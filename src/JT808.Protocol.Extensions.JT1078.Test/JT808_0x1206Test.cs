@@ -39,10 +39,9 @@ namespace JT808.Protocol.Extensions.JT1078.Test
         {
             JT808_0x1206 jT808_0x1206 = new JT808_0x1206()
             {
-        MsgNum=1,
-         Result=1
+                MsgNum=1,
+                Result=1
             };
-            var str = Newtonsoft.Json.JsonConvert.SerializeObject(jT808_0x1206);
             var hex = JT808Serializer.Serialize(jT808_0x1206).ToHexString();
             Assert.Equal("000101", hex);
         }
@@ -50,9 +49,9 @@ namespace JT808.Protocol.Extensions.JT1078.Test
         [Fact]
         public void Test2()
         {
-            var str = "{\"MsgNum\":1,\"Result\":1,\"SkipSerialization\":false}";
             var jT808_0x1206 = JT808Serializer.Deserialize<JT808_0x1206>("000101".ToHexBytes());
-            Assert.Equal(Newtonsoft.Json.JsonConvert.SerializeObject(jT808_0x1206), str);
+            Assert.Equal(1, jT808_0x1206.MsgNum);
+            Assert.Equal(1, jT808_0x1206.Result);
         }
     }
 }

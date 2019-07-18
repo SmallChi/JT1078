@@ -39,24 +39,24 @@ namespace JT808.Protocol.Extensions.JT1078.Test
         {
             JT808_0x9206 jT808_0x9206 = new JT808_0x9206()
             {
- AlarmFlag=1,
-  AVResourceType=2,
-   BeginTime= Convert.ToDateTime("2019-07-16 10:10:10"),
-    EndTime= Convert.ToDateTime("2019-07-16 10:10:11"),
-     LogicChannelNo=3,   
-                StreamType =5, FileUploadPath="D://1112",
-                 FileUploadPathLength=8,
-                  MemoryPositon=4,
-                   Password="123456",
-                    PasswordLength=6,
-                     Port=808,
-                      ServerIp="127.0.0.1",
-                       ServerIpLength=9,
-                        TaskExcuteCondition=7, 
-                         UserName="tk",
-                          UserNameLength=2
+                AlarmFlag=1,
+                AVResourceType=2,
+                BeginTime= Convert.ToDateTime("2019-07-16 10:10:10"),
+                EndTime= Convert.ToDateTime("2019-07-16 10:10:11"),
+                LogicChannelNo=3,   
+                StreamType =5,
+                FileUploadPath ="D://1112",
+                FileUploadPathLength=8,
+                MemoryPositon=4,
+                Password="123456",
+                PasswordLength=6,
+                Port=808,
+                ServerIp="127.0.0.1",
+                ServerIpLength=9,
+                TaskExcuteCondition=7, 
+                UserName="tk",
+                UserNameLength=2
             };
-            var str = Newtonsoft.Json.JsonConvert.SerializeObject(jT808_0x9206);
             var hex = JT808Serializer.Serialize(jT808_0x9206).ToHexString();
             Assert.Equal("093132372E302E302E31032802746B0631323334353608443A2F2F31313132031907161010101907161010110000000102050407", hex);
         }
@@ -64,9 +64,24 @@ namespace JT808.Protocol.Extensions.JT1078.Test
         [Fact]
         public void Test2()
         {
-            var str = "{\"ServerIpLength\":9,\"ServerIp\":\"127.0.0.1\",\"Port\":808,\"UserNameLength\":2,\"UserName\":\"tk\",\"PasswordLength\":6,\"Password\":\"123456\",\"FileUploadPathLength\":8,\"FileUploadPath\":\"D://1112\",\"LogicChannelNo\":3,\"BeginTime\":\"2019-07-16 10:10:10\",\"EndTime\":\"2019-07-16 10:10:11\",\"AlarmFlag\":1,\"AVResourceType\":2,\"StreamType\":5,\"MemoryPositon\":4,\"TaskExcuteCondition\":7,\"SkipSerialization\":false}";
             var jT808_0x9206 = JT808Serializer.Deserialize<JT808_0x9206>("093132372E302E302E31032802746B0631323334353608443A2F2F31313132031907161010101907161010110000000102050407".ToHexBytes());
-            Assert.Equal(Newtonsoft.Json.JsonConvert.SerializeObject(jT808_0x9206), str);
+            Assert.Equal(1u, jT808_0x9206.AlarmFlag);
+            Assert.Equal(2, jT808_0x9206.AVResourceType);
+            Assert.Equal(Convert.ToDateTime("2019-07-16 10:10:10"), jT808_0x9206.BeginTime);
+            Assert.Equal(Convert.ToDateTime("2019-07-16 10:10:11"), jT808_0x9206.EndTime);
+            Assert.Equal(3, jT808_0x9206.LogicChannelNo);
+            Assert.Equal(5, jT808_0x9206.StreamType);
+            Assert.Equal("D://1112", jT808_0x9206.FileUploadPath);
+            Assert.Equal(8, jT808_0x9206.FileUploadPathLength);
+            Assert.Equal(4, jT808_0x9206.MemoryPositon);
+            Assert.Equal("123456", jT808_0x9206.Password);
+            Assert.Equal(6, jT808_0x9206.PasswordLength);
+            Assert.Equal(808, jT808_0x9206.Port);
+            Assert.Equal("127.0.0.1", jT808_0x9206.ServerIp);
+            Assert.Equal(9, jT808_0x9206.ServerIpLength);
+            Assert.Equal(7, jT808_0x9206.TaskExcuteCondition);
+            Assert.Equal("tk", jT808_0x9206.UserName);
+            Assert.Equal(2, jT808_0x9206.UserNameLength);
         }
     }
 }

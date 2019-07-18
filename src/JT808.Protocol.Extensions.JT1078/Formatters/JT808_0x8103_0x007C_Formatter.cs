@@ -19,7 +19,7 @@ namespace JT808.Protocol.Extensions.JT1078.Formatters
             jT808_0x8103_0x007C.SleepWakeMode = reader.ReadByte();
             jT808_0x8103_0x007C.WakeConditionType = reader.ReadByte();
             jT808_0x8103_0x007C.TimerWakeDaySet = reader.ReadByte();
-            jT808_0x8103_0x007C.jT808_0X8103_0X007C_TimerWakeDayParamter = config.GetMessagePackFormatter<JT808_0x8103_0x007C_TimerWakeDayParamter>().Deserialize(ref reader, config);
+            jT808_0x8103_0x007C.TimerWakeDayParamter = config.GetMessagePackFormatter<JT808_0x8103_0x007C_TimerWakeDayParamter>().Deserialize(ref reader, config);
             return jT808_0x8103_0x007C;
         }
 
@@ -30,7 +30,7 @@ namespace JT808.Protocol.Extensions.JT1078.Formatters
             writer.WriteByte(value.SleepWakeMode);
             writer.WriteByte(value.WakeConditionType);
             writer.WriteByte(value.TimerWakeDaySet);
-            config.GetMessagePackFormatter<JT808_0x8103_0x007C_TimerWakeDayParamter>().Serialize(ref writer, value.jT808_0X8103_0X007C_TimerWakeDayParamter, config);
+            config.GetMessagePackFormatter<JT808_0x8103_0x007C_TimerWakeDayParamter>().Serialize(ref writer, value.TimerWakeDayParamter, config);
             writer.WriteByteReturn((byte)(writer.GetCurrentPosition()-position-1),position);
         }
     }

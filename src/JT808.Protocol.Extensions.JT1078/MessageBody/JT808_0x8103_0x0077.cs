@@ -10,7 +10,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
     /// 0x8103_0x0077
     /// </summary>
     [JT808Formatter(typeof(JT808_0x8103_0x0077_Formatter))]
-    public class JT808_0x8103_0x0077 : JT808_0x8103_CustomBodyBase
+    public class JT808_0x8103_0x0077 : JT808_0x8103_BodyBase
     {
         public override uint ParamId { get; set; } = 0x0077;
         /// <summary>
@@ -22,6 +22,6 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
         /// </summary>
         public byte NeedSetChannelTotal { get; set; }
 
-        public List<JT808_0x8103_0x0077_SignalChannel> jT808_0X8103_0X0077_SignalChannels { get; set; }
+        public List<JT808_0x8103_0x0077_SignalChannel> SignalChannels { get; set; }
     }
 }

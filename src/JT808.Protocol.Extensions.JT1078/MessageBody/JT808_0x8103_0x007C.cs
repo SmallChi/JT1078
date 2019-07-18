@@ -10,7 +10,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
     /// 0x8103_0x007C
     /// </summary>
     [JT808Formatter(typeof(JT808_0x8103_0x007C_Formatter))]
-    public class JT808_0x8103_0x007C : JT808_0x8103_CustomBodyBase
+    public class JT808_0x8103_0x007C : JT808_0x8103_BodyBase
     {
         public override uint ParamId { get; set; } = 0x007C;
         /// <summary>
@@ -32,6 +32,6 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
         /// <summary>
         /// 日定时唤醒参数列表
         /// </summary>
-        public JT808_0x8103_0x007C_TimerWakeDayParamter jT808_0X8103_0X007C_TimerWakeDayParamter { get; set; }
+        public JT808_0x8103_0x007C_TimerWakeDayParamter TimerWakeDayParamter { get; set; }
     }
 }

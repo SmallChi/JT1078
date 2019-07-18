@@ -38,7 +38,6 @@ namespace JT808.Protocol.Extensions.JT1078.Test
                 TerminalSupportedMaxNumberOfAudioPhysicalChannels = 7,
                 TerminalSupportedMaxNumberOfVideoPhysicalChannels = 8
             };
-            var str = Newtonsoft.Json.JsonConvert.SerializeObject(jT808_0x1003);
             var hex = JT808Serializer.Serialize(jT808_0x1003).ToHexString();
             Assert.Equal("03020504000101060708", hex);
         }
@@ -46,9 +45,16 @@ namespace JT808.Protocol.Extensions.JT1078.Test
         [Fact]
         public void Test2()
         {
-            var str = "{\"EnterAudioEncoding\":3,\"EnterAudioChannelsNumber\":2,\"EnterAudioSampleRate\":5,\"EnterAudioSampleDigits\":4,\"AudioFrameLength\":1,\"IsSupportedAudioOutput\":1,\"VideoEncoding\":6,\"TerminalSupportedMaxNumberOfAudioPhysicalChannels\":7,\"TerminalSupportedMaxNumberOfVideoPhysicalChannels\":8,\"SkipSerialization\":false}";
             JT808_0x1003 jT808_0x1003 = JT808Serializer.Deserialize<JT808_0x1003>("03020504000101060708".ToHexBytes());
-            Assert.Equal(Newtonsoft.Json.JsonConvert.SerializeObject(jT808_0x1003), str);
+            Assert.Equal(1,jT808_0x1003.AudioFrameLength);
+            Assert.Equal(2, jT808_0x1003.EnterAudioChannelsNumber);
+            Assert.Equal(3, jT808_0x1003.EnterAudioEncoding);
+            Assert.Equal(4, jT808_0x1003.EnterAudioSampleDigits);
+            Assert.Equal(5, jT808_0x1003.EnterAudioSampleRate);
+            Assert.Equal(1, jT808_0x1003.IsSupportedAudioOutput);
+            Assert.Equal(6, jT808_0x1003.VideoEncoding);
+            Assert.Equal(7, jT808_0x1003.TerminalSupportedMaxNumberOfAudioPhysicalChannels);
+            Assert.Equal(8, jT808_0x1003.TerminalSupportedMaxNumberOfVideoPhysicalChannels);
         }
     }
 }

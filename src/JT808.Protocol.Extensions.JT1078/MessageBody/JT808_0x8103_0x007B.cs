@@ -10,7 +10,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
     /// 0x8103_0x007B
     /// </summary>
     [JT808Formatter(typeof(JT808_0x8103_0x007B_Formatter))]
-    public class JT808_0x8103_0x007B : JT808_0x8103_CustomBodyBase
+    public class JT808_0x8103_0x007B : JT808_0x8103_BodyBase
     {
         public override uint ParamId { get; set; } = 0x007B;
         /// <summary>

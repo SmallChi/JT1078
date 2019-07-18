@@ -52,13 +52,12 @@ namespace JT809.Protocol.Extensions.JT1078.Test
                     ChannelId = 2,
                     MemType = 3,
                     StreamType = 4,
-                     StartTime = Convert.ToDateTime("2017-07-16 10:10:10"),
-                      EndTime = Convert.ToDateTime("2017-07-17 10:10:10"),
-                       AlarmType=5,
-                         FileSize=6
-        }
+                    StartTime = Convert.ToDateTime("2017-07-16 10:10:10"),
+                    EndTime = Convert.ToDateTime("2017-07-17 10:10:10"),
+                    AlarmType=5,
+                    FileSize=6
+                }
             };
-            var str = Newtonsoft.Json.JsonConvert.SerializeObject(jT809_JT1078_0x9B00);
             var hex = JT809Serializer.Serialize(jT809_JT1078_0x9B00).ToHexString();
             Assert.Equal("D4C142313233343500000000000000000000000000029B01000000840200000000596ACB0200000000596C1C82000000000000000501040300000006000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E3F000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F20212223", hex);
         }
@@ -66,9 +65,23 @@ namespace JT809.Protocol.Extensions.JT1078.Test
         [Fact]
         public void Test2()
         {
-            var str = "{\"VehicleNo\":\"粤B12345\",\"VehicleColor\":2,\"SubBusinessType\":39681,\"DataLength\":132,\"SubBodies\":{\"ChannelId\":2,\"StartTime\":\"2017-07-16 10:10:10\",\"EndTime\":\"2017-07-17 10:10:10\",\"AlarmType\":5,\"AVItemType\":1,\"StreamType\":4,\"MemType\":3,\"FileSize\":6,\"AuthorizeCode\":\"AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4OTo7PD0+Pw==\",\"GnssData\":\"AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIj\"}}";
+            var GnssDatas = Enumerable.Range(0, 36).Select(m => (byte)m).ToArray();
+            var AuthorizeCodes = Enumerable.Range(0, 64).Select(m => (byte)m).ToArray();
             var jT809_JT1078_0x9B00 = JT809Serializer.Deserialize<JT809_JT1078_0x9B00>("D4C142313233343500000000000000000000000000029B01000000840200000000596ACB0200000000596C1C82000000000000000501040300000006000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E3F000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F20212223".ToHexBytes());
-            Assert.Equal(Newtonsoft.Json.JsonConvert.SerializeObject(jT809_JT1078_0x9B00), str);
+            Assert.Equal("粤B12345", jT809_JT1078_0x9B00.VehicleNo);
+            Assert.Equal(Protocol.Enums.JT809VehicleColorType.黄色, jT809_JT1078_0x9B00.VehicleColor);
+            Assert.Equal((ushort)JT809_JT1078_SubBusinessType.远程录像下载请求消息, jT809_JT1078_0x9B00.SubBusinessType);
+            var jT809_JT1078_0x9B00_0x9B01 = jT809_JT1078_0x9B00.SubBodies as JT809_JT1078_0x9B00_0x9B01;
+            Assert.Equal(AuthorizeCodes, jT809_JT1078_0x9B00_0x9B01.AuthorizeCode);
+            Assert.Equal(GnssDatas, jT809_JT1078_0x9B00_0x9B01.GnssData);
+            Assert.Equal(1, jT809_JT1078_0x9B00_0x9B01.AVItemType);
+            Assert.Equal(2, jT809_JT1078_0x9B00_0x9B01.ChannelId);
+            Assert.Equal(3, jT809_JT1078_0x9B00_0x9B01.MemType);
+            Assert.Equal(4, jT809_JT1078_0x9B00_0x9B01.StreamType);
+            Assert.Equal(Convert.ToDateTime("2017-07-16 10:10:10"), jT809_JT1078_0x9B00_0x9B01.StartTime);
+            Assert.Equal(Convert.ToDateTime("2017-07-17 10:10:10"), jT809_JT1078_0x9B00_0x9B01.EndTime);
+            Assert.Equal(5u, jT809_JT1078_0x9B00_0x9B01.AlarmType);
+            Assert.Equal(6u, jT809_JT1078_0x9B00_0x9B01.FileSize);
         }
 
         [Fact]
@@ -80,11 +93,10 @@ namespace JT809.Protocol.Extensions.JT1078.Test
                 VehicleColor = Protocol.Enums.JT809VehicleColorType.黄色,
                 SubBusinessType = (ushort)JT809_JT1078_SubBusinessType.远程录像下载完成通知应答消息,
                 SubBodies = new JT809_JT1078_0x9B00_0x9B02() {
-               Result=1,
-                SessionId=2
+                    Result=1,
+                    SessionId=2
                 }
             };
-            var str = Newtonsoft.Json.JsonConvert.SerializeObject(jT809_JT1078_0x9B00);
             var hex = JT809Serializer.Serialize(jT809_JT1078_0x9B00).ToHexString();
             Assert.Equal("D4C142313233343500000000000000000000000000029B0200000003010002", hex);
         }
@@ -92,9 +104,13 @@ namespace JT809.Protocol.Extensions.JT1078.Test
         [Fact]
         public void Test4()
         {
-            var str = "{\"VehicleNo\":\"粤B12345\",\"VehicleColor\":2,\"SubBusinessType\":39682,\"DataLength\":3,\"SubBodies\":{\"Result\":1,\"SessionId\":2}}";
             var jT809_JT1078_0x9B00 = JT809Serializer.Deserialize<JT809_JT1078_0x9B00>("D4C142313233343500000000000000000000000000029B0200000003010002".ToHexBytes());
-            Assert.Equal(Newtonsoft.Json.JsonConvert.SerializeObject(jT809_JT1078_0x9B00), str);
+            Assert.Equal("粤B12345", jT809_JT1078_0x9B00.VehicleNo);
+            Assert.Equal(Protocol.Enums.JT809VehicleColorType.黄色, jT809_JT1078_0x9B00.VehicleColor);
+            Assert.Equal((ushort)JT809_JT1078_SubBusinessType.远程录像下载完成通知应答消息, jT809_JT1078_0x9B00.SubBusinessType);
+            var jT809_JT1078_0x9B00_0x9B02 = jT809_JT1078_0x9B00.SubBodies as JT809_JT1078_0x9B00_0x9B02;
+            Assert.Equal(1, jT809_JT1078_0x9B00_0x9B02.Result);
+            Assert.Equal(2, jT809_JT1078_0x9B00_0x9B02.SessionId);
         }
         [Fact]
         public void Test5()
@@ -107,10 +123,9 @@ namespace JT809.Protocol.Extensions.JT1078.Test
                 SubBodies = new JT809_JT1078_0x9B00_0x9B03()
                 {
                      Type=1,
-                    SessionId = 2
+                     SessionId = 2
                 }
             };
-            var str = Newtonsoft.Json.JsonConvert.SerializeObject(jT809_JT1078_0x9B00);
             var hex = JT809Serializer.Serialize(jT809_JT1078_0x9B00).ToHexString();
             Assert.Equal("D4C142313233343500000000000000000000000000029B0300000003000201", hex);
         }
@@ -118,9 +133,13 @@ namespace JT809.Protocol.Extensions.JT1078.Test
         [Fact]
         public void Test6()
         {
-            var str = "{\"VehicleNo\":\"粤B12345\",\"VehicleColor\":2,\"SubBusinessType\":39683,\"DataLength\":3,\"SubBodies\":{\"SessionId\":2,\"Type\":1}}";
             var jT809_JT1078_0x9B00 = JT809Serializer.Deserialize<JT809_JT1078_0x9B00>("D4C142313233343500000000000000000000000000029B0300000003000201".ToHexBytes());
-            Assert.Equal(Newtonsoft.Json.JsonConvert.SerializeObject(jT809_JT1078_0x9B00), str);
+            Assert.Equal("粤B12345", jT809_JT1078_0x9B00.VehicleNo);
+            Assert.Equal(Protocol.Enums.JT809VehicleColorType.黄色, jT809_JT1078_0x9B00.VehicleColor);
+            Assert.Equal((ushort)JT809_JT1078_SubBusinessType.远程录像下载控制消息, jT809_JT1078_0x9B00.SubBusinessType);
+            var jT809_JT1078_0x9B00_0x9B03 = jT809_JT1078_0x9B00.SubBodies as JT809_JT1078_0x9B00_0x9B03;
+            Assert.Equal(1, jT809_JT1078_0x9B00_0x9B03.Type);
+            Assert.Equal(2, jT809_JT1078_0x9B00_0x9B03.SessionId);
         }
     }
 }

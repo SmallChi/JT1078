@@ -39,12 +39,11 @@ namespace JT808.Protocol.Extensions.JT1078.Test
         {
             JT808_0x9202 jT808_0x9202 = new JT808_0x9202()
             {
-  AVChannelNo=1,
-   DragPlaybackPosition=Convert.ToDateTime("2019-07-16 10:10:10"),
-    FastForwardOrFastRewindMultiples=2,
-     PlayBackControl=3
+                AVChannelNo=1,
+                DragPlaybackPosition=Convert.ToDateTime("2019-07-16 10:10:10"),
+                FastForwardOrFastRewindMultiples=2,
+                PlayBackControl=3
             };
-            var str = Newtonsoft.Json.JsonConvert.SerializeObject(jT808_0x9202);
             var hex = JT808Serializer.Serialize(jT808_0x9202).ToHexString();
             Assert.Equal("010302190716101010", hex);
         }
@@ -52,9 +51,11 @@ namespace JT808.Protocol.Extensions.JT1078.Test
         [Fact]
         public void Test2()
         {
-            var str = "{\"AVChannelNo\":1,\"PlayBackControl\":3,\"FastForwardOrFastRewindMultiples\":2,\"DragPlaybackPosition\":\"2019-07-16 10:10:10\",\"SkipSerialization\":false}";
             var jT808_0x9202 = JT808Serializer.Deserialize<JT808_0x9202>("010302190716101010".ToHexBytes());
-            Assert.Equal(Newtonsoft.Json.JsonConvert.SerializeObject(jT808_0x9202), str);
+            Assert.Equal(1, jT808_0x9202.AVChannelNo);
+            Assert.Equal(Convert.ToDateTime("2019-07-16 10:10:10"), jT808_0x9202.DragPlaybackPosition);
+            Assert.Equal(2, jT808_0x9202.FastForwardOrFastRewindMultiples);
+            Assert.Equal(3, jT808_0x9202.PlayBackControl);
         }
     }
 }

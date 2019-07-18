@@ -34,25 +34,25 @@ namespace JT808.Protocol.Extensions.JT1078.Test
                 Speed = 60,
                 Direction = 0,
                 StatusFlag = 2,
-                 JT808CustomLocationAttachData = new Dictionary<byte, JT808_0x0200_CustomBodyBase>()
+                JT808LocationAttachData = new Dictionary<byte, JT808_0x0200_BodyBase>()
             };
-            jT808UploadLocationRequest.JT808CustomLocationAttachData.Add(0x14, new JT808_0x0200_0x14
+            jT808UploadLocationRequest.JT808LocationAttachData.Add(0x14, new JT808_0x0200_0x14
             {
                  VideoRelateAlarm = 100
             });
-            jT808UploadLocationRequest.JT808CustomLocationAttachData.Add(0x15, new JT808_0x0200_0x15
+            jT808UploadLocationRequest.JT808LocationAttachData.Add(0x15, new JT808_0x0200_0x15
             {
                  VideoSignalLoseAlarmStatus = 100
             });
-            jT808UploadLocationRequest.JT808CustomLocationAttachData.Add(0x16, new JT808_0x0200_0x16
+            jT808UploadLocationRequest.JT808LocationAttachData.Add(0x16, new JT808_0x0200_0x16
             {
                  VideoSignalOcclusionAlarmStatus = 100
             });
-            jT808UploadLocationRequest.JT808CustomLocationAttachData.Add(0x17, new JT808_0x0200_0x17
+            jT808UploadLocationRequest.JT808LocationAttachData.Add(0x17, new JT808_0x0200_0x17
             {
                  StorageFaultAlarmStatus = 100
             });
-            jT808UploadLocationRequest.JT808CustomLocationAttachData.Add(0x18, new JT808_0x0200_0x18
+            jT808UploadLocationRequest.JT808LocationAttachData.Add(0x18, new JT808_0x0200_0x18
             {
                  AbnormalDrivingBehaviorAlarmInfo = 100
             });
@@ -65,17 +65,17 @@ namespace JT808.Protocol.Extensions.JT1078.Test
         {
             byte[] bodys = "000000010000000200BA7F0E07E4F11C0028003C00001807151010101404000000641504000000641604000000641702006418020064".ToHexBytes();
             JT808_0x0200 jT808UploadLocationRequest = JT808Serializer.Deserialize<JT808_0x0200>(bodys);
-            Assert.Equal((uint)1, jT808UploadLocationRequest.AlarmFlag);
+            Assert.Equal(1u, jT808UploadLocationRequest.AlarmFlag);
             Assert.Equal(DateTime.Parse("2018-07-15 10:10:10"), jT808UploadLocationRequest.GPSTime);
             Assert.Equal(12222222, jT808UploadLocationRequest.Lat);
             Assert.Equal(132444444, jT808UploadLocationRequest.Lng);
             Assert.Equal(60, jT808UploadLocationRequest.Speed);
-            Assert.Equal((uint)2, jT808UploadLocationRequest.StatusFlag);
-            Assert.Equal((uint)100,  JT808Serializer.Deserialize<JT808_0x0200_0x14>(jT808UploadLocationRequest.JT808CustomLocationAttachOriginalData[0x14]).VideoRelateAlarm);
-            Assert.Equal((uint)100, JT808Serializer.Deserialize<JT808_0x0200_0x15>(jT808UploadLocationRequest.JT808CustomLocationAttachOriginalData[0x15]).VideoSignalLoseAlarmStatus);
-            Assert.Equal((uint)100, JT808Serializer.Deserialize<JT808_0x0200_0x16>(jT808UploadLocationRequest.JT808CustomLocationAttachOriginalData[0x16]).VideoSignalOcclusionAlarmStatus);
-            Assert.Equal((uint)100, JT808Serializer.Deserialize<JT808_0x0200_0x17>(jT808UploadLocationRequest.JT808CustomLocationAttachOriginalData[0x17]).StorageFaultAlarmStatus);
-            Assert.Equal((uint)100, JT808Serializer.Deserialize<JT808_0x0200_0x18>(jT808UploadLocationRequest.JT808CustomLocationAttachOriginalData[0x17]).AbnormalDrivingBehaviorAlarmInfo);
+            Assert.Equal(2u, jT808UploadLocationRequest.StatusFlag);
+            Assert.Equal(100u, ((JT808_0x0200_0x14)jT808UploadLocationRequest.JT808LocationAttachData[0x14]).VideoRelateAlarm);
+            Assert.Equal(100u, ((JT808_0x0200_0x15)jT808UploadLocationRequest.JT808LocationAttachData[0x15]).VideoSignalLoseAlarmStatus);
+            Assert.Equal(100u, ((JT808_0x0200_0x16)jT808UploadLocationRequest.JT808LocationAttachData[0x16]).VideoSignalOcclusionAlarmStatus);
+            Assert.Equal(100u, ((JT808_0x0200_0x17)jT808UploadLocationRequest.JT808LocationAttachData[0x17]).StorageFaultAlarmStatus);
+            Assert.Equal(100u, ((JT808_0x0200_0x18)jT808UploadLocationRequest.JT808LocationAttachData[0x18]).AbnormalDrivingBehaviorAlarmInfo);
         }
     }
 }

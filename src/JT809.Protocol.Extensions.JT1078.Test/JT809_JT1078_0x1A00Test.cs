@@ -40,17 +40,16 @@ namespace JT809.Protocol.Extensions.JT1078.Test
         {
             JT809_JT1078_0x1A00 jT809_JT1078_0x1A00 = new JT809_JT1078_0x1A00()
             {
-              VehicleNo="粤B12345",
-               VehicleColor= Protocol.Enums.JT809VehicleColorType.黄色,
-                SubBusinessType= (ushort)JT809_JT1078_SubBusinessType.远程录像回放请求应答消息, 
+                 VehicleNo="粤B12345",
+                 VehicleColor= Protocol.Enums.JT809VehicleColorType.黄色,
+                 SubBusinessType= (ushort)JT809_JT1078_SubBusinessType.远程录像回放请求应答消息, 
                  SubBodies=  new JT809_JT1078_0x1A00_0x1A01()
                  {
-                      Result=1,
-                       ServerIp="127.0.0.1",
-                        ServerPort=8080
+                    Result=1,
+                    ServerIp="127.0.0.1",
+                    ServerPort=8080
                  }
             };
-            var str = Newtonsoft.Json.JsonConvert.SerializeObject(jT809_JT1078_0x1A00);
             var hex = JT809Serializer.Serialize(jT809_JT1078_0x1A00).ToHexString();
             Assert.Equal("D4C142313233343500000000000000000000000000021A010000002300000000000000000000000000000000000000000000003132372E302E302E311F9001", hex);
         }
@@ -58,9 +57,14 @@ namespace JT809.Protocol.Extensions.JT1078.Test
         [Fact]
         public void Test2()
         {
-            var str = "{\"VehicleNo\":\"粤B12345\",\"VehicleColor\":2,\"SubBusinessType\":6657,\"DataLength\":35,\"SubBodies\":{\"ServerIp\":\"127.0.0.1\",\"ServerPort\":8080,\"Result\":1}}";
             var jT809_JT1078_0x1A00 = JT809Serializer.Deserialize<JT809_JT1078_0x1A00>("D4C142313233343500000000000000000000000000021A010000002300000000000000000000000000000000000000000000003132372E302E302E311F9001".ToHexBytes());
-            Assert.Equal(Newtonsoft.Json.JsonConvert.SerializeObject(jT809_JT1078_0x1A00), str);
+            Assert.Equal("粤B12345", jT809_JT1078_0x1A00.VehicleNo);
+            Assert.Equal(Protocol.Enums.JT809VehicleColorType.黄色, jT809_JT1078_0x1A00.VehicleColor);
+            Assert.Equal((ushort)JT809_JT1078_SubBusinessType.远程录像回放请求应答消息, jT809_JT1078_0x1A00.SubBusinessType);
+            var jT809_JT1078_0x1A00_0x1A01 = jT809_JT1078_0x1A00.SubBodies as JT809_JT1078_0x1A00_0x1A01;
+            Assert.Equal(1, jT809_JT1078_0x1A00_0x1A01.Result);
+            Assert.Equal("127.0.0.1", jT809_JT1078_0x1A00_0x1A01.ServerIp);
+            Assert.Equal(8080, jT809_JT1078_0x1A00_0x1A01.ServerPort);
         }
 
         [Fact]
@@ -75,7 +79,6 @@ namespace JT809.Protocol.Extensions.JT1078.Test
                   Result=1
                 }
             };
-            var str = Newtonsoft.Json.JsonConvert.SerializeObject(jT809_JT1078_0x1A00);
             var hex = JT809Serializer.Serialize(jT809_JT1078_0x1A00).ToHexString();
             Assert.Equal("D4C142313233343500000000000000000000000000021A020000000101", hex);
         }
@@ -83,9 +86,12 @@ namespace JT809.Protocol.Extensions.JT1078.Test
         [Fact]
         public void Test4()
         {
-            var str = "{\"VehicleNo\":\"粤B12345\",\"VehicleColor\":2,\"SubBusinessType\":6658,\"DataLength\":1,\"SubBodies\":{\"Result\":1}}";
             var jT809_JT1078_0x1A00 = JT809Serializer.Deserialize<JT809_JT1078_0x1A00>("D4C142313233343500000000000000000000000000021A020000000101".ToHexBytes());
-            Assert.Equal(Newtonsoft.Json.JsonConvert.SerializeObject(jT809_JT1078_0x1A00), str);
+            Assert.Equal("粤B12345", jT809_JT1078_0x1A00.VehicleNo);
+            Assert.Equal(Protocol.Enums.JT809VehicleColorType.黄色, jT809_JT1078_0x1A00.VehicleColor);
+            Assert.Equal((ushort)JT809_JT1078_SubBusinessType.远程录像回放控制应答消息, jT809_JT1078_0x1A00.SubBusinessType);
+            var jT809_JT1078_0x1A00_0x1A02 = jT809_JT1078_0x1A00.SubBodies as JT809_JT1078_0x1A00_0x1A02;
+            Assert.Equal(1, jT809_JT1078_0x1A00_0x1A02.Result);
         }
     }
 }

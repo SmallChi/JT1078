@@ -18,11 +18,11 @@ namespace JT808.Protocol.Extensions.JT1078.Formatters
             jT808_0X8103_0X0077.ParamLength = reader.ReadByte();
             jT808_0X8103_0X0077.NeedSetChannelTotal = reader.ReadByte();
             if (jT808_0X8103_0X0077.NeedSetChannelTotal > 0) {
-                jT808_0X8103_0X0077.jT808_0X8103_0X0077_SignalChannels = new List<JT808_0x8103_0x0077_SignalChannel>();
+                jT808_0X8103_0X0077.SignalChannels = new List<JT808_0x8103_0x0077_SignalChannel>();
                 var formatter = config.GetMessagePackFormatter<JT808_0x8103_0x0077_SignalChannel>();
                 for (int i = 0; i < jT808_0X8103_0X0077.NeedSetChannelTotal; i++)
                 {
-                    jT808_0X8103_0X0077.jT808_0X8103_0X0077_SignalChannels.Add(formatter.Deserialize(ref reader, config));
+                    jT808_0X8103_0X0077.SignalChannels.Add(formatter.Deserialize(ref reader, config));
                 }
             }
             return jT808_0X8103_0X0077;
@@ -33,9 +33,9 @@ namespace JT808.Protocol.Extensions.JT1078.Formatters
             writer.WriteUInt32(value.ParamId);
             writer.Skip(1,out var position); 
             writer.WriteByte(value.NeedSetChannelTotal);
-            if (value.jT808_0X8103_0X0077_SignalChannels.Any()) {
+            if (value.SignalChannels.Any()) {
                 var formatter = config.GetMessagePackFormatter<JT808_0x8103_0x0077_SignalChannel>();
-                foreach (var signalChannel in value.jT808_0X8103_0X0077_SignalChannels)
+                foreach (var signalChannel in value.SignalChannels)
                 {
                     formatter.Serialize(ref writer, signalChannel, config);
                 }

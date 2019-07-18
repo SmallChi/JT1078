@@ -9,7 +9,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
     /// 0x0200_0x14
     /// </summary>
     [JT808Formatter(typeof(JT808_0x0200_0x14_Formatter))]
-    public class JT808_0x0200_0x14 : JT808_0x0200_CustomBodyBase
+    public class JT808_0x0200_0x14 : JT808_0x0200_BodyBase
     {
         public override byte AttachInfoId { get; set; } = 0x14;
         /// <summary>

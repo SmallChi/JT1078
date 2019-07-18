@@ -39,10 +39,9 @@ namespace JT808.Protocol.Extensions.JT1078.Test
         {
             JT808_0x9303 jT808_0x9303 = new JT808_0x9303()
             {
- LogicChannelNo=1,
- IrisAdjustment=2
+                 LogicChannelNo=1,
+                 IrisAdjustment=2
             };
-            var str = Newtonsoft.Json.JsonConvert.SerializeObject(jT808_0x9303);
             var hex = JT808Serializer.Serialize(jT808_0x9303).ToHexString();
             Assert.Equal("0102", hex);
         }
@@ -50,9 +49,9 @@ namespace JT808.Protocol.Extensions.JT1078.Test
         [Fact]
         public void Test2()
         {
-            var str = "{\"LogicChannelNo\":1,\"IrisAdjustment\":2,\"SkipSerialization\":false}";
             var jT808_0x9303 = JT808Serializer.Deserialize<JT808_0x9303>("0102".ToHexBytes());
-            Assert.Equal(Newtonsoft.Json.JsonConvert.SerializeObject(jT808_0x9303), str);
+            Assert.Equal(1, jT808_0x9303.LogicChannelNo);
+            Assert.Equal(2, jT808_0x9303.IrisAdjustment);
         }
     }
 }

@@ -40,15 +40,14 @@ namespace JT809.Protocol.Extensions.JT1078.Test
         {
             JT809_JT1078_0x9900 jT809_JT1078_0x9900 = new JT809_JT1078_0x9900()
             {
-              VehicleNo="粤B12345",
-               VehicleColor= Protocol.Enums.JT809VehicleColorType.黄色,
+                VehicleNo="粤B12345",
+                VehicleColor= Protocol.Enums.JT809VehicleColorType.黄色,
                 SubBusinessType= (ushort)JT809_JT1078_SubBusinessType.主动上传音视频资源目录信息应答消息, 
-                 SubBodies=  new JT809_JT1078_0x9900_0x9901() {
+                SubBodies=  new JT809_JT1078_0x9900_0x9901() {
                       Result=1,
-                       ItemNumber=2
+                      ItemNumber=2
                  }
             };
-            var str = Newtonsoft.Json.JsonConvert.SerializeObject(jT809_JT1078_0x9900);
             var hex = JT809Serializer.Serialize(jT809_JT1078_0x9900).ToHexString();
             Assert.Equal("D4C142313233343500000000000000000000000000029901000000020102", hex);
         }
@@ -56,9 +55,13 @@ namespace JT809.Protocol.Extensions.JT1078.Test
         [Fact]
         public void Test2()
         {
-            var str = "{\"VehicleNo\":\"粤B12345\",\"VehicleColor\":2,\"SubBusinessType\":39169,\"DataLength\":2,\"SubBodies\":{\"Result\":1,\"ItemNumber\":2}}";
             var jT809_JT1078_0x9900 = JT809Serializer.Deserialize<JT809_JT1078_0x9900>("D4C142313233343500000000000000000000000000029901000000020102".ToHexBytes());
-            Assert.Equal(Newtonsoft.Json.JsonConvert.SerializeObject(jT809_JT1078_0x9900), str);
+            Assert.Equal("粤B12345", jT809_JT1078_0x9900.VehicleNo);
+            Assert.Equal(Protocol.Enums.JT809VehicleColorType.黄色, jT809_JT1078_0x9900.VehicleColor);
+            Assert.Equal((ushort)JT809_JT1078_SubBusinessType.主动上传音视频资源目录信息应答消息, jT809_JT1078_0x9900.SubBusinessType);
+            var jT809_JT1078_0x9900_0x9901 = jT809_JT1078_0x9900.SubBodies as JT809_JT1078_0x9900_0x9901;
+            Assert.Equal(1, jT809_JT1078_0x9900_0x9901.Result);
+            Assert.Equal(2, jT809_JT1078_0x9900_0x9901.ItemNumber);
         }
 
         [Fact]
@@ -75,15 +78,14 @@ namespace JT809.Protocol.Extensions.JT1078.Test
                     ChannelId = 1,
                     AlarmType = 2,
                     AVItemType = 3,
-                    EndTime = Convert.ToDateTime("2017-07-16 10:10:10"),
                     MemType = 4,
                     StartTime = Convert.ToDateTime("2017-07-15 10:10:10"),
-                     StreamType=5,
-                      AuthorizeCode= AuthorizeCodes,
-                       GnssData= GnssDatas
+                    EndTime = Convert.ToDateTime("2017-07-16 10:10:10"),
+                    StreamType =5,
+                    AuthorizeCode= AuthorizeCodes,
+                    GnssData= GnssDatas
                 }
             };
-            var str = Newtonsoft.Json.JsonConvert.SerializeObject(jT809_JT1078_0x9900);
             var hex = JT809Serializer.Serialize(jT809_JT1078_0x9900).ToHexString();
             Assert.Equal("D4C1423132333435000000000000000000000000000299020000008001000000005969798200000000596ACB020000000000000002030504000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E3F000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F20212223", hex);
         }
@@ -91,9 +93,22 @@ namespace JT809.Protocol.Extensions.JT1078.Test
         [Fact]
         public void Test4()
         {
-            var str = "{\"VehicleNo\":\"粤B12345\",\"VehicleColor\":2,\"SubBusinessType\":39170,\"DataLength\":128,\"SubBodies\":{\"ChannelId\":1,\"StartTime\":\"2017-07-15 10:10:10\",\"EndTime\":\"2017-07-16 10:10:10\",\"AlarmType\":2,\"AVItemType\":3,\"StreamType\":5,\"MemType\":4,\"AuthorizeCode\":\"AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4OTo7PD0+Pw==\",\"GnssData\":\"AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIj\"}}";
+            var GnssDatas = Enumerable.Range(0, 36).Select(m => (byte)m).ToArray();
+            var AuthorizeCodes = Enumerable.Range(0, 64).Select(m => (byte)m).ToArray();
             var jT809_JT1078_0x9900 = JT809Serializer.Deserialize<JT809_JT1078_0x9900>("D4C1423132333435000000000000000000000000000299020000008001000000005969798200000000596ACB020000000000000002030504000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E3F000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F20212223".ToHexBytes());
-            Assert.Equal(Newtonsoft.Json.JsonConvert.SerializeObject(jT809_JT1078_0x9900), str);
+            Assert.Equal("粤B12345", jT809_JT1078_0x9900.VehicleNo);
+            Assert.Equal(Protocol.Enums.JT809VehicleColorType.黄色, jT809_JT1078_0x9900.VehicleColor);
+            Assert.Equal((ushort)JT809_JT1078_SubBusinessType.查询音视频资源目录请求消息, jT809_JT1078_0x9900.SubBusinessType);
+            var jT809_JT1078_0x9900_0x9902 = jT809_JT1078_0x9900.SubBodies as JT809_JT1078_0x9900_0x9902;
+            Assert.Equal(1, jT809_JT1078_0x9900_0x9902.ChannelId);
+            Assert.Equal(2u, jT809_JT1078_0x9900_0x9902.AlarmType);
+            Assert.Equal(3, jT809_JT1078_0x9900_0x9902.AVItemType);
+            Assert.Equal(4, jT809_JT1078_0x9900_0x9902.MemType);
+            Assert.Equal(Convert.ToDateTime("2017-07-15 10:10:10"), jT809_JT1078_0x9900_0x9902.StartTime);
+            Assert.Equal(Convert.ToDateTime("2017-07-16 10:10:10"), jT809_JT1078_0x9900_0x9902.EndTime);
+            Assert.Equal(5, jT809_JT1078_0x9900_0x9902.StreamType);
+            Assert.Equal(AuthorizeCodes, jT809_JT1078_0x9900_0x9902.AuthorizeCode);
+            Assert.Equal(GnssDatas, jT809_JT1078_0x9900_0x9902.GnssData);
         }
     }
 }
