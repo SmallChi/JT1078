@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace JT1078.Flv
+namespace JT1078.Flv.MessagePack
 {
-    public static class Amf3
+    ref partial struct FlvMessagePackWriter
     {
+        
        
     }
 }
