@@ -4,7 +4,7 @@ using System.Text;
 
 namespace JT1078.Flv.Enums
 {
-    public enum FrameType
+    public enum FrameType:byte
     {
         KeyFrame = 1,
         InterFrame,

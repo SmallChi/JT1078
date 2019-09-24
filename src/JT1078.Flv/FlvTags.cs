@@ -1,8 +1,11 @@
-﻿namespace JT1078.Flv
+﻿using JT1078.Flv.Enums;
+using JT1078.Flv.Metadata;
+
+namespace JT1078.Flv
 {
-    public class FlvTag
+    public class FlvTags
     {
-        public byte Type { get; set; }
+        public TagType Type { get; set; }
         /// <summary>
         /// Tag Data部分大小
         /// 3个字节
@@ -22,6 +25,10 @@
         /// <summary>
         /// 根据tag类型
         /// </summary>
-        public byte[] TagData { get; set; }
+        public VideoTags VideoTagsData { get; set; }
+        /// <summary>
+        /// 根据tag类型
+        /// </summary>
+        public Amf3 DataTagsData { get; set; }
     }
 }

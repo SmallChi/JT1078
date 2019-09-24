@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JT1078.Flv.Metadata;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,7 +7,22 @@ namespace JT1078.Flv.MessagePack
 {
     ref partial struct FlvMessagePackWriter
     {
-        
-       
+        public void WriteAmf3(Amf3 amf3)
+        {
+            WriteByte(amf3.DataType);
+            if(amf3.Amf3Metadatas!=null && amf3.Amf3Metadatas.Count > 0)
+            {
+                WriteInt32(amf3.Amf3Metadatas.Count);
+                foreach(var item in amf3.Amf3Metadatas)
+                {
+                    //根据数据类型
+                    WriteArray(item.ToBuffer()); 
+                }
+            }
+            else
+            {
+                WriteInt32(0);
+            }
+        }
     }
 }

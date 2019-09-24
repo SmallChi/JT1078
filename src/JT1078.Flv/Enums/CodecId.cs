@@ -12,6 +12,6 @@ namespace JT1078.Flv.Enums
         Vp6,
         Vp6WithAlpha,
         ScreenVideo2,
-        Avc
+        AvcVideoPacke
     }
 }

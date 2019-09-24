@@ -5,7 +5,7 @@ using System.Text;
 
 namespace JT1078.Flv.Metadata
 {
-    public  class VideoTag
+    public  class VideoTags
     {
         /// <summary>
         /// 1: keyframe(for AVC, a seekable frame) —— 即H.264的IDR帧；
@@ -15,7 +15,7 @@ namespace JT1078.Flv.Metadata
         /// <summary>
         /// 当 CodecID 为 7 时，VideoData 为 AVCVIDEOPACKE，也即 H.264媒体数据
         /// </summary>
-        public CodecId CodecId { get; set; }
-        public byte[] VideoData { get; set; }
+        public CodecId CodecId { get; set; } = CodecId.AvcVideoPacke;
+        public AvcVideoPacke VideoData { get; set; }
     }
 }

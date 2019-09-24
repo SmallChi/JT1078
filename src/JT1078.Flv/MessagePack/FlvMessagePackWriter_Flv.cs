@@ -1,4 +1,5 @@
 ﻿using JT1078.Flv.Enums;
+using JT1078.Flv.Metadata;
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -17,40 +18,84 @@ namespace JT1078.Flv.MessagePack
             }
         }
 
-        public void WriteFlvTag(FlvTag tag)
+        public void WriteFlvTag(FlvTags tag)
         {
-            WriteByte(tag.Type);
+            WriteByte((byte)tag.Type);
             Skip(3, out int DataSizePosition);
             WriteUInt24(tag.Timestamp);
             WriteByte(tag.TimestampExt);
             WriteUInt24(tag.StreamId);
-            switch ((TagType)tag.Type)
+            switch (tag.Type)
             {
                 case TagType.Video:
-
+                    //VideoTag
+                    WriteVideoTags(tag.VideoTagsData);
                     break;
                 case TagType.ScriptData:
-
+                    //DataTags
                     //flv Amf0
-                    WriteAmf0();
+                    WriteAmf1();
                     //flv Amf3
+                    WriteAmf3(tag.DataTagsData);
                     break;
                 case TagType.Audio:
+                    //VIDEODATA 
                     break;
             }
-            WriteInt32Return(GetCurrentPosition() - DataSizePosition - 3, DataSizePosition);
+            WriteInt24Return(GetCurrentPosition() - DataSizePosition - 3, DataSizePosition);
         }
 
         public void WriteUInt24(uint value)
         {
-            BinaryPrimitives.WriteUInt32BigEndian(writer.Free, value);
+            var span = writer.Free;
+            span[0] = (byte)(value >> 16);
+            span[1] = (byte)(value >> 8);
+            span[2] = (byte)value;
             writer.Advance(3);
         }
 
-        public void WriteInt32Return(int value, int position)
+        public void WriteInt24Return(int value, int position)
         {
-            BinaryPrimitives.WriteInt32BigEndian(writer.Written.Slice(position, 3), value);
+            var span = writer.Written.Slice(position, 3);
+            span[0] = (byte)(value >> 16);
+            span[1] = (byte)(value >> 8);
+            span[2] = (byte)value;
         }
 
+        public void WriteVideoTags(VideoTags videoTags)
+        {
+            WriteByte((byte)((byte)videoTags.FrameType | (byte)videoTags.CodecId));
+#warning 只处理H.264媒体数据
+            if (videoTags.CodecId== CodecId.AvcVideoPacke)
+            {
+                WriteAvcVideoPacke(videoTags.VideoData);
+            }
+        }
+
+        public void WriteAvcVideoPacke(AvcVideoPacke videoPacke)
+        {
+            WriteByte((byte)videoPacke.AvcPacketType);
+            if (videoPacke.AvcPacketType== AvcPacketType.SequenceHeader)
+            {
+                videoPacke.CompositionTime = 0;
+                WriteUInt24(videoPacke.CompositionTime);
+                //AVCDecoderConfigurationRecord
+#warning AVCDecoderConfigurationRecord
+                WriteArray(videoPacke.Data);
+            }
+            else if(videoPacke.AvcPacketType == AvcPacketType.Raw)
+            {
+                WriteUInt24(videoPacke.CompositionTime);
+#warning One or more NALUs
+                //One or more NALUs
+                WriteArray(videoPacke.Data);
+            }
+            else
+            {
+                videoPacke.CompositionTime = 0;
+                WriteUInt24(videoPacke.CompositionTime);
+                //Empty
+            }
+        }
     }
 }

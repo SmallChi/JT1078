@@ -1,0 +1,1 @@
+ffmpeg -i demo.mp4 -c copy -f flv -vcodec h264 -acodec aac demo_flv.flv
