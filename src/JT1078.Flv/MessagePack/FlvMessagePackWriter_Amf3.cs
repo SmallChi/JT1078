@@ -1,8 +1,10 @@
 ﻿using JT1078.Flv.Metadata;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 
+[assembly: InternalsVisibleTo("JT1078.Flv.Test")]
 namespace JT1078.Flv.MessagePack
 {
     ref partial struct FlvMessagePackWriter

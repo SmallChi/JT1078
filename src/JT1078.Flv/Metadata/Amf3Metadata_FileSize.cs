@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Buffers.Binary;
+using JT1078.Flv.Extensions;
 
 namespace JT1078.Flv.Metadata
 {
@@ -17,9 +18,9 @@ namespace JT1078.Flv.Metadata
             Span<byte> tmp = new byte[2+8+1+8];
             var b1 = Encoding.ASCII.GetBytes(FieldName);
             BinaryPrimitives.WriteUInt16BigEndian(tmp, (ushort)b1.Length);
-            b1.CopyTo(tmp.Slice(4));
-            tmp[11] = DataType;
-            BinaryPrimitives.WriteInt64BigEndian(tmp.Slice(12), (long)Value);
+            b1.CopyTo(tmp.Slice(2));
+            tmp[10] = DataType;
+            this.WriteDouble(tmp.Slice(11));
             return tmp;
         }
     }
