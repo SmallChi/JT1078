@@ -86,5 +86,10 @@ namespace JT1078.Protocol
         /// 数据体
         /// </summary>
         public byte[] Bodies{ get; set; }
+
+        public string GetKey()
+        {
+            return $"{SIM}_{LogicChannelNumber.ToString()}";
+        }
     }
 }

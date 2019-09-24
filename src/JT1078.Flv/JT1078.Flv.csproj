@@ -8,5 +8,9 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
     <PackageReference Include="System.Memory" Version="4.5.3" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JT1078.Protocol\JT1078.Protocol.csproj" />
+  </ItemGroup>
   
 </Project>
