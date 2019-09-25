@@ -97,5 +97,20 @@ namespace JT1078.Flv.MessagePack
                 //Empty
             }
         }
+
+        public void WriteAVCDecoderConfigurationRecord(AVCDecoderConfigurationRecord configurationRecord)
+        {
+            WriteByte(configurationRecord.ConfigurationVersion);
+            WriteByte(configurationRecord.AVCProfileIndication);
+            WriteByte(configurationRecord.ProfileCompatibility);
+            WriteByte(configurationRecord.AVCLevelIndication);
+            WriteByte((byte)configurationRecord.LengthSizeMinusOne);
+            WriteByte((byte)configurationRecord.NumOfSequenceParameterSets);
+            WriteUInt16((ushort)configurationRecord.SPSBuffer.Length);
+            WriteArray(configurationRecord.SPSBuffer);
+            WriteByte(configurationRecord.NumOfPictureParameterSets);
+            WriteUInt16((ushort)configurationRecord.PPSBuffer.Length);
+            WriteArray(configurationRecord.PPSBuffer);
+        }
     }
 }

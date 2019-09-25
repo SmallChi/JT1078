@@ -7,7 +7,7 @@ namespace JT1078.Flv
 {
     public class FlvMuxer
     {
-        private readonly FlvHeader VideoFlvHeader = new FlvHeader(true, false);
+        private static readonly FlvHeader VideoFlvHeader = new FlvHeader(true, false);
         public byte[] FlvFirstFrame()
         {
             byte[] buffer = FlvArrayPool.Rent(10240);
@@ -17,10 +17,33 @@ namespace JT1078.Flv
                 //flv header
                 flvMessagePackWriter.WriteArray(VideoFlvHeader.ToArray());
                 //flv body
-                //flv body PreviousTagSize
+                //flv body PreviousTagSize awalys 0
                 flvMessagePackWriter.WriteUInt32(0);
                 //flv body tag
                
+                //flv body tag header
+
+                //flv body tag body
+
+                return flvMessagePackWriter.FlushAndGetArray();
+            }
+            finally
+            {
+                FlvArrayPool.Return(buffer);
+            }
+        }
+        public byte[] FlvOtherFrame()
+        {
+            byte[] buffer = FlvArrayPool.Rent(10240);
+            try
+            {
+                FlvMessagePackWriter flvMessagePackWriter = new FlvMessagePackWriter(buffer);
+
+                //flv body
+                //flv body PreviousTagSize
+
+                //flv body tag
+
                 //flv body tag header
 
                 //flv body tag body

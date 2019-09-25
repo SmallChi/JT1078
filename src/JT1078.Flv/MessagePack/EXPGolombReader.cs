@@ -63,7 +63,8 @@ namespace JT1078.Flv.MessagePack
                     for (int i = 0; i < scalingListCount; i++)
                     {
                         if (ReadBoolean())
-                        {   // seq_scaling_list_present_flag[ i ]
+                        {   
+                            // seq_scaling_list_present_flag[ i ]
                             if (i < 6)
                             {
                                 SkipScalingList(16);

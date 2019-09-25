@@ -23,16 +23,28 @@ namespace JT1078.Protocol
             {
                 if (JT1078PackageGroupDict.TryGetValue(cacheKey, out var tmpPackage))
                 {
-                    tmpPackage.Bodies.Concat(jT1078Package.Bodies).ToArray();
-                    JT1078PackageGroupDict[cacheKey] = tmpPackage;
+                    var totalLength = tmpPackage.Bodies.Length + jT1078Package.Bodies.Length;
+                    byte[] poolBytes = JT1078ArrayPool.Rent(totalLength);
+                    Span<byte> tmpSpan = poolBytes;
+                    tmpPackage.Bodies.CopyTo(tmpSpan);
+                    jT1078Package.Bodies.CopyTo(tmpSpan.Slice(tmpPackage.Bodies.Length));
+                    tmpPackage.Bodies= tmpSpan.Slice(0, totalLength).ToArray();
+                    JT1078ArrayPool.Return(poolBytes);
+                    JT1078PackageGroupDict[cacheKey] = jT1078Package;
                 }
                 return default;
             }
             else if (jT1078Package.Label3.SubpackageType == JT1078SubPackageType.分包处理时的最后一个包)
             {
-                if (JT1078PackageGroupDict.TryGetValue(cacheKey, out var tmpPackage))
+                if(JT1078PackageGroupDict.TryRemove(cacheKey, out var tmpPackage))
                 {
-                    tmpPackage.Bodies.Concat(jT1078Package.Bodies).ToArray();
+                    var totalLength = tmpPackage.Bodies.Length + jT1078Package.Bodies.Length;
+                    byte[] poolBytes = JT1078ArrayPool.Rent(totalLength);
+                    Span<byte> tmpSpan = poolBytes;
+                    tmpPackage.Bodies.CopyTo(tmpSpan);
+                    jT1078Package.Bodies.CopyTo(tmpSpan.Slice(tmpPackage.Bodies.Length));
+                    tmpPackage.Bodies = tmpSpan.Slice(0, totalLength).ToArray();
+                    JT1078ArrayPool.Return(poolBytes);
                     return tmpPackage;
                 }
                 return default;
