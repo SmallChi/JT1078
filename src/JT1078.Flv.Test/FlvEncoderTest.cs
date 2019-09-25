@@ -12,8 +12,8 @@ namespace JT1078.Flv.Test
         public void FlvMuxer_Test_1() 
         {
            FlvEncoder encoder = new FlvEncoder();
-           var buff = encoder.FlvFirstFrame();
-           var hex= buff.ToHexString();
+           //var buff = encoder.FlvFirstFrame();
+           //var hex= buff.ToHexString();
         }
     }
 }

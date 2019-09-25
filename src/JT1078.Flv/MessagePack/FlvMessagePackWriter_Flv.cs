@@ -80,13 +80,11 @@ namespace JT1078.Flv.MessagePack
                 videoPacke.CompositionTime = 0;
                 WriteUInt24(videoPacke.CompositionTime);
                 //AVCDecoderConfigurationRecord
-#warning AVCDecoderConfigurationRecord
-                WriteArray(videoPacke.Data);
+                WriteAVCDecoderConfigurationRecord(videoPacke.AVCDecoderConfiguration);
             }
             else if(videoPacke.AvcPacketType == AvcPacketType.Raw)
             {
                 WriteUInt24(videoPacke.CompositionTime);
-#warning One or more NALUs
                 //One or more NALUs
                 WriteArray(videoPacke.Data);
             }
@@ -104,7 +102,8 @@ namespace JT1078.Flv.MessagePack
             WriteByte(configurationRecord.AVCProfileIndication);
             WriteByte(configurationRecord.ProfileCompatibility);
             WriteByte(configurationRecord.AVCLevelIndication);
-            WriteByte((byte)configurationRecord.LengthSizeMinusOne);
+#warning    reserved(6bits)+LengthSizeMinusOne(2bits)
+            WriteByte(0xFF);
             WriteByte((byte)configurationRecord.NumOfSequenceParameterSets);
             WriteUInt16((ushort)configurationRecord.SPSBuffer.Length);
             WriteArray(configurationRecord.SPSBuffer);

@@ -11,6 +11,9 @@ namespace JT1078.Flv.Metadata
         public ushort FieldNameLength { get; set; }
         public string FieldName { get; set; } = "videocodecid";
         public byte DataType { get; set; } = 0x00;
+        /// <summary>
+        /// <see cref="typeof(JT1078.Flv.Enums.CodecId.AvcVideoPacke)"/>
+        /// </summary>
         public object Value { get; set; }
 
         public ReadOnlySpan<byte> ToBuffer()

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
@@ -13,10 +13,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\JT1078.Flv\JT1078.Flv.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Metadata\" />
   </ItemGroup>
 
   <ItemGroup>

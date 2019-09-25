@@ -11,6 +11,8 @@ namespace JT1078.Flv.Metadata
 
         public uint CompositionTime { get; set; }
 
+        public AVCDecoderConfigurationRecord AVCDecoderConfiguration { get; set; }
+
         public byte[] Data { get; set; }
     }
 }
