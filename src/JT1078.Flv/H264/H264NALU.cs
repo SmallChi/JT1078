@@ -11,6 +11,46 @@ namespace JT1078.Flv.H264
         public readonly static byte[] Start2 = new byte[4] { 0, 0, 0, 1 };
         public byte[] StartCodePrefix { get; set; }
         public NALUHeader NALUHeader { get; set; }
-        public JT1078Package JT1078Package { get; set; }
+        /// <summary>
+        /// 终端设备SIM卡号
+        /// BCD[6]
+        /// </summary>
+        public string SIM { get; set; }
+        /// <summary>
+        /// 逻辑通道号
+        /// </summary>
+        public byte LogicChannelNumber { get; set; }
+        /// <summary>
+        /// 数据类型
+        /// 0000：视频I帧
+        /// 0001：视频P帧
+        /// 0010：视频B帧
+        /// 0011：音频帧
+        /// 0100：透传数据
+        /// 
+        /// 0000：原子包，不可被拆分
+        /// 0001：分包处理时的第一个包
+        /// 0010：分包处理是的最后一个包
+        /// 0011：分包处理时间的中间包
+        /// </summary>
+        public JT1078Label3 Label3 { get; set; }
+        /// <summary>
+        /// 该帧与上一个关键帧之间的时间间隔，单位毫秒(ms),
+        /// 当数据类型为非视频帧时，则没有该字段
+        /// </summary>
+        public ushort LastIFrameInterval { get; set; }
+        /// <summary>
+        /// 该帧与上一个关键帧之间的时间间隔，单位毫秒(ms),
+        /// 当数据类型为非视频帧时，则没有该字段
+        /// </summary>
+        public ushort LastFrameInterval { get; set; }
+        /// <summary>
+        /// 数据体
+        /// </summary>
+        public byte[] RawData { get; set; }
+        public string GetKey()
+        {
+            return $"{SIM}_{LogicChannelNumber.ToString()}";
+        }
     }
 }

@@ -39,10 +39,8 @@ namespace JT1078.Flv.Metadata
         public byte AVCLevelIndication { get; set; }
         public int LengthSizeMinusOne { get; set; }
         public int NumOfSequenceParameterSets { get; set; }
-        public List<SPSInfo> SPS { get; set; }
         public byte[] SPSBuffer { get; set; }
         public byte NumOfPictureParameterSets { get; set; } = 1;
-        public List<PPSInfo> PPS { get; set; }
         public byte[] PPSBuffer { get; set; }
         #region Just for non-spec-conform encoders ref:org.mp4parser.boxes.iso14496.part15.AvcDecoderConfigurationRecord
         public const int LengthSizeMinusOnePaddingBits = 63;
@@ -51,15 +49,5 @@ namespace JT1078.Flv.Metadata
         public const int BitDepthLumaMinus8PaddingBits = 31;
         public const int BitDepthChromaMinus8PaddingBits = 31;
         #endregion
-        public struct SPSInfo
-        {
-            public ushort SequenceParameterSetLength { get; set; }
-            public byte[] SequenceParameterSetNALUnit { get; set; }
-        }
-        public struct PPSInfo
-        {
-            public ushort PictureParameterSetLength { get; set; }
-            public byte[] PictureParameterSetNALUnit { get; set; }
-        }
     }
 }

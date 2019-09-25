@@ -29,7 +29,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JT808.Protocol.Extensions.W
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JT1078.Flv", "JT1078.Flv\JT1078.Flv.csproj", "{33E54FFC-7D91-42E5-9DC1-853738AB8980}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JT1078.Flv.Test", "JT1078.Flv.Test\JT1078.Flv.Test.csproj", "{D13FE092-1D11-4545-A322-9F06BCDAC0FD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JT1078.Flv.Test", "JT1078.Flv.Test\JT1078.Flv.Test.csproj", "{D13FE092-1D11-4545-A322-9F06BCDAC0FD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
