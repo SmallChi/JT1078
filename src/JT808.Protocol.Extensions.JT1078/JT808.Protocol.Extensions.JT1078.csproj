@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <LangVersion>7.3</LangVersion>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;</TargetFrameworks>
+    <LangVersion>8.0</LangVersion>
     <Copyright>Copyright 2019.</Copyright>
     <Authors>SmallChi(Koike)</Authors>
     <PackageId>JT808.Protocol.Extensions.JT1078</PackageId>
@@ -15,17 +15,20 @@
     <licenseUrl>https://github.com/SmallChi/JT1078/blob/master/LICENSE</licenseUrl>
     <license>https://github.com/SmallChi/JT1078/blob/master/LICENSE</license>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>2.1.6</Version>
+    <Version>2.1.7</Version>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>\JT808.Protocol.Extensions.JT1078\JT808.Protocol.Extensions.JT1078.xml</DocumentationFile>
+    <DocumentationFile>JT808.Protocol.Extensions.JT1078.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
+    <DocumentationFile>JT808.Protocol.Extensions.JT1078.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JT808" Version="2.1.6" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="2.2.0" />
+    <PackageReference Include="JT808" Version="2.1.7" />
   </ItemGroup>
 
   <ItemGroup>
