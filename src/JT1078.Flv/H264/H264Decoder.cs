@@ -9,7 +9,7 @@ using System.Text;
 
 namespace JT1078.Flv.H264
 {
-    public class H264Demuxer
+    public class H264Decoder
     {
         public List<H264NALU> ParseNALU(JT1078Package package)
         {
@@ -71,7 +71,7 @@ namespace JT1078.Flv.H264
         {
             H264NALU nALU = new H264NALU();
             nALU.SIM = package.SIM;
-            nALU.Label3 = package.Label3;
+            nALU.DataType = package.Label3.DataType;
             nALU.LogicChannelNumber = package.LogicChannelNumber;
             nALU.LastFrameInterval = package.LastFrameInterval;
             nALU.LastIFrameInterval = package.LastIFrameInterval;
@@ -103,14 +103,19 @@ namespace JT1078.Flv.H264
         /// </summary>
         /// <param name="h264NALU"></param>
         /// <returns></returns>
-        public void NALUTypeFilter(H264NALU h264NALU)
+        private void NALUTypeFilter(H264NALU h264NALU)
         {
             switch (h264NALU.NALUHeader.NalUnitType)
             {
+                //IPB帧
+                case 1:
+
+                    break;
                 //IDR
                 case 5:
                     
                     break;
+                //SEI
                 case 6:
                     h264NALU.RawData = DiscardEmulationPreventionBytes(h264NALU.RawData);
 

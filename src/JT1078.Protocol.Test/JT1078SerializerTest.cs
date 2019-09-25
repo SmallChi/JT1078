@@ -3,6 +3,7 @@ using Xunit;
 using JT808.Protocol.Extensions;
 using JT1078.Protocol.Enums;
 using System.Linq;
+using System.IO;
 
 namespace JT1078.Protocol.Test
 {
@@ -302,5 +303,25 @@ namespace JT1078.Protocol.Test
             Assert.Equal(JT1078DataType.视频B帧, label3.DataType);
             Assert.Equal(JT1078SubPackageType.分包处理时的最后一个包, label3.SubpackageType);
         }
+
+        [Fact]
+        public void MergeTest()
+        {
+            var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "JT1078.txt"));
+            JT1078Package merge=null;
+            int mergeBodyLength=0;
+            foreach (var line in lines)
+            {
+                var data = line.Split(',');
+                var bytes = data[5].ToHexBytes();
+                JT1078Package package = JT1078Serializer.Deserialize(bytes);
+                mergeBodyLength += package.DataBodyLength;
+                merge = JT1078Serializer.Merge(package);
+            }
+            Assert.NotNull(merge);
+            Assert.Equal(mergeBodyLength, merge.Bodies.Length);
+            Assert.Equal(JT1078SubPackageType.分包处理时的第一个包, merge.Label3.SubpackageType);
+        }
+
     }
 }

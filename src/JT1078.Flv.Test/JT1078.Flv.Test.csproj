@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-
-    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,6 +13,16 @@
 
   <ItemGroup>
     <ProjectReference Include="..\JT1078.Flv\JT1078.Flv.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Metadata\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="H264\JT1078.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -17,4 +17,10 @@
     <ProjectReference Include="..\JT1078.Protocol\JT1078.Protocol.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="JT1078.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

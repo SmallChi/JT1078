@@ -1,4 +1,4 @@
-﻿using JT1078.Protocol;
+﻿using JT1078.Protocol.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -22,18 +22,8 @@ namespace JT1078.Flv.H264
         public byte LogicChannelNumber { get; set; }
         /// <summary>
         /// 数据类型
-        /// 0000：视频I帧
-        /// 0001：视频P帧
-        /// 0010：视频B帧
-        /// 0011：音频帧
-        /// 0100：透传数据
-        /// 
-        /// 0000：原子包，不可被拆分
-        /// 0001：分包处理时的第一个包
-        /// 0010：分包处理是的最后一个包
-        /// 0011：分包处理时间的中间包
         /// </summary>
-        public JT1078Label3 Label3 { get; set; }
+        public JT1078DataType DataType { get; set; }
         /// <summary>
         /// 该帧与上一个关键帧之间的时间间隔，单位毫秒(ms),
         /// 当数据类型为非视频帧时，则没有该字段

@@ -6,12 +6,13 @@ using JT1078.Flv.Extensions;
 
 namespace JT1078.Flv.Test
 {
-    public  class FlvMuxer_Test
+    public  class FlvEncoderTest
     {
         [Fact]
-        public void FlvMuxer_Test_1() {
-            FlvMuxer flvMuxer = new FlvMuxer();
-            var buff = flvMuxer.FlvFirstFrame();
+        public void FlvMuxer_Test_1() 
+        {
+           FlvEncoder encoder = new FlvEncoder();
+           var buff = encoder.FlvFirstFrame();
            var hex= buff.ToHexString();
         }
     }
