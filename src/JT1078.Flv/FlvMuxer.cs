@@ -20,7 +20,7 @@ namespace JT1078.Flv
                 //flv body PreviousTagSize
                 flvMessagePackWriter.WriteUInt32(0);
                 //flv body tag
-               
+
                 //flv body tag header
 
                 //flv body tag body

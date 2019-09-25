@@ -23,7 +23,7 @@ namespace JT1078.Flv
             Span<byte> tmp = new byte[9];
             tmp[0] = 0x46;
             tmp[1] = 0x4c;
-            tmp[2] = 0x66;
+            tmp[2] = 0x56;
             tmp[3] = 0x01;
             tmp[4] = Flags;
             BinaryPrimitives.WriteInt32BigEndian(tmp.Slice(5), 9);

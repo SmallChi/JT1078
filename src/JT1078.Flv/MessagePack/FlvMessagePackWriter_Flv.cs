@@ -34,7 +34,7 @@ namespace JT1078.Flv.MessagePack
                 case TagType.ScriptData:
                     //DataTags
                     //flv Amf0
-                    WriteAmf1();
+                    WriteAmf0();
                     //flv Amf3
                     WriteAmf3(tag.DataTagsData);
                     break;
@@ -42,7 +42,7 @@ namespace JT1078.Flv.MessagePack
                     //VIDEODATA 
                     break;
             }
-            WriteInt24Return(GetCurrentPosition() - DataSizePosition - 3, DataSizePosition);
+            WriteInt24Return(GetCurrentPosition() - 11, DataSizePosition);
         }
 
         public void WriteUInt24(uint value)

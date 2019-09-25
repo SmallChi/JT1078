@@ -7,7 +7,7 @@ namespace JT1078.Flv.MessagePack
     ref partial struct FlvMessagePackWriter
     {
         private readonly static byte[] FixedAmf0Data = new byte[] { 0x6F, 0x6E, 0x4D, 0x65, 0x74, 0x61, 0x44, 0x61, 0x74, 0x61 };
-        public void WriteAmf1()
+        public void WriteAmf0()
         {
             var span = writer.Free;
             span[0] = 0x02;

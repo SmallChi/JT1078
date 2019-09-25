@@ -17,8 +17,4 @@
     <ProjectReference Include="..\JT1078.Flv\JT1078.Flv.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Metadata\" />
-  </ItemGroup>
-
 </Project>
