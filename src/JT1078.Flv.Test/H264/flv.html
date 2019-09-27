@@ -1,0 +1,25 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="flv.min.js"></script>
+</head>
+<body>
+    <video muted="muted" webkit-playsinline="true" autoplay="true" id="player"></video>
+    <script>
+
+        if (flvjs.isSupported()) {
+            var player = document.getElementById('player');
+            var flvPlayer = flvjs.createPlayer({
+                type: 'flv',
+                url: "jt1078_1.flv"
+            });
+            flvPlayer.attachMediaElement(player);
+            flvPlayer.load();
+            flvPlayer.play();
+        }
+    </script>
+</body>
+</html>

@@ -11,7 +11,7 @@ namespace JT1078.Flv.Extensions
     {
         public static void WriteDouble(this IAmf3Metadata metadata, Span<byte> value)
         {
-            var flvBuffer = BitConverter.GetBytes((double)metadata.Value).AsSpan();
+            var flvBuffer = BitConverter.GetBytes(Convert.ToDouble(metadata.Value)).AsSpan();
             flvBuffer.Reverse();
             flvBuffer.CopyTo(value);
         }

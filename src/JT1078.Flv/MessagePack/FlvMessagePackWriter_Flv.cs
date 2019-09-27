@@ -42,7 +42,7 @@ namespace JT1078.Flv.MessagePack
                     //VIDEODATA 
                     break;
             }
-            WriteInt24Return(GetCurrentPosition() - 11, DataSizePosition);
+            WriteInt24Return(GetCurrentPosition() - DataSizePosition -3-7, DataSizePosition);
         }
 
         public void WriteUInt24(uint value)
@@ -77,8 +77,8 @@ namespace JT1078.Flv.MessagePack
             WriteByte((byte)videoPacke.AvcPacketType);
             if (videoPacke.AvcPacketType== AvcPacketType.SequenceHeader)
             {
-                videoPacke.CompositionTime = 0;
-                WriteUInt24(videoPacke.CompositionTime);
+                //videoPacke.CompositionTime = 0;
+                WriteUInt24(0);
                 //AVCDecoderConfigurationRecord
                 WriteAVCDecoderConfigurationRecord(videoPacke.AVCDecoderConfiguration);
             }
@@ -86,6 +86,8 @@ namespace JT1078.Flv.MessagePack
             {
                 WriteUInt24(videoPacke.CompositionTime);
                 //One or more NALUs
+                //WriteArray(new byte[] {0,0,0,1});
+                WriteInt32(videoPacke.Data.Length);
                 WriteArray(videoPacke.Data);
             }
             else
@@ -102,13 +104,22 @@ namespace JT1078.Flv.MessagePack
             WriteByte(configurationRecord.AVCProfileIndication);
             WriteByte(configurationRecord.ProfileCompatibility);
             WriteByte(configurationRecord.AVCLevelIndication);
-#warning    reserved(6bits)+LengthSizeMinusOne(2bits)
+            //reserved(6bits)+LengthSizeMinusOne(2bits)
             WriteByte(0xFF);
             WriteByte((byte)configurationRecord.NumOfSequenceParameterSets);
-            WriteUInt16((ushort)configurationRecord.SPSBuffer.Length);
+
+            WriteUInt16((ushort)(configurationRecord.SPSBuffer.Length));
+
+            //WriteUInt16((ushort)(configurationRecord.SPSBuffer.Length + 4));
+            //WriteArray(new byte[] { 0, 0, 0, 1 });
+
             WriteArray(configurationRecord.SPSBuffer);
             WriteByte(configurationRecord.NumOfPictureParameterSets);
-            WriteUInt16((ushort)configurationRecord.PPSBuffer.Length);
+
+            WriteUInt16((ushort)(configurationRecord.PPSBuffer.Length));
+
+            //WriteUInt16((ushort)(configurationRecord.PPSBuffer.Length+4));
+            //WriteArray(new byte[] { 0, 0, 0, 1 });
             WriteArray(configurationRecord.PPSBuffer);
         }
     }

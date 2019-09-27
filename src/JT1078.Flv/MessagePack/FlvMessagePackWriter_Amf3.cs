@@ -20,6 +20,10 @@ namespace JT1078.Flv.MessagePack
                     //根据数据类型
                     WriteArray(item.ToBuffer()); 
                 }
+                //always 9
+                WriteByte(0);
+                WriteByte(0);
+                WriteByte(9);
             }
             else
             {
