@@ -16,14 +16,23 @@ namespace JT1078.Flv
         private static readonly  byte[] VideoFlvHeaderBuffer;
         private const uint PreviousTagSizeFixedLength = 4;
         private static readonly ConcurrentDictionary<string, uint> PreviousTagSizeDict;
+        private static readonly ConcurrentDictionary<string, bool> FrameInitDict;
+        private static readonly Flv.H264.H264Decoder H264Decoder;
         static FlvEncoder()
         {
             FlvHeader VideoFlvHeader = new FlvHeader(true, false);
             VideoFlvHeaderBuffer = VideoFlvHeader.ToArray().ToArray();
             PreviousTagSizeDict = new ConcurrentDictionary<string, uint>();
+            FrameInitDict = new ConcurrentDictionary<string, bool>();
+            H264Decoder = new Flv.H264.H264Decoder();
         }
-
-        public byte[] FlvFirstFrame(List<H264NALU> nALUs)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sps">NalUnitType->7</param>
+        /// <param name="pps">NalUnitType->8</param>
+        /// <returns></returns>
+        public byte[] CreateFlvFirstFrame(H264NALU sps, H264NALU pps)
         {
             byte[] buffer = FlvArrayPool.Rent(65535);
             int currentMarkPosition = 0;
@@ -35,26 +44,23 @@ namespace JT1078.Flv
                 flvMessagePackWriter.WriteArray(VideoFlvHeaderBuffer);
 
                 //SPS -> 7
-                var spsNALU = nALUs.FirstOrDefault(n => n.NALUHeader.NalUnitType == 7);
-                ExpGolombReader h264GolombReader = new ExpGolombReader(spsNALU.RawData);
+                ExpGolombReader h264GolombReader = new ExpGolombReader(sps.RawData);
                 var spsInfo = h264GolombReader.ReadSPS();
-                //PPS -> 8
-                var ppsNALU = nALUs.FirstOrDefault(n => n.NALUHeader.NalUnitType == 8);
 
                 currentMarkPosition = flvMessagePackWriter.GetCurrentPosition();
                 //flv body script tag
-                CreateScriptTagFrame(ref flvMessagePackWriter,spsInfo.width, spsInfo.height);
+                CreateScriptTagFrame(ref flvMessagePackWriter, spsInfo.width, spsInfo.height);
                 nextMarkPosition = flvMessagePackWriter.GetCurrentPosition();
 
                 //flv body video tag
                 uint scriptTagFramePreviousTagSize = (uint)(nextMarkPosition - currentMarkPosition - PreviousTagSizeFixedLength);
                 AVCDecoderConfigurationRecord aVCDecoderConfigurationRecord = new AVCDecoderConfigurationRecord();
                 aVCDecoderConfigurationRecord.AVCProfileIndication = spsInfo.profileIdc;
-                aVCDecoderConfigurationRecord.ProfileCompatibility =(byte)spsInfo.profileCompat;
+                aVCDecoderConfigurationRecord.ProfileCompatibility = (byte)spsInfo.profileCompat;
                 aVCDecoderConfigurationRecord.AVCLevelIndication = spsInfo.levelIdc;
                 aVCDecoderConfigurationRecord.NumOfPictureParameterSets = 1;
-                aVCDecoderConfigurationRecord.PPSBuffer = ppsNALU.RawData;
-                aVCDecoderConfigurationRecord.SPSBuffer = spsNALU.RawData;
+                aVCDecoderConfigurationRecord.PPSBuffer = pps.RawData;
+                aVCDecoderConfigurationRecord.SPSBuffer = sps.RawData;
 
                 currentMarkPosition = flvMessagePackWriter.GetCurrentPosition();
                 CreateVideoTag0Frame(ref flvMessagePackWriter, scriptTagFramePreviousTagSize, aVCDecoderConfigurationRecord);
@@ -62,16 +68,9 @@ namespace JT1078.Flv
 
                 //flv body video tag 0
                 uint videoTag0PreviousTagSize = (uint)(nextMarkPosition - currentMarkPosition - PreviousTagSizeFixedLength);
-                //IDR -> 5  关键帧
-                var idrNALU = nALUs.FirstOrDefault(n => n.NALUHeader.NalUnitType == 5);
-
-                currentMarkPosition = flvMessagePackWriter.GetCurrentPosition();
-                CreateVideoTagKeyFram(ref flvMessagePackWriter, videoTag0PreviousTagSize, idrNALU);
-                nextMarkPosition = flvMessagePackWriter.GetCurrentPosition();
-
                 //cache PreviousTagSize
-                uint videoTagKeyFramPreviousTagSize = (uint)(nextMarkPosition - currentMarkPosition - PreviousTagSizeFixedLength);
-                PreviousTagSizeDict.AddOrUpdate(idrNALU.GetKey(), videoTagKeyFramPreviousTagSize, (a, b) => videoTagKeyFramPreviousTagSize);
+                PreviousTagSizeDict.AddOrUpdate(sps.GetKey(), videoTag0PreviousTagSize, (a, b) => videoTag0PreviousTagSize);
+
                 return flvMessagePackWriter.FlushAndGetArray();
             }
             finally
@@ -139,26 +138,6 @@ namespace JT1078.Flv
             flvTags.VideoTagsData.VideoData.AVCDecoderConfiguration = aVCDecoderConfigurationRecord;
             flvMessagePackWriter.WriteFlvTag(flvTags);
         }
-        private void CreateVideoTagKeyFram(ref FlvMessagePackWriter flvMessagePackWriter,  uint previousTagSize, H264NALU nALU)
-        {
-            //flv body PreviousTagSize
-            flvMessagePackWriter.WriteUInt32(previousTagSize);
-            //flv body video tag
-            //flv body tag header
-            FlvTags flvTags = new FlvTags();
-            flvTags.Type = TagType.Video;
-            flvTags.Timestamp = nALU.LastIFrameInterval;
-            flvTags.TimestampExt = 0;
-            flvTags.StreamId = 0;
-            //flv body tag body
-            flvTags.VideoTagsData = new VideoTags();
-            flvTags.VideoTagsData.FrameType = FrameType.KeyFrame;
-            flvTags.VideoTagsData.VideoData = new AvcVideoPacke();
-            flvTags.VideoTagsData.VideoData.AvcPacketType = AvcPacketType.Raw;
-            flvTags.VideoTagsData.VideoData.CompositionTime = 0;
-            flvTags.VideoTagsData.VideoData.Data = nALU.RawData;
-            flvMessagePackWriter.WriteFlvTag(flvTags);
-        }
         private void CreateVideoTagOtherFrame(ref FlvMessagePackWriter flvMessagePackWriter, uint previousTagSize, H264NALU nALU)
         {
             //flv body PreviousTagSize
@@ -186,7 +165,7 @@ namespace JT1078.Flv
             flvTags.VideoTagsData.VideoData.Data = nALU.RawData;
             flvMessagePackWriter.WriteFlvTag(flvTags);
         }
-        public byte[] FlvOtherFrame(List<H264NALU> nALUs,int minimumLength=10240)
+        public byte[] CreateFlvFrame(List<H264NALU> nALUs, int minimumLength = 10240)
         {
             byte[] buffer = FlvArrayPool.Rent(minimumLength);
             try
@@ -194,15 +173,37 @@ namespace JT1078.Flv
                 FlvMessagePackWriter flvMessagePackWriter = new FlvMessagePackWriter(buffer);
                 int currentMarkPosition = 0;
                 int nextMarkPosition = 0;
+                H264NALU? sps=null, pps=null;
                 foreach (var naln in nALUs)
                 {
                     string key = naln.GetKey();
+                    if(!FrameInitDict.ContainsKey(key))
+                    {
+                        if (naln.NALUHeader.NalUnitType == 7)
+                        {
+                            naln.RawData = H264Decoder.DiscardEmulationPreventionBytes(naln.RawData);
+                            sps = naln;
+                        }
+                        else if (naln.NALUHeader.NalUnitType == 8)
+                        {
+                            pps = naln;
+                        }
+                        if (sps != null && pps != null)
+                        {
+                            flvMessagePackWriter.WriteArray(CreateFlvFirstFrame(sps, pps));
+                            FrameInitDict.TryAdd(key, true);
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
                     if (PreviousTagSizeDict.TryGetValue(key, out uint previousTagSize))
                     {
                         currentMarkPosition = flvMessagePackWriter.GetCurrentPosition();
                         CreateVideoTagOtherFrame(ref flvMessagePackWriter, previousTagSize, naln);
                         nextMarkPosition = flvMessagePackWriter.GetCurrentPosition();
-                        uint tmpPreviousTagSize = (uint)(nextMarkPosition- currentMarkPosition - PreviousTagSizeFixedLength);
+                        uint tmpPreviousTagSize = (uint)(nextMarkPosition - currentMarkPosition - PreviousTagSizeFixedLength);
                         PreviousTagSizeDict.TryUpdate(key, tmpPreviousTagSize, previousTagSize);
                     }
                 }

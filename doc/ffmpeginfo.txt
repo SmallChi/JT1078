@@ -1,1 +1,3 @@
 ffmpeg -i demo.mp4 -c copy -f flv -vcodec h264 -acodec aac demo_flv.flv
+
+./ffmpeg -i JT1078_3.h264 -r 25 -c copy -f flv "D:\JT1078_3.flv"

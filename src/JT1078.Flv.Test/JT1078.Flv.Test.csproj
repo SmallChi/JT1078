@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="H264\JT1078_3.rar" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageReference Include="xunit" Version="2.4.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
@@ -16,16 +20,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="H264\flv.html">
+    <None Update="H264\index.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="H264\flv.min.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="H264\JT1078.txt">
+    <None Update="H264\JT1078_1.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="H264\JT1078_1.txt">
+    <None Update="H264\JT1078_2.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="H264\JT1078_3.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -42,6 +42,14 @@ namespace JT1078.Flv.Metadata
         public byte[] SPSBuffer { get; set; }
         public byte NumOfPictureParameterSets { get; set; }
         public byte[] PPSBuffer { get; set; }
+        public bool IsPPSAndSPS
+        {
+            get
+            {
+                return (SPSBuffer != null && SPSBuffer.Length > 0) && (PPSBuffer != null && SPSBuffer.Length > 0);
+            }
+        }
+
         #region Just for non-spec-conform encoders ref:org.mp4parser.boxes.iso14496.part15.AvcDecoderConfigurationRecord
         public const int LengthSizeMinusOnePaddingBits = 63;
         public const int NumberOfSequenceParameterSetsPaddingBits = 7;
