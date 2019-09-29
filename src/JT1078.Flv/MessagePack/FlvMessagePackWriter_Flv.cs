@@ -87,8 +87,22 @@ namespace JT1078.Flv.MessagePack
                 WriteUInt24(videoPacke.CompositionTime);
                 //One or more NALUs
                 //WriteArray(new byte[] {0,0,0,1});
-                WriteInt32(videoPacke.Data.Length);
-                WriteArray(videoPacke.Data);
+                if (videoPacke.MultiData != null)
+                {
+                    foreach(var item in videoPacke.MultiData)
+                    {
+                        if (item != null && item.Length > 0)
+                        {
+                            WriteInt32(item.Length);
+                            WriteArray(item);
+                        }
+                    }
+                }
+                if (videoPacke.Data != null && videoPacke.Data.Length>0)
+                {
+                    WriteInt32(videoPacke.Data.Length);
+                    WriteArray(videoPacke.Data);
+                }
             }
             else
             {

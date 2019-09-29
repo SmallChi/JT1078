@@ -13,7 +13,7 @@ namespace JT1078.Flv
 {
     public class FlvEncoder
     {
-        private static readonly  byte[] VideoFlvHeaderBuffer;
+        private static readonly byte[] VideoFlvHeaderBuffer;
         private const uint PreviousTagSizeFixedLength = 4;
         private static readonly ConcurrentDictionary<string, uint> PreviousTagSizeDict;
         private static readonly ConcurrentDictionary<string, bool> FrameInitDict;
@@ -78,7 +78,7 @@ namespace JT1078.Flv
                 FlvArrayPool.Return(buffer);
             }
         }
-        private void CreateScriptTagFrame(ref FlvMessagePackWriter flvMessagePackWriter,int width,int height)
+        private void CreateScriptTagFrame(ref FlvMessagePackWriter flvMessagePackWriter, int width, int height,double frameRate = 25d)
         {
             //flv body PreviousTagSize awalys 0
             flvMessagePackWriter.WriteUInt32(0);
@@ -106,7 +106,7 @@ namespace JT1078.Flv
             });
             flvTags.DataTagsData.Amf3Metadatas.Add(new Amf3Metadata_FrameRate
             {
-                Value = 25d
+                Value = frameRate
             });
             flvTags.DataTagsData.Amf3Metadatas.Add(new Amf3Metadata_Width
             {
@@ -118,7 +118,7 @@ namespace JT1078.Flv
             });
             flvMessagePackWriter.WriteFlvTag(flvTags);
         }
-        private void CreateVideoTag0Frame(ref FlvMessagePackWriter flvMessagePackWriter, uint previousTagSize,AVCDecoderConfigurationRecord aVCDecoderConfigurationRecord)
+        private void CreateVideoTag0Frame(ref FlvMessagePackWriter flvMessagePackWriter, uint previousTagSize, AVCDecoderConfigurationRecord aVCDecoderConfigurationRecord)
         {
             //flv body PreviousTagSize ScriptTag
             flvMessagePackWriter.WriteUInt32(previousTagSize);
@@ -138,7 +138,10 @@ namespace JT1078.Flv
             flvTags.VideoTagsData.VideoData.AVCDecoderConfiguration = aVCDecoderConfigurationRecord;
             flvMessagePackWriter.WriteFlvTag(flvTags);
         }
-        private void CreateVideoTagOtherFrame(ref FlvMessagePackWriter flvMessagePackWriter, uint previousTagSize, H264NALU nALU)
+
+        public static uint LastFrameInterval = 0;
+
+        private void CreateVideoTagOtherFrame(ref FlvMessagePackWriter flvMessagePackWriter, uint previousTagSize, H264NALU nALU, H264NALU sps, H264NALU pps,H264NALU sei)
         {
             //flv body PreviousTagSize
             flvMessagePackWriter.WriteUInt32(previousTagSize);
@@ -146,26 +149,48 @@ namespace JT1078.Flv
             //flv body tag header
             FlvTags flvTags = new FlvTags();
             flvTags.Type = TagType.Video;
-            flvTags.Timestamp = nALU.LastIFrameInterval;
             flvTags.TimestampExt = 0;
             flvTags.StreamId = 0;
             //flv body tag body
             flvTags.VideoTagsData = new VideoTags();
+            flvTags.VideoTagsData.VideoData = new AvcVideoPacke();
+            flvTags.VideoTagsData.VideoData.CompositionTime = 0;
+            flvTags.VideoTagsData.VideoData.AvcPacketType = AvcPacketType.Raw;
+            flvTags.VideoTagsData.VideoData.MultiData = new List<byte[]>();
+ 
+            LastFrameInterval += nALU.LastFrameInterval;
+            flvTags.Timestamp = LastFrameInterval;
+
             if (nALU.NALUHeader.NalUnitType == 5)
             {
                 flvTags.VideoTagsData.FrameType = FrameType.KeyFrame;
+                if (sps!=null && pps != null)
+                {
+                    //flvTags.VideoTagsData.VideoData.MultiData.Add(sps.RawData);
+                    //flvTags.VideoTagsData.VideoData.MultiData.Add(pps.RawData);
+                    flvTags.VideoTagsData.VideoData.MultiData.Add(nALU.RawData);
+                }
+                else
+                {
+                    //if (sei != null)
+                    //{
+                    //    flvTags.VideoTagsData.VideoData.MultiData.Add(sei.RawData);
+                    //}
+                    flvTags.VideoTagsData.VideoData.MultiData.Add(nALU.RawData);
+                }
             }
             else
             {
                 flvTags.VideoTagsData.FrameType = FrameType.InterFrame;
+                //if (sei != null)
+                //{
+                //    flvTags.VideoTagsData.VideoData.MultiData.Add(sei.RawData);
+                //}
+                flvTags.VideoTagsData.VideoData.MultiData.Add(nALU.RawData);
             }
-            flvTags.VideoTagsData.VideoData = new AvcVideoPacke();
-            flvTags.VideoTagsData.VideoData.AvcPacketType = AvcPacketType.Raw;
-            flvTags.VideoTagsData.VideoData.CompositionTime = nALU.LastIFrameInterval;
-            flvTags.VideoTagsData.VideoData.Data = nALU.RawData;
             flvMessagePackWriter.WriteFlvTag(flvTags);
         }
-        public byte[] CreateFlvFrame(List<H264NALU> nALUs, int minimumLength = 10240)
+        public byte[] CreateFlvFrame(List<H264NALU> nALUs, int minimumLength = 65535)
         {
             byte[] buffer = FlvArrayPool.Rent(minimumLength);
             try
@@ -173,39 +198,29 @@ namespace JT1078.Flv
                 FlvMessagePackWriter flvMessagePackWriter = new FlvMessagePackWriter(buffer);
                 int currentMarkPosition = 0;
                 int nextMarkPosition = 0;
-                H264NALU? sps=null, pps=null;
-                foreach (var naln in nALUs)
+                H264NALU sps = nALUs.FirstOrDefault(f => f.NALUHeader.NalUnitType == 7);
+                H264NALU pps = nALUs.FirstOrDefault(f => f.NALUHeader.NalUnitType == 8);
+                H264NALU sei = nALUs.FirstOrDefault(f => f.NALUHeader.NalUnitType == 6);
+                if (sps!=null && pps != null)
+                {
+                    string key = sps.GetKey();
+                    if (!FrameInitDict.ContainsKey(key))
+                    {
+                        flvMessagePackWriter.WriteArray(CreateFlvFirstFrame(sps, pps));
+                        FrameInitDict.TryAdd(key, true);
+                    }
+                }
+                foreach (var naln in nALUs.Where(w=> w.NALUHeader.NalUnitType != 7 && w.NALUHeader.NalUnitType != 8 && w.NALUHeader.NalUnitType != 6))
                 {
                     string key = naln.GetKey();
-                    if(!FrameInitDict.ContainsKey(key))
-                    {
-                        if (naln.NALUHeader.NalUnitType == 7)
-                        {
-                            naln.RawData = H264Decoder.DiscardEmulationPreventionBytes(naln.RawData);
-                            sps = naln;
-                        }
-                        else if (naln.NALUHeader.NalUnitType == 8)
-                        {
-                            pps = naln;
-                        }
-                        if (sps != null && pps != null)
-                        {
-                            flvMessagePackWriter.WriteArray(CreateFlvFirstFrame(sps, pps));
-                            FrameInitDict.TryAdd(key, true);
-                        }
-                        else
-                        {
-                            continue;
-                        }
-                    }
                     if (PreviousTagSizeDict.TryGetValue(key, out uint previousTagSize))
                     {
                         currentMarkPosition = flvMessagePackWriter.GetCurrentPosition();
-                        CreateVideoTagOtherFrame(ref flvMessagePackWriter, previousTagSize, naln);
+                        CreateVideoTagOtherFrame(ref flvMessagePackWriter, previousTagSize, naln,sps, pps, sei);
                         nextMarkPosition = flvMessagePackWriter.GetCurrentPosition();
                         uint tmpPreviousTagSize = (uint)(nextMarkPosition - currentMarkPosition - PreviousTagSizeFixedLength);
                         PreviousTagSizeDict.TryUpdate(key, tmpPreviousTagSize, previousTagSize);
-                    }
+                    }      
                 }
                 return flvMessagePackWriter.FlushAndGetArray();
             }

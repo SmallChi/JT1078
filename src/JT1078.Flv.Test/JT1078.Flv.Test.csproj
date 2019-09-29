@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <None Remove="H264\JT1078_3.rar" />
+    <None Remove="H264\JT1078_4.rar" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +34,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="H264\JT1078_3.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="H264\JT1078_4.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

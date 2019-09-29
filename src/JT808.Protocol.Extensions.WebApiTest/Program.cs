@@ -25,7 +25,7 @@ namespace JT808.Protocol.Extensions.WebApiTest
             {
                 c.HttpHost = new Uri("http://localhost:12828/jt808api/");
                 c.FormatOptions.DateTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
-                c.LoggerFactory = p.GetRequiredService<ILoggerFactory>();
+                //c.LoggerFactory = p.GetRequiredService<ILoggerFactory>();
             });
 
             IServiceProvider serviceProvider = serviceDescriptors.BuildServiceProvider();
