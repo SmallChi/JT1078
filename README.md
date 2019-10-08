@@ -124,29 +124,29 @@ Assert.Equal("00 00 00 01 61 E1 A2 BF 00 98 CF C0 EE 1E 17 28 34 07 78 8E 39 A4 
 
 ``` ini
 
-BenchmarkDotNet=v0.11.5, OS=Windows 10.0.17763.557 (1809/October2018Update/Redstone5)
+BenchmarkDotNet=v0.11.5, OS=Windows 10.0.18362
 Intel Core i7-8700K CPU 3.70GHz (Coffee Lake), 1 CPU, 12 logical and 6 physical cores
-  [Host]     : .NET Framework 4.7.2 (CLR 4.0.30319.42000), 64bit RyuJIT-v4.7.3416.0
-  Job-FVMQGI : .NET Framework 4.7.2 (CLR 4.0.30319.42000), 64bit RyuJIT-v4.7.3416.0
-  Job-LGLQDK : .NET Core 2.2.5 (CoreCLR 4.6.27617.05, CoreFX 4.6.27618.01), 64bit RyuJIT
+  [Host]     : .NET Framework 4.7.2 (CLR 4.0.30319.42000), 64bit RyuJIT-v4.8.4018.0
+  Job-LGLQDK : .NET Core 2.2.7 (CoreCLR 4.6.28008.02, CoreFX 4.6.28008.03), 64bit RyuJIT
+  Job-ZHZJMS : .NET Core 3.0.0 (CoreCLR 4.700.19.46205, CoreFX 4.700.19.46214), 64bit RyuJIT
 
-Platform=AnyCpu  Runtime=Clr  Server=False  
+Platform=AnyCpu  Server=False  
 
 ```
-|            Method |     Toolchain |      N |            Mean |          Error |        StdDev |      Gen 0 |   Gen 1 | Gen 2 |    Allocated |
-|------------------ |-------------- |------- |----------------:|---------------:|--------------:|-----------:|--------:|------:|-------------:|
-|  **JT1078Serializer** |       **Default** |    **100** |     **1,051.97 us** |     **10.8309 us** |      **9.601 us** |    **74.2188** |       **-** |     **-** |    **457.83 KB** |
-| JT1078Deserialize |       Default |    100 |        67.31 us |      1.3317 us |      1.684 us |    23.8037 |       - |     - |    146.88 KB |
-|  JT1078Serializer | .NET Core 2.2 |    100 |       611.85 us |     12.0670 us |     18.428 us |    38.0859 |       - |     - |    235.16 KB |
-| JT1078Deserialize | .NET Core 2.2 |    100 |        48.52 us |      0.9662 us |      1.742 us |    23.8647 |  0.0610 |     - |    146.88 KB |
-|  **JT1078Serializer** |       **Default** |  **10000** |   **103,736.17 us** |  **2,045.0081 us** |  **2,273.021 us** |  **7400.0000** |       **-** |     **-** |  **45782.72 KB** |
-| JT1078Deserialize |       Default |  10000 |     7,114.68 us |    160.6500 us |    254.808 us |  2382.8125 |  7.8125 |     - |  14687.67 KB |
-|  JT1078Serializer | .NET Core 2.2 |  10000 |    58,178.53 us |  1,159.6161 us |  1,587.296 us |  3777.7778 |       - |     - |  23515.63 KB |
-| JT1078Deserialize | .NET Core 2.2 |  10000 |     5,067.99 us |    100.7925 us |    181.750 us |  2382.8125 |  7.8125 |     - |   14687.5 KB |
-|  **JT1078Serializer** |       **Default** | **100000** | **1,038,763.25 us** | **17,757.1818 us** | **15,741.279 us** | **74000.0000** |       **-** |     **-** | **457827.99 KB** |
-| JT1078Deserialize |       Default | 100000 |    66,404.06 us |  1,396.2228 us |  1,433.818 us | 23875.0000 |       - |     - | 146877.21 KB |
-|  JT1078Serializer | .NET Core 2.2 | 100000 |   575,291.66 us | 10,749.4909 us | 10,055.081 us | 38000.0000 |       - |     - | 235156.25 KB |
-| JT1078Deserialize | .NET Core 2.2 | 100000 |    48,081.94 us |  1,050.5808 us |  1,167.718 us | 23818.1818 | 90.9091 |     - |    146875 KB |
+|            Method |     Toolchain |      N |          Mean |         Error |        StdDev |      Gen 0 |   Gen 1 | Gen 2 |    Allocated |
+|------------------ |-------------- |------- |--------------:|--------------:|--------------:|-----------:|--------:|------:|-------------:|
+|  **JT1078Serializer** | **.NET Core 2.2** |    **100** |     **549.14 us** |     **6.4469 us** |     **6.0305 us** |    **38.0859** |       **-** |     **-** |    **235.16 KB** |
+| JT1078Deserialize | .NET Core 2.2 |    100 |      42.61 us |     0.2607 us |     0.2439 us |    23.8647 |  0.0610 |     - |    146.88 KB |
+|  JT1078Serializer | .NET Core 3.0 |    100 |     196.98 us |     1.8462 us |     1.7270 us |    37.8418 |       - |     - |    232.81 KB |
+| JT1078Deserialize | .NET Core 3.0 |    100 |      33.64 us |     0.3528 us |     0.3128 us |    23.8037 |       - |     - |    146.09 KB |
+|  **JT1078Serializer** | **.NET Core 2.2** |  **10000** |  **54,292.55 us** |   **221.0286 us** |   **195.9361 us** |  **3800.0000** |       **-** |     **-** |  **23515.63 KB** |
+| JT1078Deserialize | .NET Core 2.2 |  10000 |   4,276.85 us |    25.6729 us |    21.4381 us |  2382.8125 |  7.8125 |     - |   14687.5 KB |
+|  JT1078Serializer | .NET Core 3.0 |  10000 |  17,527.79 us |   203.5101 us |   190.3634 us |  3781.2500 |       - |     - |  23281.25 KB |
+| JT1078Deserialize | .NET Core 3.0 |  10000 |   3,450.90 us |    49.3875 us |    43.7807 us |  2382.8125 |  3.9063 |     - |  14609.38 KB |
+|  **JT1078Serializer** | **.NET Core 2.2** | **100000** | **544,508.44 us** | **4,522.9521 us** | **4,009.4793 us** | **38000.0000** |       **-** |     **-** | **235156.25 KB** |
+| JT1078Deserialize | .NET Core 2.2 | 100000 |  43,453.20 us |   169.8988 us |   158.9234 us | 23833.3333 | 83.3333 |     - |    146875 KB |
+|  JT1078Serializer | .NET Core 3.0 | 100000 | 174,163.26 us |   848.6417 us |   708.6542 us | 38000.0000 |       - |     - |  232812.5 KB |
+| JT1078Deserialize | .NET Core 3.0 | 100000 |  34,266.16 us |   357.1659 us |   334.0932 us | 23800.0000 |       - |     - | 146093.75 KB |
 
 ## 基于JT808扩展的JT1078消息协议
 
