@@ -14,7 +14,5 @@ namespace JT1078.Flv.Metadata
         public AVCDecoderConfigurationRecord AVCDecoderConfiguration { get; set; }
 
         public byte[] Data { get; set; }
-
-        public List<byte[]> MultiData { get; set; }
     }
 }

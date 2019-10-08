@@ -21,7 +21,7 @@ namespace JT1078.Flv.MessagePack
             Word = 0;
             BitsAvailable = 0; 
         }
-        public (byte profileIdc,byte levelIdc,uint profileCompat,int width, int height) ReadSPS()
+        public SPSInfo ReadSPS()
         {
             int sarScale = 1;
             uint frameCropLeftOffset=0;
@@ -153,7 +153,7 @@ namespace JT1078.Flv.MessagePack
             }
             int width= (int)((((picWidthInMbsMinus1 + 1) * 16) - frameCropLeftOffset * 2 - frameCropRightOffset * 2) * sarScale);
             int height = (int)(((2 - frameMbsOnlyFlag) * (picHeightInMapUnitsMinus1 + 1) * 16) - ((frameMbsOnlyFlag == 1U ? 2 : 4) * (frameCropTopOffset + frameCropBottomOffset)));
-            return (profileIdc, levelIdc, profileCompat,width, height);
+            return new SPSInfo { profileIdc= profileIdc, levelIdc= levelIdc, profileCompat= profileCompat, width= width, height= height };
         }
         public void LoadWord()
         {
@@ -309,5 +309,14 @@ namespace JT1078.Flv.MessagePack
                 lastScale = (nextScale == 0) ? lastScale : nextScale;
             }
         }
+    }
+
+    public struct SPSInfo
+    {
+        public byte profileIdc { get; set; }
+        public byte levelIdc { get; set; }
+        public uint profileCompat { get; set; }
+        public int width { get; set; }
+        public int height { get; set; }
     }
 }

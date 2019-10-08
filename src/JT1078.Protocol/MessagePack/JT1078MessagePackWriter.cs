@@ -24,40 +24,22 @@ namespace JT1078.Protocol.MessagePack
         }
         public void WriteUInt16(ushort value)
         {
-            var span = writer.Free;
-            span[0] = (byte)(value >> 8);
-            span[1] = (byte)value;
+            BinaryPrimitives.WriteUInt16BigEndian(writer.Free, value);
             writer.Advance(2);
         }
         public void WriteInt32(int value)
         {
-            var span = writer.Free;
-            span[0] = (byte)(value >> 24);
-            span[1] = (byte)(value >> 16);
-            span[2] = (byte)(value >> 8);
-            span[3] = (byte)value;
+            BinaryPrimitives.WriteInt32BigEndian(writer.Free, value);
             writer.Advance(4);
         }
         public void WriteUInt64(ulong value)
         {
-            var span = writer.Free;
-            span[0] = (byte)(value >> 56);
-            span[1] = (byte)(value >> 48);
-            span[2] = (byte)(value >> 40);
-            span[3] = (byte)(value >> 32);
-            span[4] = (byte)(value >> 24);
-            span[5] = (byte)(value >> 16);
-            span[6] = (byte)(value >> 8);
-            span[7] = (byte)value;
+            BinaryPrimitives.WriteUInt64BigEndian(writer.Free, value);
             writer.Advance(8);
         }
         public void WriteUInt32(uint value)
         {
-            var span = writer.Free;
-            span[0] = (byte)(value >> 24);
-            span[1] = (byte)(value >> 16);
-            span[2] = (byte)(value >> 8);
-            span[3] = (byte)value;
+            BinaryPrimitives.WriteUInt32BigEndian(writer.Free, value);
             writer.Advance(4);
         }
         public void WriteArray(ReadOnlySpan<byte> src)

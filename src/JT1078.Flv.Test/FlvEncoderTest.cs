@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using JT1078.Protocol.Enums;
 using JT1078.Flv.H264;
+using JT1078.Flv.MessagePack;
 
 namespace JT1078.Flv.Test
 {
@@ -187,6 +188,68 @@ namespace JT1078.Flv.Test
                     }
                 }
 
+                fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
+                var totalPage = (h264NALULs.Count + 10 - 1) / 10;
+                for (var i = 0; i < totalPage; i++)
+                {
+                    var flv2 = encoder.CreateFlvFrame(h264NALULs.Skip(i * 10).Take(10).ToList());
+                    if (flv2.Length != 0)
+                    {
+                        fileStream.Write(flv2);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Assert.Throws<Exception>(() => { });
+            }
+            finally
+            {
+                fileStream?.Close();
+                fileStream?.Dispose();
+            }
+        }
+
+        [Fact]
+        public void FlvEncoder_Test_5()
+        {
+            FileStream fileStream = null;
+            Flv.H264.H264Decoder decoder = new Flv.H264.H264Decoder();
+            List<H264NALU> h264NALULs = new List<H264NALU>();
+            FlvEncoder encoder = new FlvEncoder();
+            try
+            {
+                var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_5.flv");
+                var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_5.txt"));
+                if (File.Exists(filepath))
+                {
+                    File.Delete(filepath);
+                }
+
+                JT1078Package Package = null;
+
+                foreach (var line in lines)
+                {
+                    var data = line.Split(',');
+                    var bytes = data[6].ToHexBytes();
+                    JT1078Package package = JT1078Serializer.Deserialize(bytes);
+                    Package = JT1078Serializer.Merge(package);
+                    if (Package != null)
+                    {
+                        var tmp = decoder.ParseNALU(Package);
+                        if (tmp != null && tmp.Count > 0)
+                        {
+                            h264NALULs = h264NALULs.Concat(tmp).ToList();
+                        }
+                    }
+                }
+                var tmp1 = h264NALULs.Where(w => w.NALUHeader.NalUnitType == 7).ToList();
+                List<SPSInfo> tmpSpss = new List<SPSInfo>();
+                foreach (var item in tmp1)
+                {
+                    ExpGolombReader expGolombReader = new ExpGolombReader(item.RawData);
+                    tmpSpss.Add(expGolombReader.ReadSPS());
+                }
                 fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
                 var totalPage = (h264NALULs.Count + 10 - 1) / 10;
                 for (var i = 0; i < totalPage; i++)

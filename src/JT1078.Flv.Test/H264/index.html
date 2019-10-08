@@ -8,27 +8,21 @@
 </head>
 <body>
     <video muted="muted" webkit-playsinline="true" autoplay="true" id="player"></video>
-    <video muted="muted" webkit-playsinline="true" autoplay="true" id="player2"></video>
     <script>
 
         if (flvjs.isSupported()) {
             var player = document.getElementById('player');
             var flvPlayer = flvjs.createPlayer({
                 type: 'flv',
-                url: "jt1078_3.flv"
+                url: "jt1078_5.flv"
             });
+            var width, height, flag;
             flvPlayer.attachMediaElement(player);
+            flvPlayer.on(flvjs.Events.SCRIPTDATA_ARRIVED, (e) => {
+                console.log(e);
+            });
             flvPlayer.load();
             flvPlayer.play();
-
-            var player2 = document.getElementById('player2');
-            var flvPlayer2 = flvjs.createPlayer({
-                type: 'flv',
-                url: "jt1078_4.flv"
-            });
-            flvPlayer2.attachMediaElement(player2);
-            flvPlayer2.load();
-            flvPlayer2.play();
         }
     </script>
 </body>

@@ -85,19 +85,6 @@ namespace JT1078.Flv.MessagePack
             else if(videoPacke.AvcPacketType == AvcPacketType.Raw)
             {
                 WriteUInt24(videoPacke.CompositionTime);
-                //One or more NALUs
-                //WriteArray(new byte[] {0,0,0,1});
-                if (videoPacke.MultiData != null)
-                {
-                    foreach(var item in videoPacke.MultiData)
-                    {
-                        if (item != null && item.Length > 0)
-                        {
-                            WriteInt32(item.Length);
-                            WriteArray(item);
-                        }
-                    }
-                }
                 if (videoPacke.Data != null && videoPacke.Data.Length>0)
                 {
                     WriteInt32(videoPacke.Data.Length);
@@ -121,19 +108,10 @@ namespace JT1078.Flv.MessagePack
             //reserved(6bits)+LengthSizeMinusOne(2bits)
             WriteByte(0xFF);
             WriteByte((byte)configurationRecord.NumOfSequenceParameterSets);
-
             WriteUInt16((ushort)(configurationRecord.SPSBuffer.Length));
-
-            //WriteUInt16((ushort)(configurationRecord.SPSBuffer.Length + 4));
-            //WriteArray(new byte[] { 0, 0, 0, 1 });
-
             WriteArray(configurationRecord.SPSBuffer);
             WriteByte(configurationRecord.NumOfPictureParameterSets);
-
             WriteUInt16((ushort)(configurationRecord.PPSBuffer.Length));
-
-            //WriteUInt16((ushort)(configurationRecord.PPSBuffer.Length+4));
-            //WriteArray(new byte[] { 0, 0, 0, 1 });
             WriteArray(configurationRecord.PPSBuffer);
         }
     }
