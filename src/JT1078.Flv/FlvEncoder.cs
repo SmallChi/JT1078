@@ -13,7 +13,7 @@ namespace JT1078.Flv
 {
     public class FlvEncoder
     {
-        struct FlvFrameInfo
+        class FlvFrameInfo
         {
             public uint PreviousTagSize { get; set;}
             public uint LastFrameInterval { get; set; }
@@ -23,12 +23,14 @@ namespace JT1078.Flv
         private static readonly ConcurrentDictionary<string, SPSInfo> VideoSPSDict;
         private static readonly Flv.H264.H264Decoder H264Decoder;
         private static readonly ConcurrentDictionary<string, FlvFrameInfo> FlvFrameInfoDict;
+        private static readonly ConcurrentDictionary<string, byte[]> FlvFirstFrameCache;
         static FlvEncoder()
         {
             FlvHeader VideoFlvHeader = new FlvHeader(true, false);
             VideoFlvHeaderBuffer = VideoFlvHeader.ToArray().ToArray();
             VideoSPSDict = new ConcurrentDictionary<string, SPSInfo>();
             FlvFrameInfoDict = new ConcurrentDictionary<string, FlvFrameInfo>();
+            FlvFirstFrameCache = new ConcurrentDictionary<string, byte[]>();
             H264Decoder = new Flv.H264.H264Decoder();
         }
 
@@ -174,17 +176,24 @@ namespace JT1078.Flv
                             {
                                 if(FlvFrameInfoDict.TryGetValue(key, out FlvFrameInfo flvFrameInfo))
                                 {
-                                    CreateFlvKeyFrame(ref flvMessagePackWriter, key, sps.RawData, pps.RawData, spsInfo, flvFrameInfo.PreviousTagSize);
+                                    CreateFlvKeyFrame(ref flvMessagePackWriter, key, sps.RawData, pps.RawData, spsInfo, flvFrameInfo.PreviousTagSize); 
+                                    FlvFirstFrameCache.TryRemove(key, out _);
+                                    FlvFirstFrameCache.TryAdd(key, flvMessagePackWriter.FlushAndGetArray());
                                     VideoSPSDict.TryUpdate(key, spsInfo, spsInfo);
                                     flvFrameInfo.LastFrameInterval = 0;
                                     FlvFrameInfoDict.TryUpdate(key, flvFrameInfo, flvFrameInfo);
                                 }
                             }
+                            sps = null;
+                            pps = null;
                         }
                         else
                         {
                             CreateFlvKeyFrame(ref flvMessagePackWriter, key, sps.RawData, pps.RawData, spsInfo, 0);
+                            FlvFirstFrameCache.TryAdd(key, flvMessagePackWriter.FlushAndGetArray());
                             VideoSPSDict.TryAdd(key, spsInfo);
+                            sps = null;
+                            pps = null;
                         }
                     }
                     //7 8 6 5 1 1 1 1 7 8 6 5 1 1 1 1 1 7 8 6 5 1 1 1 1 1
@@ -223,6 +232,17 @@ namespace JT1078.Flv
             finally
             {
                 FlvArrayPool.Return(buffer);
+            }
+        }
+        public byte[] GetFlvFirstFrameByKey(string key)
+        {
+            if(FlvFirstFrameCache.TryGetValue(key,out byte[] buffer))
+            {
+                return buffer;
+            }
+            else
+            {
+                return null;
             }
         }
     }
