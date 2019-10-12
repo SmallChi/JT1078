@@ -9,6 +9,7 @@ using System.Linq;
 using JT1078.Protocol.Enums;
 using JT1078.Flv.H264;
 using JT1078.Flv.MessagePack;
+using JT1078.Flv.Metadata;
 
 namespace JT1078.Flv.Test
 {
@@ -99,7 +100,6 @@ namespace JT1078.Flv.Test
                 fileStream?.Dispose();
             }
         }
-
 
         [Fact]
         public void FlvEncoder_Test_3()
@@ -250,9 +250,9 @@ namespace JT1078.Flv.Test
                     }
                 }
                 //var tmp1 = h264NALULs.Where(w => w.NALUHeader.NalUnitType == 7).ToList();
-                //List<SPSInfo> tmpSpss = new List<SPSInfo>();
-                //List<ushort> times = new List<ushort>();
-                //List<int> type = new List<int>();
+                List<SPSInfo> tmpSpss = new List<SPSInfo>();
+                List<ushort> times = new List<ushort>();
+                List<int> type = new List<int>();
                 //foreach (var item in h264NALULs)
                 //{
                 //    //ExpGolombReader expGolombReader = new ExpGolombReader(item.RawData);
@@ -281,6 +281,37 @@ namespace JT1078.Flv.Test
                 fileStream?.Close();
                 fileStream?.Dispose();
             }
+        }
+
+        [Fact]
+        public void CreateScriptTagFrameTest()
+        {
+            FlvEncoder flvEncoder = new FlvEncoder();
+            var hexData = flvEncoder.CreateScriptTagFrame(288, 352);
+            Assert.Equal(151, hexData.Length);
+        }
+
+        [Fact]
+        public void CreateVideoTag0FrameTest()
+        {
+            FlvEncoder flvEncoder = new FlvEncoder();
+            var hexData = flvEncoder.CreateVideoTag0Frame(
+                new byte[] { 0x67, 0x4D, 0, 0x14, 0x95, 0xA8, 0x58, 0x25, 0x90 },
+                new byte[] { 0x68, 0xEE, 0x3C, 0x80 },
+                new SPSInfo { levelIdc = 0x14, profileIdc= 0x4d, profileCompat=0 });
+            Assert.Equal(40, hexData.Length);
+        }
+
+        [Fact]
+        public void GetFirstFlvFrameTest()
+        {
+            FlvEncoder flvEncoder = new FlvEncoder();
+            string key = "test";
+            var bufferFlvFrame = new byte[] { 0xA, 0xB, 0xC, 0xD, 0xE, 0xF };
+            FlvEncoder.FlvFirstFrameCache.TryAdd(key, (2, new byte[] { 1, 2, 3, 4, 5, 6 }));
+            var buffer=flvEncoder.GetFirstFlvFrame(key, bufferFlvFrame);
+            //替换PreviousTagSize 4位的长度为首帧的 PreviousTagSize
+            Assert.Equal(new byte[] { 1, 2, 3, 4, 5, 6, 0, 0, 0, 2, 0xE, 0xF }, buffer);
         }
     }
 }

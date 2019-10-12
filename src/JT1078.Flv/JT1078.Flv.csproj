@@ -25,6 +25,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="FlvEncoder.bak" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\JT1078.Protocol\JT1078.Protocol.csproj" />
   </ItemGroup>
   <ItemGroup>

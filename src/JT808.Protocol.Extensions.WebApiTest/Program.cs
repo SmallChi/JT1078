@@ -23,7 +23,7 @@ namespace JT808.Protocol.Extensions.WebApiTest
 
             serviceDescriptors.AddHttpApi<IJT808DotNettyWebApi>().ConfigureHttpApiConfig((c, p) =>
             {
-                c.HttpHost = new Uri("http://localhost:12828/jt808api/");
+                c.HttpHost = new Uri("http://localhost:12819/jt808api/");
                 c.FormatOptions.DateTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
                 //c.LoggerFactory = p.GetRequiredService<ILoggerFactory>();
             });
@@ -34,12 +34,12 @@ namespace JT808.Protocol.Extensions.WebApiTest
             JT808Serializer JT808Serializer = config.GetSerializer();
             IJT808DotNettyWebApi JT808DotNettyWebApiClient = serviceProvider.GetRequiredService<IJT808DotNettyWebApi>();
             string terminalPhoneNo = "";
-            string serverIPAddress = "127.0.0.1";
+            string serverIPAddress = "";
 
             //创建子码流
-            CreateSub(terminalPhoneNo, serverIPAddress, JT808Serializer, JT808DotNettyWebApiClient);
+           // CreateSub(terminalPhoneNo, serverIPAddress, JT808Serializer, JT808DotNettyWebApiClient);
 
-            //创建主码流
+            ////创建主码流
             CreateMain(terminalPhoneNo, serverIPAddress, JT808Serializer, JT808DotNettyWebApiClient);
 
             Console.ReadKey();
@@ -57,21 +57,27 @@ namespace JT808.Protocol.Extensions.WebApiTest
             jT808_0X9101.ServerIPAddress = serverIPAddress;
             jT808_0X9101.ServerVideoChannelTcpPort = 1808;
             jT808_0X9101.ServerVideoChannelUdpPort = 0;
-            jT808_0X9101.LogicalChannelNo = 3;
+            jT808_0X9101.LogicalChannelNo = 1;
             jT808_0X9101.DataType = 1;
             jT808_0X9101.StreamType = 1;
             jT808Package.Bodies = jT808_0X9101;
 
             var data = JT808Serializer.Serialize(jT808Package);
             Console.WriteLine(JsonConvert.SerializeObject(data.ToHexString()));
-
-            var result = JT808DotNettyWebApiClient.UnificationTcpSend(new JT808UnificationSendRequestDto
+            var tmpSend = JsonConvert.SerializeObject(new JT808UnificationSendRequestDto
             {
                 TerminalPhoneNo = terminalPhoneNo,
                 Data = data
-            }).GetAwaiter().GetResult();
+            });
+            //由于升级忘记测试接口导致接口变更用不了使用postman替代下
+            //var result = JT808DotNettyWebApiClient.UnificationTcpSend(new JT808UnificationSendRequestDto
+            //{
+            //    TerminalPhoneNo = terminalPhoneNo,
+            //    Data = data
+            //}).GetAwaiter().GetResult();
 
-            Console.WriteLine(JsonConvert.SerializeObject(result));
+            //Console.WriteLine(JsonConvert.SerializeObject(result));
+            Console.WriteLine(tmpSend);
         }
 
         public static void CreateMain(string terminalPhoneNo, string serverIPAddress, JT808Serializer JT808Serializer, IJT808DotNettyWebApi JT808DotNettyWebApiClient)
@@ -86,7 +92,7 @@ namespace JT808.Protocol.Extensions.WebApiTest
             jT808_0X9101.ServerIPAddress = serverIPAddress;
             jT808_0X9101.ServerVideoChannelTcpPort = 1808;
             jT808_0X9101.ServerVideoChannelUdpPort = 0;
-            jT808_0X9101.LogicalChannelNo = 3;
+            jT808_0X9101.LogicalChannelNo = 1;
             jT808_0X9101.DataType = 1;
             jT808_0X9101.StreamType =0;
             jT808Package.Bodies = jT808_0X9101;
@@ -94,13 +100,20 @@ namespace JT808.Protocol.Extensions.WebApiTest
             var data = JT808Serializer.Serialize(jT808Package);
             Console.WriteLine(JsonConvert.SerializeObject(data.ToHexString()));
 
-            var result = JT808DotNettyWebApiClient.UnificationTcpSend(new JT808UnificationSendRequestDto
+            var tmpSend = JsonConvert.SerializeObject(new JT808UnificationSendRequestDto
             {
                 TerminalPhoneNo = terminalPhoneNo,
                 Data = data
-            }).GetAwaiter().GetResult();
+            });
 
-            Console.WriteLine(JsonConvert.SerializeObject(result));
+            //var result = JT808DotNettyWebApiClient.UnificationTcpSend(new JT808UnificationSendRequestDto
+            //{
+            //    TerminalPhoneNo = terminalPhoneNo,
+            //    Data = data
+            //}).GetAwaiter().GetResult();
+
+            //Console.WriteLine(JsonConvert.SerializeObject(result));
+            Console.WriteLine(tmpSend);
         }
 
         public static void Close(string terminalPhoneNo, JT808Serializer JT808Serializer, IJT808DotNettyWebApi JT808DotNettyWebApiClient)
