@@ -65,7 +65,6 @@ namespace JT1078.Flv.MessagePack
         public void WriteVideoTags(VideoTags videoTags)
         {
             WriteByte((byte)((byte)videoTags.FrameType | (byte)videoTags.CodecId));
-#warning 只处理H.264媒体数据
             if (videoTags.CodecId== CodecId.AvcVideoPacke)
             {
                 WriteAvcVideoPacke(videoTags.VideoData);
@@ -85,10 +84,13 @@ namespace JT1078.Flv.MessagePack
             else if(videoPacke.AvcPacketType == AvcPacketType.Raw)
             {
                 WriteUInt24(videoPacke.CompositionTime);
-                if (videoPacke.Data != null && videoPacke.Data.Length>0)
+                if (videoPacke.MultiData != null && videoPacke.MultiData.Count>0)
                 {
-                    WriteInt32(videoPacke.Data.Length);
-                    WriteArray(videoPacke.Data);
+                    foreach(var item in videoPacke.MultiData)
+                    {
+                        WriteInt32(item.Length);
+                        WriteArray(item);
+                    }
                 }
             }
             else

@@ -35,6 +35,12 @@ namespace JT1078.Flv.H264
         /// </summary>
         public ushort LastFrameInterval { get; set; }
         /// <summary>
+        /// 时间戳
+        /// 标识此RTP数据包当前帧的相对时间，单位毫秒（ms）。
+        /// 当数据类型为01000时，则没有该字段
+        /// </summary>
+        public ulong Timestamp { get; set; }
+        /// <summary>
         /// 数据体
         /// </summary>
         public byte[] RawData { get; set; }

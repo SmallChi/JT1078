@@ -10,6 +10,7 @@ using JT1078.Protocol.Enums;
 using JT1078.Flv.H264;
 using JT1078.Flv.MessagePack;
 using JT1078.Flv.Metadata;
+using System.Diagnostics;
 
 namespace JT1078.Flv.Test
 {
@@ -35,15 +36,12 @@ namespace JT1078.Flv.Test
 
             FlvEncoder encoder = new FlvEncoder();
             var contents = encoder.CreateFlvFrame(nalus);
-            byte[] tmp = new byte[FlvEncoder.VideoFlvHeaderBuffer.Length+ contents.Length];
-            Array.Copy(FlvEncoder.VideoFlvHeaderBuffer, tmp, FlvEncoder.VideoFlvHeaderBuffer.Length);
-            Array.Copy(contents,0,tmp, FlvEncoder.VideoFlvHeaderBuffer.Length, contents.Length);
             var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_1.flv");
             if (File.Exists(filepath))
             {
                 File.Delete(filepath);
             }
-            File.WriteAllBytes(filepath, tmp);
+            File.WriteAllBytes(filepath, contents);
         }
 
         [Fact]
@@ -79,7 +77,6 @@ namespace JT1078.Flv.Test
                     File.Delete(filepath);
                 }
                 fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
-                fileStream.Write(FlvEncoder.VideoFlvHeaderBuffer);
                 var totalPage = (h264NALULs.Count + 10 - 1) / 10;
                 for(var i=0;i< totalPage; i++)
                 {
@@ -136,7 +133,6 @@ namespace JT1078.Flv.Test
                 }
 
                 fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
-                fileStream.Write(FlvEncoder.VideoFlvHeaderBuffer);
                 var totalPage = (h264NALULs.Count + 10 - 1) / 10;
                 for (var i = 0; i < totalPage; i++)
                 {
@@ -192,9 +188,7 @@ namespace JT1078.Flv.Test
                     }
                 }
 
-                fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
-                fileStream.Write(FlvEncoder.VideoFlvHeaderBuffer);
-                
+                fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);                
                 var totalPage = (h264NALULs.Count + 10 - 1) / 10;
                 for (var i = 0; i < totalPage; i++)
                 {
@@ -251,17 +245,16 @@ namespace JT1078.Flv.Test
                 }
                 //var tmp1 = h264NALULs.Where(w => w.NALUHeader.NalUnitType == 7).ToList();
                 List<SPSInfo> tmpSpss = new List<SPSInfo>();
-                List<ushort> times = new List<ushort>();
+                List<ulong> times = new List<ulong>();
                 List<int> type = new List<int>();
-                //foreach (var item in h264NALULs)
-                //{
-                //    //ExpGolombReader expGolombReader = new ExpGolombReader(item.RawData);
-                //    type.Add(item.NALUHeader.NalUnitType);
-                //    times.Add(item.LastFrameInterval);
-                //    //tmpSpss.Add(expGolombReader.ReadSPS());
-                //}
+                foreach (var item in h264NALULs)
+                {
+                    //ExpGolombReader expGolombReader = new ExpGolombReader(item.RawData);
+                    //type.Add(item.NALUHeader.NalUnitType);
+                    times.Add(item.Timestamp);
+                    //tmpSpss.Add(expGolombReader.ReadSPS());
+                }
                 fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
-                fileStream.Write(FlvEncoder.VideoFlvHeaderBuffer);
                 var totalPage = (h264NALULs.Count + 10 - 1) / 10;
                 for (var i = 0; i < totalPage; i++)
                 {

@@ -75,6 +75,7 @@ namespace JT1078.Flv.H264
             nALU.LogicChannelNumber = package.LogicChannelNumber;
             nALU.LastFrameInterval = package.LastFrameInterval;
             nALU.LastIFrameInterval = package.LastIFrameInterval;
+            nALU.Timestamp = package.Timestamp;
             if (startCodePrefix == 3)
             {
                 nALU.StartCodePrefix = H264NALU.Start1;
