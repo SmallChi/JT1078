@@ -311,7 +311,7 @@ namespace JT1078.Flv.MessagePack
         }
     }
 
-    public struct SPSInfo
+    public class SPSInfo
     {
         public byte profileIdc { get; set; }
         public byte levelIdc { get; set; }

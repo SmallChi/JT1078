@@ -4,6 +4,7 @@ using JT1078.Flv.MessagePack;
 using JT1078.Flv.Metadata;
 using JT1078.Protocol;
 using JT1078.Protocol.Enums;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Buffers.Binary;
 using System.Collections.Concurrent;
@@ -17,31 +18,29 @@ namespace JT1078.Flv
 {
     public class FlvEncoder
     {
-        public class FlvFrameInfo
-        {
-            public uint PreviousTagSize { get; set;}
-            public uint LastFrameInterval { get; set; }
-            public uint LastIFrameInterval { get; set; }
-            public ulong Timestamp { get; set; }
-            public uint Interval { get; set; }
-            public JT1078DataType DataType { get; set; }
-        }
-
         public static readonly byte[] VideoFlvHeaderBuffer;
         private static readonly Flv.H264.H264Decoder H264Decoder;
         private static readonly ConcurrentDictionary<string, SPSInfo> VideoSPSDict;
         private static readonly ConcurrentDictionary<string, FlvFrameInfo> FlvFrameInfoDict;
-        internal static readonly ConcurrentDictionary<string, (uint PreviousTagSize,byte[] Buffer)> FlvFirstFrameCache;
+        internal static readonly ConcurrentDictionary<string, (uint PreviousTagSize,byte[] Buffer,bool Changed)> FirstFlvFrameCache;
+        private readonly ILogger logger;
         static FlvEncoder()
         {
             FlvHeader VideoFlvHeader = new FlvHeader(true, false);
             VideoFlvHeaderBuffer = VideoFlvHeader.ToArray().ToArray();
             VideoSPSDict = new ConcurrentDictionary<string, SPSInfo>(StringComparer.OrdinalIgnoreCase);
             FlvFrameInfoDict = new ConcurrentDictionary<string, FlvFrameInfo>(StringComparer.OrdinalIgnoreCase);
-            FlvFirstFrameCache = new ConcurrentDictionary<string, (uint PreviousTagSize, byte[] Buffer)>(StringComparer.OrdinalIgnoreCase);
+            FirstFlvFrameCache = new ConcurrentDictionary<string, (uint PreviousTagSize, byte[] Buffer, bool Changed)>(StringComparer.OrdinalIgnoreCase);
             H264Decoder = new Flv.H264.H264Decoder();
         }
+        public FlvEncoder()
+        {
 
+        }
+        public FlvEncoder(ILoggerFactory loggerFactory)
+        {
+            logger = loggerFactory.CreateLogger("FlvEncoder");
+        }
         public byte[] CreateScriptTagFrame(int width, int height, double frameRate = 25d)
         {
             byte[] buffer = FlvArrayPool.Rent(1024);
@@ -92,7 +91,7 @@ namespace JT1078.Flv
         }
         public byte[] CreateVideoTag0Frame(byte[] spsRawData, byte[] ppsRawData, SPSInfo spsInfo)
         {
-            byte[] buffer = FlvArrayPool.Rent(1024);
+            byte[] buffer = FlvArrayPool.Rent(2048);
             try
             {
                 FlvMessagePackWriter flvMessagePackWriter = new FlvMessagePackWriter(buffer);
@@ -125,6 +124,41 @@ namespace JT1078.Flv
                 FlvArrayPool.Return(buffer);
             }
         }
+        public byte[] CreateSecondVideoTag0Frame(FlvFrameInfo flvFrameInfo,byte[] spsRawData, byte[] ppsRawData, SPSInfo spsInfo)
+        {
+            byte[] buffer = FlvArrayPool.Rent(2048);
+            try
+            {
+                FlvMessagePackWriter flvMessagePackWriter = new FlvMessagePackWriter(buffer);
+                //flv body video tag
+                //flv body tag header
+                FlvTags flvTags = new FlvTags();
+                flvTags.Type = TagType.Video;
+                flvTags.Timestamp = flvFrameInfo.Interval;
+                flvTags.TimestampExt = 0;
+                flvTags.StreamId = 0;
+                //flv body tag body
+                flvTags.VideoTagsData = new VideoTags();
+                flvTags.VideoTagsData.FrameType = FrameType.KeyFrame;
+                flvTags.VideoTagsData.VideoData = new AvcVideoPacke();
+                flvTags.VideoTagsData.VideoData.AvcPacketType = AvcPacketType.SequenceHeader;
+                flvTags.VideoTagsData.VideoData.CompositionTime = flvFrameInfo.LastIFrameInterval;
+                AVCDecoderConfigurationRecord aVCDecoderConfigurationRecord = new AVCDecoderConfigurationRecord();
+                aVCDecoderConfigurationRecord.AVCProfileIndication = spsInfo.profileIdc;
+                aVCDecoderConfigurationRecord.ProfileCompatibility = (byte)spsInfo.profileCompat;
+                aVCDecoderConfigurationRecord.AVCLevelIndication = spsInfo.levelIdc;
+                aVCDecoderConfigurationRecord.NumOfPictureParameterSets = 1;
+                aVCDecoderConfigurationRecord.PPSBuffer = ppsRawData;
+                aVCDecoderConfigurationRecord.SPSBuffer = spsRawData;
+                flvTags.VideoTagsData.VideoData.AVCDecoderConfiguration = aVCDecoderConfigurationRecord;
+                flvMessagePackWriter.WriteFlvTag(flvTags);
+                return flvMessagePackWriter.FlushAndGetArray();
+            }
+            finally
+            {
+                FlvArrayPool.Return(buffer);
+            }
+        }
         public byte[] CreateVideoTagOtherFrame(FlvFrameInfo flvFrameInfo, H264NALU nALU, H264NALU sei)
         {
             byte[] buffer = FlvArrayPool.Rent(65535);
@@ -135,6 +169,8 @@ namespace JT1078.Flv
                 //flv body tag header
                 FlvTags flvTags = new FlvTags();
                 flvTags.Type = TagType.Video;
+                //pts
+                flvTags.Timestamp = flvFrameInfo.Interval;
                 flvTags.TimestampExt = 0;
                 flvTags.StreamId = 0;
                 //flv body tag body
@@ -151,19 +187,21 @@ namespace JT1078.Flv
                 }
                 if(flvFrameInfo.DataType== JT1078DataType.视频I帧)
                 {
+                    //cts
                     flvTags.VideoTagsData.VideoData.CompositionTime = flvFrameInfo.LastIFrameInterval;
                 }
                 else
                 {
+                    //cts
                     flvTags.VideoTagsData.VideoData.CompositionTime = flvFrameInfo.LastFrameInterval;
                 }
-                flvTags.Timestamp = flvFrameInfo.Interval;
                 flvTags.VideoTagsData.VideoData.MultiData = new List<byte[]>();
                 flvTags.VideoTagsData.VideoData.MultiData.Add(nALU.RawData);
-                if(sei!=null && sei.RawData!=null && sei.RawData.Length > 0)
-                {
-                    flvTags.VideoTagsData.VideoData.MultiData.Add(sei.RawData);
-                }
+                //忽略sei
+                //if (sei != null && sei.RawData != null && sei.RawData.Length > 0)
+                //{
+                //    flvTags.VideoTagsData.VideoData.MultiData.Add(sei.RawData);
+                //}
                 flvMessagePackWriter.WriteFlvTag(flvTags);
                 return flvMessagePackWriter.FlushAndGetArray();
             }
@@ -179,41 +217,82 @@ namespace JT1078.Flv
             {
                 FlvMessagePackWriter flvMessagePackWriter = new FlvMessagePackWriter(buffer);
                 H264NALU sps=null, pps=null, sei=null;
-                SPSInfo spsInfo = new SPSInfo();
                 foreach (var naln in nALUs)
                 {
                     string key = naln.GetKey();
                     if (sps != null && pps != null)
                     {
+                        var rawData = H264Decoder.DiscardEmulationPreventionBytes(sps.RawData);
+                        ExpGolombReader h264GolombReader = new ExpGolombReader(rawData);
+                        SPSInfo spsInfo = h264GolombReader.ReadSPS();
                         if (VideoSPSDict.TryGetValue(key, out var spsInfoCache))
                         {
-                            //todo: 主次码流
-                            //if (spsInfoCache.height != spsInfo.height && spsInfoCache.width != spsInfo.width)
-                            //{
-                            //    if (FlvFrameInfoDict.TryGetValue(key, out FlvFrameInfo flvFrameInfo))
-                            //    {
-                            //        var rawData = H264Decoder.DiscardEmulationPreventionBytes(sps.RawData);
-                            //        ExpGolombReader h264GolombReader = new ExpGolombReader(rawData);
-                            //        spsInfo = h264GolombReader.ReadSPS();
-                            //        CreateFlvKeyFrame(ref flvMessagePackWriter, key, sps.RawData, pps.RawData, spsInfo);
-                            //        VideoSPSDict.TryUpdate(key, spsInfo, spsInfo);
-                            //        flvFrameInfo.LastIFrameInterval = 0;
-                            //        FlvFrameInfoDict.TryUpdate(key, flvFrameInfo, flvFrameInfo);
-                            //    }
-                            //}
+                            //切换主次码流
+                            //根据宽高来判断
+                            if (spsInfoCache.height != spsInfo.height && spsInfoCache.width != spsInfo.width)
+                            {
+                                if (logger != null)
+                                {
+                                    if (logger.IsEnabled(LogLevel.Debug))
+                                    {
+                                        logger.LogDebug($"Cache:{spsInfoCache.height}-{spsInfoCache.width},Current:{spsInfo.height}-{spsInfo.width}");
+                                    }
+                                }
+                                VideoSPSDict.TryUpdate(key, spsInfo, spsInfoCache);
+                                if (FlvFrameInfoDict.TryGetValue(key, out FlvFrameInfo flvFrameInfo))
+                                {
+                                    flvFrameInfo.Timestamp = naln.Timestamp;
+                                    flvFrameInfo.LastIFrameInterval = naln.LastIFrameInterval;
+                                    flvFrameInfo.LastFrameInterval = naln.LastFrameInterval;
+                                    if (logger != null)
+                                    {
+                                        if (logger.IsEnabled(LogLevel.Debug))
+                                        {
+                                            logger.LogDebug($"Cache:{spsInfoCache.height}-{spsInfoCache.width},Current:{spsInfo.height}-{spsInfo.width}");
+                                        }
+                                    }
+                                    var secondFlvKeyFrame=CreateSecondFlvKeyFrame(sps.RawData, pps.RawData, spsInfo, flvFrameInfo);
+                                    flvMessagePackWriter.WriteArray(secondFlvKeyFrame.Buffer);
+                                    flvFrameInfo.PreviousTagSize = secondFlvKeyFrame.PreviousTagSize;
+                                    FlvFrameInfoDict.TryUpdate(key, flvFrameInfo, flvFrameInfo);
+                                    if(FirstFlvFrameCache.TryGetValue(key,out var firstFlvFrameCacche))
+                                    {
+                                        FirstFlvFrameCache.TryUpdate(key, (secondFlvKeyFrame.PreviousTagSize, secondFlvKeyFrame.Buffer, true), firstFlvFrameCacche);
+                                    }
+                                }
+                            }
                         }
                         else
                         {
-                            var rawData = H264Decoder.DiscardEmulationPreventionBytes(sps.RawData);
-                            ExpGolombReader h264GolombReader = new ExpGolombReader(rawData);
-                            spsInfo = h264GolombReader.ReadSPS();
-                            flvMessagePackWriter.WriteArray(VideoFlvHeaderBuffer);
-                            CreateFlvKeyFrame(ref flvMessagePackWriter, key, sps.RawData, pps.RawData, spsInfo);
+                            var firstFlvKeyFrame = CreateFirstFlvKeyFrame(sps.RawData, pps.RawData, spsInfo);
+                            flvMessagePackWriter.WriteArray(firstFlvKeyFrame.Buffer);
+                            if (logger != null)
+                            {
+                                if (logger.IsEnabled(LogLevel.Debug))
+                                {
+                                    logger.LogDebug($"Current:{spsInfo.height}-{spsInfo.width}");
+                                }
+                            }
+                            //cache PreviousTagSize
+                            FlvFrameInfoDict.TryAdd(key, new FlvFrameInfo{
+                                    PreviousTagSize = firstFlvKeyFrame.PreviousTagSize,
+                                    Interval = (uint)(pps.Timestamp- sps.Timestamp),
+                                    Timestamp= pps.Timestamp,
+                                }
+                            ); 
+                            FirstFlvFrameCache.TryAdd(key, (firstFlvKeyFrame.PreviousTagSize, firstFlvKeyFrame.Buffer, false));      
                             VideoSPSDict.TryAdd(key, spsInfo);
                         }
                         sps = null;
                         pps = null;
                         continue;
+                    }
+                    if (logger != null)
+                    {
+                        if (logger.IsEnabled(LogLevel.Debug))
+                        {
+                            logger.LogDebug($"NalUnitType:{naln.NALUHeader.NalUnitType}");
+                        }
                     }
                     //7 8 6 5 1 1 1 1 7 8 6 5 1 1 1 1 1 7 8 6 5 1 1 1 1 1
                     switch (naln.NALUHeader.NalUnitType)
@@ -224,6 +303,7 @@ namespace JT1078.Flv
                             {
                                 flvFrameInfo.LastIFrameInterval = naln.LastIFrameInterval;
                                 flvFrameInfo.LastFrameInterval  = naln.LastFrameInterval;
+                                //当前的1078包与上一包1078的时间戳相减再进行累加
                                 uint interval = (uint)(naln.Timestamp - flvFrameInfo.Timestamp);
                                 flvFrameInfo.Interval += interval;
                                 flvFrameInfo.Timestamp = naln.Timestamp;
@@ -257,30 +337,55 @@ namespace JT1078.Flv
                 FlvArrayPool.Return(buffer);
             }
         }
-        private void CreateFlvKeyFrame(ref FlvMessagePackWriter flvMessagePackWriter, string key, byte[] spsRawData, byte[] ppsRawData, SPSInfo spsInfo)
+        public (byte[] Buffer, uint PreviousTagSize) CreateFirstFlvKeyFrame(byte[] spsRawData, byte[] ppsRawData, SPSInfo spsInfo)
         {
-            //flv body PreviousTagSize awalys 0
-            flvMessagePackWriter.WriteUInt32(0);
-            //flv body script tag
-            var scriptTagFrameBuffer= CreateScriptTagFrame(spsInfo.width, spsInfo.height);
-            flvMessagePackWriter.WriteArray(scriptTagFrameBuffer);
-            //flv script tag PreviousTagSize
-            flvMessagePackWriter.WriteUInt32((uint)scriptTagFrameBuffer.Length);
-            //flv body video tag 0
-            var videoTagFrame0Buffer= CreateVideoTag0Frame(spsRawData, ppsRawData, spsInfo);
-            flvMessagePackWriter.WriteArray(videoTagFrame0Buffer);
-            uint videoTag0PreviousTagSize = (uint)videoTagFrame0Buffer.Length;
-            //cache PreviousTagSize
-            FlvFrameInfoDict.AddOrUpdate(key, new FlvFrameInfo { PreviousTagSize = videoTag0PreviousTagSize}, (a, b) => {
-                b.PreviousTagSize = videoTag0PreviousTagSize;
-                return b;
-            });
-            var buffer = flvMessagePackWriter.FlushAndGetArray();
-            FlvFirstFrameCache.AddOrUpdate(key,(videoTag0PreviousTagSize, buffer),(a,b)=> {
-                b.PreviousTagSize = videoTag0PreviousTagSize;
-                b.Buffer = buffer;
-                return b;
-            });
+            byte[] buffer = FlvArrayPool.Rent(65535);
+            try
+            {
+                FlvMessagePackWriter flvMessagePackWriter = new FlvMessagePackWriter(buffer);
+                //flv body PreviousTagSize awalys 0
+                flvMessagePackWriter.WriteUInt32(0);
+                //flv body script tag
+                var scriptTagFrameBuffer= CreateScriptTagFrame(spsInfo.width, spsInfo.height);
+                flvMessagePackWriter.WriteArray(scriptTagFrameBuffer);
+                //flv script tag PreviousTagSize
+                flvMessagePackWriter.WriteUInt32((uint)scriptTagFrameBuffer.Length);
+                //flv body video tag 0
+                var videoTagFrame0Buffer= CreateVideoTag0Frame(spsRawData, ppsRawData, spsInfo);
+                flvMessagePackWriter.WriteArray(videoTagFrame0Buffer);
+                uint videoTag0PreviousTagSize = (uint)videoTagFrame0Buffer.Length;
+                return (flvMessagePackWriter.FlushAndGetArray(), videoTag0PreviousTagSize);
+            }
+            finally
+            {
+                FlvArrayPool.Return(buffer);
+            }
+        }
+        public (byte[] Buffer,uint PreviousTagSize) CreateSecondFlvKeyFrame(byte[] spsRawData, byte[] ppsRawData, SPSInfo spsInfo, FlvFrameInfo flvFrameInfo)
+        {
+            byte[] buffer = FlvArrayPool.Rent(65535);
+            try
+            {
+                FlvMessagePackWriter flvMessagePackWriter = new FlvMessagePackWriter(buffer);
+                //flv body PreviousTagSize awalys 0
+                //当首包的时候为 0
+                //当切花主次码流的时候需要根据上一包的大小
+                flvMessagePackWriter.WriteUInt32(flvFrameInfo.PreviousTagSize);
+                //flv body script tag
+                var scriptTagFrameBuffer = CreateScriptTagFrame(spsInfo.width, spsInfo.height);
+                flvMessagePackWriter.WriteArray(scriptTagFrameBuffer);
+                //flv script tag PreviousTagSize
+                flvMessagePackWriter.WriteUInt32((uint)scriptTagFrameBuffer.Length);
+                //flv body video tag 0
+                var videoTagFrame0Buffer = CreateSecondVideoTag0Frame(flvFrameInfo, spsRawData, ppsRawData, spsInfo);
+                flvMessagePackWriter.WriteArray(videoTagFrame0Buffer);
+                uint videoTag0PreviousTagSize = (uint)videoTagFrame0Buffer.Length;
+                return (flvMessagePackWriter.FlushAndGetArray(), videoTag0PreviousTagSize);
+            }
+            finally
+            {
+                FlvArrayPool.Return(buffer);
+            }
         }
         public byte[] CreateFlvFrame(JT1078Package package,int minimumLength = 65535)
         {
@@ -290,17 +395,32 @@ namespace JT1078.Flv
         }
         public byte[] GetFirstFlvFrame(string key,byte[] bufferFlvFrame)
         {
-            if (FlvFirstFrameCache.TryGetValue(key, out var firstBuffer))
+            if (FirstFlvFrameCache.TryGetValue(key, out var firstBuffer))
             {
-                var length = firstBuffer.Buffer.Length + bufferFlvFrame.Length;
+                var length = firstBuffer.Buffer.Length + bufferFlvFrame.Length + VideoFlvHeaderBuffer.Length;
                 byte[] buffer = FlvArrayPool.Rent(length);
                 try
                 {
                     Span<byte> tmp = buffer;
-                    firstBuffer.Buffer.CopyTo(tmp);
-                    BinaryPrimitives.WriteUInt32BigEndian(bufferFlvFrame, firstBuffer.PreviousTagSize);
-                    bufferFlvFrame.CopyTo(tmp.Slice(firstBuffer.Buffer.Length));
-                    return tmp.Slice(0, length).ToArray();
+                    VideoFlvHeaderBuffer.CopyTo(tmp);
+                    if (firstBuffer.Changed)
+                    {
+                        //新用户进来需要替换为首包的PreviousTagSize 0
+                        BinaryPrimitives.WriteUInt32BigEndian(firstBuffer.Buffer, 0);
+                        firstBuffer.Buffer.CopyTo(tmp.Slice(VideoFlvHeaderBuffer.Length));
+                        //新用户进来需要替换为上一包的PreviousTagSize
+                        BinaryPrimitives.WriteUInt32BigEndian(bufferFlvFrame, firstBuffer.PreviousTagSize);
+                        bufferFlvFrame.CopyTo(tmp.Slice(VideoFlvHeaderBuffer.Length + firstBuffer.Buffer.Length));
+                        return tmp.Slice(0, length).ToArray();
+                    }
+                    else
+                    {
+                        firstBuffer.Buffer.CopyTo(tmp.Slice(VideoFlvHeaderBuffer.Length));
+                        //新用户进来需要替换为首包的PreviousTagSize
+                        BinaryPrimitives.WriteUInt32BigEndian(bufferFlvFrame, firstBuffer.PreviousTagSize);
+                        bufferFlvFrame.CopyTo(tmp.Slice(VideoFlvHeaderBuffer.Length + firstBuffer.Buffer.Length));
+                        return tmp.Slice(0, length).ToArray();
+                    }
                 }
                 finally
                 {
@@ -309,5 +429,15 @@ namespace JT1078.Flv
              }
             return default;
         }
+    }
+
+    public class FlvFrameInfo
+    {
+        public uint PreviousTagSize { get; set; }
+        public uint LastFrameInterval { get; set; }
+        public uint LastIFrameInterval { get; set; }
+        public ulong Timestamp { get; set; }
+        public uint Interval { get; set; }
+        public JT1078DataType DataType { get; set; }
     }
 }

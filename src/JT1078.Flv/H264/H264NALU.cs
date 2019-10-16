@@ -30,7 +30,7 @@ namespace JT1078.Flv.H264
         /// </summary>
         public ushort LastIFrameInterval { get; set; }
         /// <summary>
-        /// 该帧与上一个关键帧之间的时间间隔，单位毫秒(ms),
+        /// 该帧与上一个帧之间的时间间隔，单位毫秒(ms),
         /// 当数据类型为非视频帧时，则没有该字段
         /// </summary>
         public ushort LastFrameInterval { get; set; }

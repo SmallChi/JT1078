@@ -3,3 +3,5 @@ ffmpeg -i demo.mp4 -c copy -f flv -vcodec h264 -acodec aac demo_flv.flv
 ./ffmpeg -i JT1078_3.h264 -r 25 -c copy -f flv "D:\JT1078_3.flv"
 
 ffmpeg -f dshow -i video="USB2.0 PC CAMERA" -t 60 -c copy -f h264 -vcodec h264 jt1078.264
+
+chrome://media-internals/

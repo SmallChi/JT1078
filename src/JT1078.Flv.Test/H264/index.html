@@ -9,28 +9,40 @@
 <body>
     <video muted="muted" webkit-playsinline="true" autoplay="true" id="player"></video>
     <script>
-        //ref https://github.com/bilibili/flv.js/issues/427
-        //ref https://github.com/bilibili/flv.js/issues/498
+        //ref https://github.com/bilibili/flv.js/issues/498  ✔
         if (flvjs.isSupported()) {
             var player = document.getElementById('player');
+
             var flvPlayer = flvjs.createPlayer({
                 type: 'flv',
-                lazyLoad: false,
-                lazyLoadMaxDuration: 0,
-                lazyLoadRecoverDuration: 0,
-                deferLoadAfterSourceOpen: false,
-                fixAudioTimestampGap: false,
+                isLive: true,
                 //url: "ws://localhost:1818/jt1078live?token=" + Math.floor((Math.random() * 1000000) + 1)
                 //isLive: true,
                 url: "JT1078_3.flv"
             });
+
             var width, height, flag;
             flvPlayer.attachMediaElement(player);
             flvPlayer.on(flvjs.Events.SCRIPTDATA_ARRIVED, (e) => {
                 console.log(e);
             });
             flvPlayer.load();
+
             flvPlayer.play();
+                        (function componentDidMount() {
+                this.cleanBuff = setInterval(function () {
+                    let buffered = player.buffered
+                    console.log("start...")
+                    if (buffered.length > 0) {
+                        let end = buffered.end(0)
+                        if (end - player.currentTime > 0.15) {
+                            player.currentTime = end - 0.1;
+                            console.log("exe... start")
+                        }
+                    }
+                    console.log("end...")
+                }, 3 * 10 * 1000)
+            })();
         }
     </script>
 </body>

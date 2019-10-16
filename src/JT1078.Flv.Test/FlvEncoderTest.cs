@@ -243,16 +243,23 @@ namespace JT1078.Flv.Test
                         }
                     }
                 }
-                //var tmp1 = h264NALULs.Where(w => w.NALUHeader.NalUnitType == 7).ToList();
+                var tmp1 = h264NALULs.Where(w => w.NALUHeader.NalUnitType == 7).ToList();
                 List<SPSInfo> tmpSpss = new List<SPSInfo>();
                 List<ulong> times = new List<ulong>();
+                List<ushort> lastIFrameIntervals = new List<ushort>();
+                List<ushort> lastFrameIntervals = new List<ushort>();
                 List<int> type = new List<int>();
                 foreach (var item in h264NALULs)
-                {
-                    //ExpGolombReader expGolombReader = new ExpGolombReader(item.RawData);
+                {    
                     //type.Add(item.NALUHeader.NalUnitType);
                     times.Add(item.Timestamp);
-                    //tmpSpss.Add(expGolombReader.ReadSPS());
+                    lastFrameIntervals.Add(item.LastFrameInterval);
+                    lastIFrameIntervals.Add(item.LastIFrameInterval);
+                    if(item.NALUHeader.NalUnitType == 7)
+                    {
+                        ExpGolombReader expGolombReader = new ExpGolombReader(item.RawData);
+                        tmpSpss.Add(expGolombReader.ReadSPS());
+                    }
                 }
                 fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
                 var totalPage = (h264NALULs.Count + 10 - 1) / 10;
@@ -261,7 +268,7 @@ namespace JT1078.Flv.Test
                     var flv2 = encoder.CreateFlvFrame(h264NALULs.Skip(i * 10).Take(10).ToList());
                     if (flv2.Length != 0)
                     {
-                        fileStream.Write(flv2);
+                        //fileStream.Write(flv2);
                     }
                 }
             }
@@ -301,7 +308,7 @@ namespace JT1078.Flv.Test
             FlvEncoder flvEncoder = new FlvEncoder();
             string key = "test";
             var bufferFlvFrame = new byte[] { 0xA, 0xB, 0xC, 0xD, 0xE, 0xF };
-            FlvEncoder.FlvFirstFrameCache.TryAdd(key, (2, new byte[] { 1, 2, 3, 4, 5, 6 }));
+            FlvEncoder.FirstFlvFrameCache.TryAdd(key, (2, new byte[] { 1, 2, 3, 4, 5, 6 },true));
             var buffer=flvEncoder.GetFirstFlvFrame(key, bufferFlvFrame);
             //替换PreviousTagSize 4位的长度为首帧的 PreviousTagSize
             Assert.Equal(new byte[] { 1, 2, 3, 4, 5, 6, 0, 0, 0, 2, 0xE, 0xF }, buffer);
