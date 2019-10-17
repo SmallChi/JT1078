@@ -1,4 +1,5 @@
 ﻿using JT1078.Flv.Enums;
+using JT1078.Flv.Extensions;
 using JT1078.Flv.H264;
 using JT1078.Flv.MessagePack;
 using JT1078.Flv.Metadata;
@@ -124,7 +125,7 @@ namespace JT1078.Flv
                 FlvArrayPool.Return(buffer);
             }
         }
-        public byte[] CreateSecondVideoTag0Frame(FlvFrameInfo flvFrameInfo,byte[] spsRawData, byte[] ppsRawData, SPSInfo spsInfo)
+        public byte[] CreateSecondVideoTag0Frame(byte[] spsRawData, byte[] ppsRawData, SPSInfo spsInfo)
         {
             byte[] buffer = FlvArrayPool.Rent(2048);
             try
@@ -134,7 +135,7 @@ namespace JT1078.Flv
                 //flv body tag header
                 FlvTags flvTags = new FlvTags();
                 flvTags.Type = TagType.Video;
-                flvTags.Timestamp = flvFrameInfo.Interval;
+                flvTags.Timestamp =0;
                 flvTags.TimestampExt = 0;
                 flvTags.StreamId = 0;
                 //flv body tag body
@@ -142,7 +143,7 @@ namespace JT1078.Flv
                 flvTags.VideoTagsData.FrameType = FrameType.KeyFrame;
                 flvTags.VideoTagsData.VideoData = new AvcVideoPacke();
                 flvTags.VideoTagsData.VideoData.AvcPacketType = AvcPacketType.SequenceHeader;
-                flvTags.VideoTagsData.VideoData.CompositionTime = flvFrameInfo.LastIFrameInterval;
+                flvTags.VideoTagsData.VideoData.CompositionTime = 0;
                 AVCDecoderConfigurationRecord aVCDecoderConfigurationRecord = new AVCDecoderConfigurationRecord();
                 aVCDecoderConfigurationRecord.AVCProfileIndication = spsInfo.profileIdc;
                 aVCDecoderConfigurationRecord.ProfileCompatibility = (byte)spsInfo.profileCompat;
@@ -188,12 +189,12 @@ namespace JT1078.Flv
                 if(flvFrameInfo.DataType== JT1078DataType.视频I帧)
                 {
                     //cts
-                    flvTags.VideoTagsData.VideoData.CompositionTime = flvFrameInfo.LastIFrameInterval;
+                    flvTags.VideoTagsData.VideoData.CompositionTime = nALU.LastIFrameInterval;
                 }
                 else
                 {
                     //cts
-                    flvTags.VideoTagsData.VideoData.CompositionTime = flvFrameInfo.LastFrameInterval;
+                    flvTags.VideoTagsData.VideoData.CompositionTime = nALU.LastFrameInterval;
                 }
                 flvTags.VideoTagsData.VideoData.MultiData = new List<byte[]>();
                 flvTags.VideoTagsData.VideoData.MultiData.Add(nALU.RawData);
@@ -242,8 +243,6 @@ namespace JT1078.Flv
                                 if (FlvFrameInfoDict.TryGetValue(key, out FlvFrameInfo flvFrameInfo))
                                 {
                                     flvFrameInfo.Timestamp = naln.Timestamp;
-                                    flvFrameInfo.LastIFrameInterval = naln.LastIFrameInterval;
-                                    flvFrameInfo.LastFrameInterval = naln.LastFrameInterval;
                                     if (logger != null)
                                     {
                                         if (logger.IsEnabled(LogLevel.Debug))
@@ -276,7 +275,7 @@ namespace JT1078.Flv
                             //cache PreviousTagSize
                             FlvFrameInfoDict.TryAdd(key, new FlvFrameInfo{
                                     PreviousTagSize = firstFlvKeyFrame.PreviousTagSize,
-                                    Interval = (uint)(pps.Timestamp- sps.Timestamp),
+                                    Interval = (uint)(pps.Timestamp - sps.Timestamp),
                                     Timestamp= pps.Timestamp,
                                 }
                             ); 
@@ -289,9 +288,9 @@ namespace JT1078.Flv
                     }
                     if (logger != null)
                     {
-                        if (logger.IsEnabled(LogLevel.Debug))
+                        if (logger.IsEnabled(LogLevel.Trace))
                         {
-                            logger.LogDebug($"NalUnitType:{naln.NALUHeader.NalUnitType}");
+                            logger.LogTrace($"SIM:{naln.SIM},CH:{naln.LogicChannelNumber},{naln.DataType.ToString()},NalUnitType:{naln.NALUHeader.NalUnitType},RawData:{naln.RawData.ToHexString()}");
                         }
                     }
                     //7 8 6 5 1 1 1 1 7 8 6 5 1 1 1 1 1 7 8 6 5 1 1 1 1 1
@@ -301,8 +300,6 @@ namespace JT1078.Flv
                         case 1:// I/P/B
                             if (FlvFrameInfoDict.TryGetValue(key, out FlvFrameInfo  flvFrameInfo))
                             {
-                                flvFrameInfo.LastIFrameInterval = naln.LastIFrameInterval;
-                                flvFrameInfo.LastFrameInterval  = naln.LastFrameInterval;
                                 //当前的1078包与上一包1078的时间戳相减再进行累加
                                 uint interval = (uint)(naln.Timestamp - flvFrameInfo.Timestamp);
                                 flvFrameInfo.Interval += interval;
@@ -377,7 +374,7 @@ namespace JT1078.Flv
                 //flv script tag PreviousTagSize
                 flvMessagePackWriter.WriteUInt32((uint)scriptTagFrameBuffer.Length);
                 //flv body video tag 0
-                var videoTagFrame0Buffer = CreateSecondVideoTag0Frame(flvFrameInfo, spsRawData, ppsRawData, spsInfo);
+                var videoTagFrame0Buffer = CreateSecondVideoTag0Frame(spsRawData, ppsRawData, spsInfo);
                 flvMessagePackWriter.WriteArray(videoTagFrame0Buffer);
                 uint videoTag0PreviousTagSize = (uint)videoTagFrame0Buffer.Length;
                 return (flvMessagePackWriter.FlushAndGetArray(), videoTag0PreviousTagSize);
@@ -434,8 +431,6 @@ namespace JT1078.Flv
     public class FlvFrameInfo
     {
         public uint PreviousTagSize { get; set; }
-        public uint LastFrameInterval { get; set; }
-        public uint LastIFrameInterval { get; set; }
         public ulong Timestamp { get; set; }
         public uint Interval { get; set; }
         public JT1078DataType DataType { get; set; }

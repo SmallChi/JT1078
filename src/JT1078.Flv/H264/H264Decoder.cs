@@ -11,63 +11,64 @@ namespace JT1078.Flv.H264
 {
     public class H264Decoder
     {
+        /// <summary>
+        /// 
+        /// <see cref="https://github.com/samirkumardas/jmuxer/blob/master/src/parsers/h264.js"/>
+        /// </summary>
+        /// <param name="package"></param>
+        /// <returns></returns>
         public List<H264NALU> ParseNALU(JT1078Package package)
         {
-            List<H264NALU> units = new List<H264NALU>();
-            int offset = 0;
-            (int previousOffset, int previousContentOffset) previous = (0, 0);
-            int len = package.Bodies.Length;
-            ReadOnlySpan<byte> tmpBuffer = package.Bodies;
-            int index = 0;
-            while (offset < len)
+            Stack<H264NALU> unitsStacks = new Stack<H264NALU>();
+            int i=0,state=0;
+            int? lastIndex=null;
+            int length = package.Bodies.Length;
+            byte value;
+            ReadOnlySpan<byte> buffer = package.Bodies;
+            while (i < length)
             {
-                if ((len - offset - 3) < 0 || (len - offset - 4) < 0)
+                value = buffer[i++];
+                switch (state)
                 {
-                    if (previous.previousOffset == 0 && previous.previousContentOffset == 0)
-                    {
-                        int startCodePrefix=4;
-                        if (tmpBuffer.Slice(0, 3).SequenceEqual(H264NALU.Start1))
+                    case 0:
+                        if (value == 0) state = 1;
+                        break;
+                    case 1:
+                        state = value == 0 ? 2 : 0;
+                        break;
+                    case 2:
+                    case 3:
+                        if (value == 0)
                         {
-                            startCodePrefix = 3;
+                            state = 3;
                         }
-                        units.Add(Create(package, tmpBuffer.Slice(offset, 1), startCodePrefix));
-                        units[index++].RawData = tmpBuffer.ToArray();
-                    }
-                    else
-                    {
-                        units[index++].RawData = tmpBuffer.Slice(previous.previousContentOffset + (previous.previousOffset - previous.previousContentOffset)).ToArray();
-                    }
-                    break;
-                }
-                if (tmpBuffer.Slice(offset, 3).SequenceEqual(H264NALU.Start1))
-                {
-                    offset += 3;
-                    if ((offset - 3) != 0)
-                    {
-                        units[index++].RawData = tmpBuffer.Slice(previous.previousContentOffset + 3, offset - previous.previousOffset - 3).ToArray();
-                    }
-                    units.Add(Create(package, tmpBuffer.Slice(offset, 1), 3));
-                    previous = (offset, offset - 3);
-                }
-                else if (tmpBuffer.Slice(offset, 4).SequenceEqual(H264NALU.Start2))
-                {
-                    offset += 4;
-                    if ((offset - 4) != 0)
-                    {
-                        units[index++].RawData = tmpBuffer.Slice(previous.previousContentOffset + 4, offset - previous.previousOffset - 4).ToArray();
-                    }
-                    units.Add(Create(package, tmpBuffer.Slice(offset, 1), 4));
-                    previous = (offset, offset - 4);
-                }
-                else
-                {
-                    offset++;
+                        else if (value == 1 && i < length)
+                        {
+                            if (lastIndex.HasValue)
+                            {
+                                var tmp = buffer.Slice(lastIndex.Value, i - state - 1 - lastIndex.Value);
+                                unitsStacks.Push(Create(package, tmp, state));
+                            }
+                            lastIndex = i;
+                            state = 0;
+                        }
+                        else
+                        {
+                            state = 0;
+                        }
+                        break;
+                    default:
+                        break;
                 }
             }
-            return units;
+            if (lastIndex.HasValue)
+            {
+                unitsStacks.Push(Create(package, buffer.Slice(lastIndex.Value), 4));
+            }
+            return unitsStacks.Reverse().ToList();
         }
 
-        private H264NALU Create(JT1078Package package,ReadOnlySpan<byte> naluheader, int startCodePrefix)
+        private H264NALU Create(JT1078Package package,ReadOnlySpan<byte> nalu, int startCodePrefix)
         {
             H264NALU nALU = new H264NALU();
             nALU.SIM = package.SIM;
@@ -76,6 +77,7 @@ namespace JT1078.Flv.H264
             nALU.LastFrameInterval = package.LastFrameInterval;
             nALU.LastIFrameInterval = package.LastIFrameInterval;
             nALU.Timestamp = package.Timestamp;
+            nALU.RawData = nalu.ToArray();
             if (startCodePrefix == 3)
             {
                 nALU.StartCodePrefix = H264NALU.Start1;
@@ -84,7 +86,7 @@ namespace JT1078.Flv.H264
             {
                 nALU.StartCodePrefix = H264NALU.Start2;
             }
-            nALU.NALUHeader = new NALUHeader(naluheader);  
+            nALU.NALUHeader = new NALUHeader(nalu.Slice(0,1));  
             return nALU;
         }
 

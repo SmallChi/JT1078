@@ -2,9 +2,10 @@
 
 道路运输车辆卫星定位系统-视频通讯协议主要分为三大部分。
 
-1. 设备终端到平台的通信也就是JT808
-2. 企业平台到政府监管的通信也就是JT809
-3. 设备终端上传的实时音视频流数据也就是视频服务器
+1. [设备终端到平台的通信也就是JT808](#808Ext)
+2. [企业平台到政府监管的通信也就是JT809](#809Ext)
+3. [设备终端上传的实时音视频流数据也就是视频服务器](#1078)  
+3.1  [将1078的数据(h264)编码成FLV](#1078flv)
 
 [![MIT Licence](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/SmallChi/JT1078/blob/master/LICENSE)[![Build Status](https://travis-ci.org/SmallChi/JT1078.svg?branch=master)](https://travis-ci.org/SmallChi/JT1078)
 
@@ -13,10 +14,11 @@
 | Package Name          | Version                                            | Downloads                                           |
 | --------------------- | -------------------------------------------------- | --------------------------------------------------- |
 | Install-Package JT1078 | ![JT1078](https://img.shields.io/nuget/v/JT1078.svg) | ![JT1078](https://img.shields.io/nuget/dt/JT1078.svg) |
+| Install-Package JT1078.Flv | ![JT1078.Flv](https://img.shields.io/nuget/v/JT1078.Flv.svg) | ![JT1078.Flv](https://img.shields.io/nuget/dt/JT1078.Flv.svg) |
 | Install-Package JT808.Protocol.Extensions.JT1078 | ![JT808.Protocol.Extensions.JT1078](https://img.shields.io/nuget/v/JT808.Protocol.Extensions.JT1078.svg) | ![JT808](https://img.shields.io/nuget/dt/JT808.Protocol.Extensions.JT1078.svg) |
 | Install-Package JT809.Protocol.Extensions.JT1078 | ![JT809.Protocol.Extensions.JT1078](https://img.shields.io/nuget/v/JT809.Protocol.Extensions.JT1078.svg) | ![JT809](https://img.shields.io/nuget/dt/JT809.Protocol.Extensions.JT1078.svg) |
 
-## 基于JT1078音视频流数据的RTP协议
+## <span id="1078">基于JT1078音视频流数据的RTP协议</span>
 
 ### 前提条件
 
@@ -148,7 +150,34 @@ Platform=AnyCpu  Server=False
 |  JT1078Serializer | .NET Core 3.0 | 100000 | 174,163.26 us |   848.6417 us |   708.6542 us | 38000.0000 |       - |     - |  232812.5 KB |
 | JT1078Deserialize | .NET Core 3.0 | 100000 |  34,266.16 us |   357.1659 us |   334.0932 us | 23800.0000 |       - |     - | 146093.75 KB |
 
-## 基于JT808扩展的JT1078消息协议
+## <span id="1078flv">基于JT1078的Flv视频编码器</span>
+
+### 前提条件
+
+1. 掌握JT078解码器；
+2. 了解H264解码；
+3. 掌握FLV编码；
+
+由于网上资料比较多，自己也不擅长写文章，这边只是着重写一些在实际开发中需要注意的问题。
+
+> 注意：目前仅支持H264编码的视频播放，主次码流的切换。由于多数设备厂商只支持一路通道只能存在主码流或者子码流，所以不考虑同时上传主次码流。
+
+### 关注点
+
+1. 在组包Flv的时候需要注意PreviousTagSize这个属性，因为该属性涉及到了新老用户、以及主次码流切换是否能播放成功。
+
+2. 在组包FLV的时候需要注意将解析的NALU值放入VideoTagsData中，格式:[NALU.Length 长度]+[NALU 值]...[NALU.Length 长度]+[NALU 值]可以存放多个NALU。
+
+3. JT1078的属性大有用处。
+
+| JT1078属性  | FLV属性 |
+| :--- | :----|
+|Timestamp|JT1078的Timestamp为FLv的累加值（当前的1078包与上一包1078的时间戳相减再进行累加）|
+|DataType|JT1078的DataType为FLv的FrameType的值（判断是否为关键帧）|
+|LastIFrameInterval|JT1078的LastIFrameInterval为FLv（关键帧）的CompositionTime值|
+|LastFrameInterval|JT1078的LastIFrameInterval为FLv（B/P帧）的CompositionTime值|
+
+## <span id="808ext">基于JT808扩展的JT1078消息协议</span>
 
 ### JT808扩展协议消息对照表
 
@@ -194,7 +223,7 @@ serviceDescriptors1.AddJT808Configure()
                    .AddJT1078Configure();
 ```
 
-## 基于JT809扩展的JT1078消息协议
+## <span id="809ext">基于JT809扩展的JT1078消息协议</span>
 
 ### JT809扩展协议消息对照表
 

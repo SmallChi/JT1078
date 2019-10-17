@@ -9,15 +9,6 @@ namespace JT1078.Flv.MessagePack
 {
     ref partial struct FlvMessagePackWriter
     {
-        public void WriteFlvBody(FlvBody body)
-        {
-            WriteUInt32(body.PreviousTagSize);
-            if (body.Tag != null)
-            {
-                WriteFlvTag(body.Tag);
-            }
-        }
-
         public void WriteFlvTag(FlvTags tag)
         {
             WriteByte((byte)tag.Type);
@@ -39,7 +30,7 @@ namespace JT1078.Flv.MessagePack
                     WriteAmf3(tag.DataTagsData);
                     break;
                 case TagType.Audio:
-                    //VIDEODATA 
+                    //todo:VIDEODATA 
                     break;
             }
             WriteInt24Return(GetCurrentPosition() - DataSizePosition -3-7, DataSizePosition);

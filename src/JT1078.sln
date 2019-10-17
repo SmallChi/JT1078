@@ -31,6 +31,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JT1078.Flv", "JT1078.Flv\JT
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JT1078.Flv.Test", "JT1078.Flv.Test\JT1078.Flv.Test.csproj", "{D13FE092-1D11-4545-A322-9F06BCDAC0FD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JT1078.Flv.Benchmark", "JT1078.Flv.Benchmark\JT1078.Flv.Benchmark.csproj", "{5BBA68D4-53C6-4356-AAAE-ECC21B0BB8FF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +79,10 @@ Global
 		{D13FE092-1D11-4545-A322-9F06BCDAC0FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D13FE092-1D11-4545-A322-9F06BCDAC0FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D13FE092-1D11-4545-A322-9F06BCDAC0FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BBA68D4-53C6-4356-AAAE-ECC21B0BB8FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BBA68D4-53C6-4356-AAAE-ECC21B0BB8FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BBA68D4-53C6-4356-AAAE-ECC21B0BB8FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BBA68D4-53C6-4356-AAAE-ECC21B0BB8FF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -33,12 +33,12 @@ namespace JT1078.Flv.Test.H264
         public void ParseNALUTest2()
         {
             JT1078Package Package=null;
-            var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078.txt"));
+            var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_1.txt"));
             int mergeBodyLength = 0;
             foreach (var line in lines)
             {
                 var data = line.Split(',');
-                var bytes = data[5].ToHexBytes();
+                var bytes = data[6].ToHexBytes();
                 JT1078Package package = JT1078Serializer.Deserialize(bytes);
                 mergeBodyLength += package.DataBodyLength;
                 Package = JT1078Serializer.Merge(package);
