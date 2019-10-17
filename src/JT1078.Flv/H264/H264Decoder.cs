@@ -19,7 +19,7 @@ namespace JT1078.Flv.H264
         /// <returns></returns>
         public List<H264NALU> ParseNALU(JT1078Package package)
         {
-            Stack<H264NALU> unitsStacks = new Stack<H264NALU>();
+            List<H264NALU> h264NALUs = new List<H264NALU>();
             int i=0,state=0;
             int? lastIndex=null;
             int length = package.Bodies.Length;
@@ -47,7 +47,7 @@ namespace JT1078.Flv.H264
                             if (lastIndex.HasValue)
                             {
                                 var tmp = buffer.Slice(lastIndex.Value, i - state - 1 - lastIndex.Value);
-                                unitsStacks.Push(Create(package, tmp, state));
+                                h264NALUs.Add(Create(package, tmp, state));
                             }
                             lastIndex = i;
                             state = 0;
@@ -63,9 +63,9 @@ namespace JT1078.Flv.H264
             }
             if (lastIndex.HasValue)
             {
-                unitsStacks.Push(Create(package, buffer.Slice(lastIndex.Value), 4));
+                h264NALUs.Add(Create(package, buffer.Slice(lastIndex.Value), 4));
             }
-            return unitsStacks.Reverse().ToList();
+            return h264NALUs;
         }
 
         private H264NALU Create(JT1078Package package,ReadOnlySpan<byte> nalu, int startCodePrefix)

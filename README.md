@@ -154,7 +154,7 @@ Platform=AnyCpu  Server=False
 
 ### 前提条件
 
-1. 掌握JT078解码器；
+1. 掌握JT078解码；
 2. 了解H264解码；
 3. 掌握FLV编码；
 
@@ -172,10 +172,35 @@ Platform=AnyCpu  Server=False
 
 | JT1078属性  | FLV属性 |
 | :--- | :----|
-|Timestamp|JT1078的Timestamp为FLv的累加值（当前的1078包与上一包1078的时间戳相减再进行累加）|
+|Timestamp|JT1078的Timestamp为FLv的Timestamp累加值（当前的1078包与上一包1078的时间戳相减再进行累加）|
 |DataType|JT1078的DataType为FLv的FrameType的值（判断是否为关键帧）|
 |LastIFrameInterval|JT1078的LastIFrameInterval为FLv（关键帧）的CompositionTime值|
 |LastFrameInterval|JT1078的LastIFrameInterval为FLv（B/P帧）的CompositionTime值|
+
+### 使用BenchmarkDotNet性能测试报告（只是玩玩，不能当真）
+
+``` ini
+
+BenchmarkDotNet=v0.11.5, OS=Windows 10.0.18362
+Intel Core i7-8700K CPU 3.70GHz (Coffee Lake), 1 CPU, 12 logical and 6 physical cores
+.NET Core SDK=3.0.100
+  [Host]     : .NET Core 3.0.0 (CoreCLR 4.700.19.46205, CoreFX 4.700.19.46214), 64bit RyuJIT
+  Job-QJAHWX : .NET Core 3.0.0 (CoreCLR 4.700.19.46205, CoreFX 4.700.19.46214), 64bit RyuJIT
+
+Platform=AnyCpu  Server=False  Toolchain=.NET Core 3.0  
+
+```
+|          Method |      N |            Mean |          Error |         StdDev |       Gen 0 |     Gen 1 | Gen 2 |    Allocated |
+|---------------- |------- |----------------:|---------------:|---------------:|------------:|----------:|------:|-------------:|
+| **EXPGolombReader** |    **100** |        **12.15 us** |      **0.2320 us** |      **0.2482 us** |      **1.5259** |         **-** |     **-** |      **9.38 KB** |
+|     H264Decoder |    100 |     1,353.34 us |     10.7795 us |      9.0014 us |    128.9063 |    1.9531 |     - |    795.31 KB |
+|      FlvEncoder |    100 |       215.75 us |      4.3104 us |      8.3047 us |    252.1973 |    3.6621 |     - |   1545.31 KB |
+| **EXPGolombReader** |  **10000** |     **1,125.22 us** |     **13.9630 us** |     **13.0610 us** |    **152.3438** |         **-** |     **-** |     **937.5 KB** |
+|     H264Decoder |  10000 |   136,046.46 us |  2,694.6748 us |  2,388.7590 us |  12750.0000 |  250.0000 |     - |  79531.25 KB |
+|      FlvEncoder |  10000 |    22,609.35 us |    448.6121 us |  1,133.7000 us |  25218.7500 |  343.7500 |     - | 154531.25 KB |
+| **EXPGolombReader** | **100000** |    **11,832.04 us** |    **240.9705 us** |    **321.6888 us** |   **1515.6250** |         **-** |     **-** |      **9375 KB** |
+|     H264Decoder | 100000 | 1,430,712.75 us | 27,590.0058 us | 27,097.0749 us | 129000.0000 | 3000.0000 |     - |  795312.5 KB |
+|      FlvEncoder | 100000 |   224,622.61 us |  4,087.9082 us |  3,823.8318 us | 252000.0000 | 3666.6667 |     - | 1545312.5 KB |
 
 ## <span id="808ext">基于JT808扩展的JT1078消息协议</span>
 

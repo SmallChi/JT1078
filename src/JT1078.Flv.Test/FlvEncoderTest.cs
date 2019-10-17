@@ -31,6 +31,7 @@ namespace JT1078.Flv.Test
                 Package = JT1078Serializer.Merge(package);
             }
             Flv.H264.H264Decoder decoder = new Flv.H264.H264Decoder();
+            //7 8 6 5 1 1 1 1 1 7 8 6 5 1 1 1 1
             var nalus = decoder.ParseNALU(Package);
             Assert.Equal(4, nalus.Count);
 
