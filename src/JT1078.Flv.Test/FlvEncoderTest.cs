@@ -17,7 +17,7 @@ namespace JT1078.Flv.Test
     public class FlvEncoderTest
     {
         [Fact]
-        public void FlvEncoder_Test_1()
+        public void 测试第一帧的数据()
         {
             JT1078Package Package = null;
             var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_1.txt"));
@@ -42,11 +42,14 @@ namespace JT1078.Flv.Test
             {
                 File.Delete(filepath);
             }
-            File.WriteAllBytes(filepath, contents);
+            FileStream fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
+            fileStream.Write(FlvEncoder.VideoFlvHeaderBuffer);
+            fileStream.Write(contents);
+            fileStream.Close();
         }
 
         [Fact]
-        public void FlvEncoder_Test_2()
+        public void 测试前几帧的数据()
         {
             FileStream fileStream=null;
             try
@@ -78,6 +81,7 @@ namespace JT1078.Flv.Test
                     File.Delete(filepath);
                 }
                 fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
+                fileStream.Write(FlvEncoder.VideoFlvHeaderBuffer);
                 var totalPage = (h264NALULs.Count + 10 - 1) / 10;
                 for(var i=0;i< totalPage; i++)
                 {
@@ -100,7 +104,7 @@ namespace JT1078.Flv.Test
         }
 
         [Fact]
-        public void FlvEncoder_Test_3()
+        public void 测试可以播放的Flv1()
         {
             FileStream fileStream = null;
             Flv.H264.H264Decoder decoder = new Flv.H264.H264Decoder();
@@ -134,6 +138,7 @@ namespace JT1078.Flv.Test
                 }
 
                 fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
+                fileStream.Write(FlvEncoder.VideoFlvHeaderBuffer);
                 var totalPage = (h264NALULs.Count + 10 - 1) / 10;
                 for (var i = 0; i < totalPage; i++)
                 {
@@ -156,7 +161,7 @@ namespace JT1078.Flv.Test
         }
 
         [Fact]
-        public void FlvEncoder_Test_4()
+        public void 测试可以播放的Flv2()
         {
             FileStream fileStream = null;
             Flv.H264.H264Decoder decoder = new Flv.H264.H264Decoder();
@@ -189,7 +194,8 @@ namespace JT1078.Flv.Test
                     }
                 }
 
-                fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);                
+                fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
+                fileStream.Write(FlvEncoder.VideoFlvHeaderBuffer);
                 var totalPage = (h264NALULs.Count + 10 - 1) / 10;
                 for (var i = 0; i < totalPage; i++)
                 {
@@ -212,7 +218,7 @@ namespace JT1078.Flv.Test
         }
 
         [Fact]
-        public void FlvEncoder_Test_5()
+        public void 测试主次码流切换()
         {
             FileStream fileStream = null;
             Flv.H264.H264Decoder decoder = new Flv.H264.H264Decoder();

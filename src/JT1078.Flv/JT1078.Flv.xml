@@ -1,0 +1,203 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>JT1078.Flv</name>
+    </assembly>
+    <members>
+        <member name="T:JT1078.Flv.FlvBufferWriter">
+            <summary>
+            <see cref="!:System.Buffers.Writer"/>
+            </summary>
+        </member>
+        <member name="F:JT1078.Flv.Enums.FrameType.KeyFrame">
+            <summary>
+            ‭00010000‬
+            </summary>
+        </member>
+        <member name="F:JT1078.Flv.Enums.FrameType.InterFrame">
+            <summary>
+            ‭00100000‬
+            </summary>
+        </member>
+        <member name="F:JT1078.Flv.Enums.FrameType.DisposableInterFrame">
+            <summary>
+            ‭00110000‬
+            </summary>
+        </member>
+        <member name="F:JT1078.Flv.Enums.FrameType.GeneratedKeyFrame">
+            <summary>
+            01000000
+            </summary>
+        </member>
+        <member name="F:JT1078.Flv.Enums.FrameType.VideoInfoOrCommandFrame">
+            <summary>
+            01010000
+            </summary>
+        </member>
+        <member name="T:JT1078.Flv.Extensions.HexExtensions">
+            <summary>
+            
+            ref:"www.codeproject.com/tips/447938/high-performance-csharp-byte-array-to-hex-string-t"
+            </summary>
+        </member>
+        <member name="M:JT1078.Flv.Extensions.HexExtensions.ToHexBytes(System.String)">
+            <summary>
+            16进制字符串转16进制数组
+            </summary>
+            <param name="hexString"></param>
+            <param name="separator"></param>
+            <returns></returns>
+        </member>
+        <member name="F:JT1078.Flv.FlvEncoder.VideoFlvHeaderBuffer">
+            <summary>
+            Flv固定头部数据
+            </summary>
+        </member>
+        <member name="M:JT1078.Flv.FlvEncoder.CreateFlvFrame(JT1078.Protocol.JT1078Package,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="package">完整的1078包</param>
+            <param name="minimumLength">默认65535</param>
+            <returns></returns>
+        </member>
+        <member name="M:JT1078.Flv.FlvEncoder.GetFirstFlvFrame(System.String,System.Byte[])">
+            <summary>
+            
+            </summary>
+            <param name="key">设备号+通道号(1111111_1)</param>
+            <param name="currentBufferFlvFrame">当前接收到的flv数据</param>
+            <returns></returns>
+        </member>
+        <member name="P:JT1078.Flv.FlvTags.DataSize">
+            <summary>
+            Tag Data部分大小
+            3个字节
+            </summary>
+        </member>
+        <member name="P:JT1078.Flv.FlvTags.Timestamp">
+            <summary>
+            Tag时间戳
+            3个字节
+            </summary>
+        </member>
+        <member name="P:JT1078.Flv.FlvTags.StreamId">
+            <summary>
+            stream id 总是0
+            3个字节
+            </summary>
+        </member>
+        <member name="P:JT1078.Flv.FlvTags.VideoTagsData">
+            <summary>
+            根据tag类型
+            </summary>
+        </member>
+        <member name="P:JT1078.Flv.FlvTags.DataTagsData">
+            <summary>
+            根据tag类型
+            </summary>
+        </member>
+        <member name="M:JT1078.Flv.H264.H264Decoder.ParseNALU(JT1078.Protocol.JT1078Package)">
+            <summary>
+            
+            <see cref="!:https://github.com/samirkumardas/jmuxer/blob/master/src/parsers/h264.js"/>
+            </summary>
+            <param name="package"></param>
+            <returns></returns>
+        </member>
+        <member name="M:JT1078.Flv.H264.H264Decoder.DiscardEmulationPreventionBytes(System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Expunge any "Emulation Prevention" bytes from a "Raw Byte Sequence Payload"
+            <see cref="!:https://blog.csdn.net/u011399342/article/details/80472084"/>
+            防止竞争插入0x03
+            </summary>
+            <param name="srcBuffer"></param>
+            <returns></returns>
+        </member>
+        <member name="P:JT1078.Flv.H264.H264NALU.SIM">
+            <summary>
+            终端设备SIM卡号
+            BCD[6]
+            </summary>
+        </member>
+        <member name="P:JT1078.Flv.H264.H264NALU.LogicChannelNumber">
+            <summary>
+            逻辑通道号
+            </summary>
+        </member>
+        <member name="P:JT1078.Flv.H264.H264NALU.DataType">
+            <summary>
+            数据类型
+            </summary>
+        </member>
+        <member name="P:JT1078.Flv.H264.H264NALU.LastIFrameInterval">
+            <summary>
+            该帧与上一个关键帧之间的时间间隔，单位毫秒(ms),
+            当数据类型为非视频帧时，则没有该字段
+            </summary>
+        </member>
+        <member name="P:JT1078.Flv.H264.H264NALU.LastFrameInterval">
+            <summary>
+            该帧与上一个帧之间的时间间隔，单位毫秒(ms),
+            当数据类型为非视频帧时，则没有该字段
+            </summary>
+        </member>
+        <member name="P:JT1078.Flv.H264.H264NALU.Timestamp">
+            <summary>
+            时间戳
+            标识此RTP数据包当前帧的相对时间，单位毫秒（ms）。
+            当数据类型为01000时，则没有该字段
+            </summary>
+        </member>
+        <member name="P:JT1078.Flv.H264.H264NALU.RawData">
+            <summary>
+            数据体
+            </summary>
+        </member>
+        <member name="T:JT1078.Flv.MessagePack.ExpGolombReader">
+            <summary>
+            Exp-Golomb指数哥伦布编码
+            </summary>
+        </member>
+        <member name="M:JT1078.Flv.MessagePack.ExpGolombReader.SkipScalingList(System.Int32)">
+             <summary>
+            Advance the ExpGolomb decoder past a scaling list.The scaling
+            list is optionally transmitted as part of a sequence parameter
+            set and is not relevant to transmuxing.
+            @param count { number}
+            the number of entries in this scaling list
+            @see Recommendation ITU-T H.264, Section 7.3.2.1.1.1
+             </summary>
+             <param name="count"></param>
+        </member>
+        <member name="P:JT1078.Flv.Metadata.Amf3.DataType">
+            <summary>
+            AMF3数据类型
+            </summary>
+        </member>
+        <member name="P:JT1078.Flv.Metadata.Amf3.Count">
+            <summary>
+            元素个数
+            </summary>
+        </member>
+        <member name="P:JT1078.Flv.Metadata.Amf3Metadata_VideoCodecId.Value">
+            <summary>
+            <see cref="!:typeof(JT1078.Flv.Enums.CodecId.AvcVideoPacke)"/>
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:JT1078.Flv.Metadata.AVCDecoderConfigurationRecord" -->
+        <member name="P:JT1078.Flv.Metadata.VideoTags.FrameType">
+            <summary>
+            高4位
+            1: keyframe(for AVC, a seekable frame) —— 即H.264的IDR帧；
+            2: inter frame(for AVC, a non- seekable frame) —— H.264的普通I帧；
+            </summary>
+        </member>
+        <member name="P:JT1078.Flv.Metadata.VideoTags.CodecId">
+            <summary>
+            第四位
+            当 CodecID 为 7 时，VideoData 为 AVCVIDEOPACKE，也即 H.264媒体数据
+            </summary>
+        </member>
+    </members>
+</doc>

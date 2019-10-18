@@ -19,6 +19,9 @@ namespace JT1078.Flv
 {
     public class FlvEncoder
     {
+        /// <summary>
+        /// Flv固定头部数据
+        /// </summary>
         public static readonly byte[] VideoFlvHeaderBuffer;
         private static readonly Flv.H264.H264Decoder H264Decoder;
         private static readonly ConcurrentDictionary<string, SPSInfo> VideoSPSDict;
@@ -42,7 +45,7 @@ namespace JT1078.Flv
         {
             logger = loggerFactory.CreateLogger("FlvEncoder");
         }
-        public byte[] CreateScriptTagFrame(int width, int height, double frameRate = 25d)
+        internal byte[] CreateScriptTagFrame(int width, int height, double frameRate = 25d)
         {
             byte[] buffer = FlvArrayPool.Rent(1024);
             try
@@ -90,7 +93,7 @@ namespace JT1078.Flv
                 FlvArrayPool.Return(buffer);
             }
         }
-        public byte[] CreateVideoTag0Frame(byte[] spsRawData, byte[] ppsRawData, SPSInfo spsInfo)
+        internal byte[] CreateVideoTag0Frame(byte[] spsRawData, byte[] ppsRawData, SPSInfo spsInfo)
         {
             byte[] buffer = FlvArrayPool.Rent(2048);
             try
@@ -125,7 +128,7 @@ namespace JT1078.Flv
                 FlvArrayPool.Return(buffer);
             }
         }
-        public byte[] CreateSecondVideoTag0Frame(byte[] spsRawData, byte[] ppsRawData, SPSInfo spsInfo)
+        internal byte[] CreateSecondVideoTag0Frame(byte[] spsRawData, byte[] ppsRawData, SPSInfo spsInfo)
         {
             byte[] buffer = FlvArrayPool.Rent(2048);
             try
@@ -160,7 +163,7 @@ namespace JT1078.Flv
                 FlvArrayPool.Return(buffer);
             }
         }
-        public byte[] CreateVideoTagOtherFrame(FlvFrameInfo flvFrameInfo, H264NALU nALU, H264NALU sei)
+        internal byte[] CreateVideoTagOtherFrame(FlvFrameInfo flvFrameInfo, H264NALU nALU, H264NALU sei)
         {
             byte[] buffer = FlvArrayPool.Rent(65535);
             try
@@ -334,7 +337,7 @@ namespace JT1078.Flv
                 FlvArrayPool.Return(buffer);
             }
         }
-        public (byte[] Buffer, uint PreviousTagSize) CreateFirstFlvKeyFrame(byte[] spsRawData, byte[] ppsRawData, SPSInfo spsInfo)
+        internal (byte[] Buffer, uint PreviousTagSize) CreateFirstFlvKeyFrame(byte[] spsRawData, byte[] ppsRawData, SPSInfo spsInfo)
         {
             byte[] buffer = FlvArrayPool.Rent(65535);
             try
@@ -358,7 +361,7 @@ namespace JT1078.Flv
                 FlvArrayPool.Return(buffer);
             }
         }
-        public (byte[] Buffer,uint PreviousTagSize) CreateSecondFlvKeyFrame(byte[] spsRawData, byte[] ppsRawData, SPSInfo spsInfo, FlvFrameInfo flvFrameInfo)
+        internal (byte[] Buffer,uint PreviousTagSize) CreateSecondFlvKeyFrame(byte[] spsRawData, byte[] ppsRawData, SPSInfo spsInfo, FlvFrameInfo flvFrameInfo)
         {
             byte[] buffer = FlvArrayPool.Rent(65535);
             try
@@ -384,17 +387,29 @@ namespace JT1078.Flv
                 FlvArrayPool.Return(buffer);
             }
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="package">完整的1078包</param>
+        /// <param name="minimumLength">默认65535</param>
+        /// <returns></returns>
         public byte[] CreateFlvFrame(JT1078Package package,int minimumLength = 65535)
         {
             var nalus = H264Decoder.ParseNALU(package);
             if (nalus == null || nalus.Count <= 0) return default;
             return CreateFlvFrame(nalus, minimumLength);
         }
-        public byte[] GetFirstFlvFrame(string key,byte[] bufferFlvFrame)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key">设备号+通道号(1111111_1)</param>
+        /// <param name="currentBufferFlvFrame">当前接收到的flv数据</param>
+        /// <returns></returns>
+        public byte[] GetFirstFlvFrame(string key,byte[] currentBufferFlvFrame)
         {
             if (FirstFlvFrameCache.TryGetValue(key, out var firstBuffer))
             {
-                var length = firstBuffer.Buffer.Length + bufferFlvFrame.Length + VideoFlvHeaderBuffer.Length;
+                var length = firstBuffer.Buffer.Length + currentBufferFlvFrame.Length + VideoFlvHeaderBuffer.Length;
                 byte[] buffer = FlvArrayPool.Rent(length);
                 try
                 {
@@ -406,16 +421,16 @@ namespace JT1078.Flv
                         BinaryPrimitives.WriteUInt32BigEndian(firstBuffer.Buffer, 0);
                         firstBuffer.Buffer.CopyTo(tmp.Slice(VideoFlvHeaderBuffer.Length));
                         //新用户进来需要替换为上一包的PreviousTagSize
-                        BinaryPrimitives.WriteUInt32BigEndian(bufferFlvFrame, firstBuffer.PreviousTagSize);
-                        bufferFlvFrame.CopyTo(tmp.Slice(VideoFlvHeaderBuffer.Length + firstBuffer.Buffer.Length));
+                        BinaryPrimitives.WriteUInt32BigEndian(currentBufferFlvFrame, firstBuffer.PreviousTagSize);
+                        currentBufferFlvFrame.CopyTo(tmp.Slice(VideoFlvHeaderBuffer.Length + firstBuffer.Buffer.Length));
                         return tmp.Slice(0, length).ToArray();
                     }
                     else
                     {
                         firstBuffer.Buffer.CopyTo(tmp.Slice(VideoFlvHeaderBuffer.Length));
                         //新用户进来需要替换为首包的PreviousTagSize
-                        BinaryPrimitives.WriteUInt32BigEndian(bufferFlvFrame, firstBuffer.PreviousTagSize);
-                        bufferFlvFrame.CopyTo(tmp.Slice(VideoFlvHeaderBuffer.Length + firstBuffer.Buffer.Length));
+                        BinaryPrimitives.WriteUInt32BigEndian(currentBufferFlvFrame, firstBuffer.PreviousTagSize);
+                        currentBufferFlvFrame.CopyTo(tmp.Slice(VideoFlvHeaderBuffer.Length + firstBuffer.Buffer.Length));
                         return tmp.Slice(0, length).ToArray();
                     }
                 }
@@ -428,7 +443,7 @@ namespace JT1078.Flv
         }
     }
 
-    public class FlvFrameInfo
+    internal class FlvFrameInfo
     {
         public uint PreviousTagSize { get; set; }
         public ulong Timestamp { get; set; }
