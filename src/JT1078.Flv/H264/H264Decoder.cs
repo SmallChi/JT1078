@@ -16,8 +16,9 @@ namespace JT1078.Flv.H264
         /// <see cref="https://github.com/samirkumardas/jmuxer/blob/master/src/parsers/h264.js"/>
         /// </summary>
         /// <param name="package"></param>
+        /// <param name="key"></param>
         /// <returns></returns>
-        public List<H264NALU> ParseNALU(JT1078Package package)
+        public List<H264NALU> ParseNALU(JT1078Package package, string key = null)
         {
             List<H264NALU> h264NALUs = new List<H264NALU>();
             int i=0,state=0;

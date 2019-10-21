@@ -214,7 +214,14 @@ namespace JT1078.Flv
                 FlvArrayPool.Return(buffer);
             }
         }
-        public byte[] CreateFlvFrame(List<H264NALU> nALUs,int minimumLength = 65535)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="nALUs"></param>
+        /// <param name="key">由于获取的SIM卡可能为000000000000,所以如果有替换JT1078Package.GetKey()的值</param>
+        /// <param name="minimumLength"></param>
+        /// <returns></returns>
+        public byte[] CreateFlvFrame(List<H264NALU> nALUs, string key = null, int minimumLength = 65535)
         {
             byte[] buffer = FlvArrayPool.Rent(minimumLength);
             try
@@ -223,7 +230,7 @@ namespace JT1078.Flv
                 H264NALU sps=null, pps=null, sei=null;
                 foreach (var naln in nALUs)
                 {
-                    string key = naln.GetKey();
+                    key = key ?? naln.GetKey();
                     if (sps != null && pps != null)
                     {
                         var rawData = H264Decoder.DiscardEmulationPreventionBytes(sps.RawData);
@@ -391,13 +398,14 @@ namespace JT1078.Flv
         /// 
         /// </summary>
         /// <param name="package">完整的1078包</param>
+        /// <param name="key">由于获取的SIM卡可能为000000000000,所以如果有替换JT1078Package.GetKey()的值</param>
         /// <param name="minimumLength">默认65535</param>
         /// <returns></returns>
-        public byte[] CreateFlvFrame(JT1078Package package,int minimumLength = 65535)
+        public byte[] CreateFlvFrame(JT1078Package package,string key=null,int minimumLength = 65535)
         {
             var nalus = H264Decoder.ParseNALU(package);
             if (nalus == null || nalus.Count <= 0) return default;
-            return CreateFlvFrame(nalus, minimumLength);
+            return CreateFlvFrame(nalus, key, minimumLength);
         }
         /// <summary>
         /// 
