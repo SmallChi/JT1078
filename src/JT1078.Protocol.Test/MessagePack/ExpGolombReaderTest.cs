@@ -1,8 +1,9 @@
-﻿using System.Buffers.Binary;
+﻿using JT1078.Protocol.MessagePack;
+using System.Buffers.Binary;
 using Xunit;
-using JT1078.Flv.MessagePack;
 
-namespace JT1078.Flv.Test.MessagePack
+
+namespace JT1078.Protocol.Test.MessagePack
 {
     public class ExpGolombReaderTest
     {

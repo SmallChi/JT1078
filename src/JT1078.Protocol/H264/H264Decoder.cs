@@ -1,13 +1,10 @@
-﻿using JT1078.Flv.Extensions;
-using JT1078.Flv.MessagePack;
-using JT1078.Protocol;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace JT1078.Flv.H264
+namespace JT1078.Protocol.H264
 {
     public class H264Decoder
     {

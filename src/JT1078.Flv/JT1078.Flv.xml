@@ -53,7 +53,7 @@
             Flv固定头部数据
             </summary>
         </member>
-        <member name="M:JT1078.Flv.FlvEncoder.CreateFlvFrame(System.Collections.Generic.List{JT1078.Flv.H264.H264NALU},System.String,System.Int32)">
+        <member name="M:JT1078.Flv.FlvEncoder.CreateFlvFrame(System.Collections.Generic.List{JT1078.Protocol.H264.H264NALU},System.String,System.Int32)">
             <summary>
             
             </summary>
@@ -106,80 +106,6 @@
             <summary>
             根据tag类型
             </summary>
-        </member>
-        <member name="M:JT1078.Flv.H264.H264Decoder.ParseNALU(JT1078.Protocol.JT1078Package,System.String)">
-            <summary>
-            
-            <see cref="!:https://github.com/samirkumardas/jmuxer/blob/master/src/parsers/h264.js"/>
-            </summary>
-            <param name="package"></param>
-            <param name="key"></param>
-            <returns></returns>
-        </member>
-        <member name="M:JT1078.Flv.H264.H264Decoder.DiscardEmulationPreventionBytes(System.ReadOnlySpan{System.Byte})">
-            <summary>
-            Expunge any "Emulation Prevention" bytes from a "Raw Byte Sequence Payload"
-            <see cref="!:https://blog.csdn.net/u011399342/article/details/80472084"/>
-            防止竞争插入0x03
-            </summary>
-            <param name="srcBuffer"></param>
-            <returns></returns>
-        </member>
-        <member name="P:JT1078.Flv.H264.H264NALU.SIM">
-            <summary>
-            终端设备SIM卡号
-            BCD[6]
-            </summary>
-        </member>
-        <member name="P:JT1078.Flv.H264.H264NALU.LogicChannelNumber">
-            <summary>
-            逻辑通道号
-            </summary>
-        </member>
-        <member name="P:JT1078.Flv.H264.H264NALU.DataType">
-            <summary>
-            数据类型
-            </summary>
-        </member>
-        <member name="P:JT1078.Flv.H264.H264NALU.LastIFrameInterval">
-            <summary>
-            该帧与上一个关键帧之间的时间间隔，单位毫秒(ms),
-            当数据类型为非视频帧时，则没有该字段
-            </summary>
-        </member>
-        <member name="P:JT1078.Flv.H264.H264NALU.LastFrameInterval">
-            <summary>
-            该帧与上一个帧之间的时间间隔，单位毫秒(ms),
-            当数据类型为非视频帧时，则没有该字段
-            </summary>
-        </member>
-        <member name="P:JT1078.Flv.H264.H264NALU.Timestamp">
-            <summary>
-            时间戳
-            标识此RTP数据包当前帧的相对时间，单位毫秒（ms）。
-            当数据类型为01000时，则没有该字段
-            </summary>
-        </member>
-        <member name="P:JT1078.Flv.H264.H264NALU.RawData">
-            <summary>
-            数据体
-            </summary>
-        </member>
-        <member name="T:JT1078.Flv.MessagePack.ExpGolombReader">
-            <summary>
-            Exp-Golomb指数哥伦布编码
-            </summary>
-        </member>
-        <member name="M:JT1078.Flv.MessagePack.ExpGolombReader.SkipScalingList(System.Int32)">
-             <summary>
-            Advance the ExpGolomb decoder past a scaling list.The scaling
-            list is optionally transmitted as part of a sequence parameter
-            set and is not relevant to transmuxing.
-            @param count { number}
-            the number of entries in this scaling list
-            @see Recommendation ITU-T H.264, Section 7.3.2.1.1.1
-             </summary>
-             <param name="count"></param>
         </member>
         <member name="P:JT1078.Flv.Metadata.Amf3.DataType">
             <summary>

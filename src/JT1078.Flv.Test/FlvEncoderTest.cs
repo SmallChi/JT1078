@@ -7,10 +7,11 @@ using JT1078.Protocol;
 using System.IO;
 using System.Linq;
 using JT1078.Protocol.Enums;
-using JT1078.Flv.H264;
 using JT1078.Flv.MessagePack;
 using JT1078.Flv.Metadata;
 using System.Diagnostics;
+using JT1078.Protocol.H264;
+using JT1078.Protocol.MessagePack;
 
 namespace JT1078.Flv.Test
 {
@@ -30,7 +31,7 @@ namespace JT1078.Flv.Test
                 mergeBodyLength += package.DataBodyLength;
                 Package = JT1078Serializer.Merge(package);
             }
-            Flv.H264.H264Decoder decoder = new Flv.H264.H264Decoder();
+            H264Decoder decoder = new H264Decoder();
             //7 8 6 5 1 1 1 1 1 7 8 6 5 1 1 1 1
             var nalus = decoder.ParseNALU(Package);
             Assert.Equal(4, nalus.Count);
@@ -56,7 +57,7 @@ namespace JT1078.Flv.Test
             {
                 JT1078Package Package = null;
                 List<H264NALU> h264NALULs = new List<H264NALU>();
-                Flv.H264.H264Decoder decoder = new Flv.H264.H264Decoder();
+                H264Decoder decoder = new H264Decoder();
                 FlvEncoder encoder = new FlvEncoder();
                 var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_2.txt"));
                 foreach (var line in lines)
@@ -107,7 +108,7 @@ namespace JT1078.Flv.Test
         public void 测试可以播放的Flv1()
         {
             FileStream fileStream = null;
-            Flv.H264.H264Decoder decoder = new Flv.H264.H264Decoder();
+            H264Decoder decoder = new H264Decoder();
             List<H264NALU> h264NALULs = new List<H264NALU>();
             FlvEncoder encoder = new FlvEncoder();
             try
@@ -164,7 +165,7 @@ namespace JT1078.Flv.Test
         public void 测试可以播放的Flv2()
         {
             FileStream fileStream = null;
-            Flv.H264.H264Decoder decoder = new Flv.H264.H264Decoder();
+            H264Decoder decoder = new H264Decoder();
             List<H264NALU> h264NALULs = new List<H264NALU>();
             FlvEncoder encoder = new FlvEncoder();
             try
@@ -221,7 +222,7 @@ namespace JT1078.Flv.Test
         public void 测试主次码流切换()
         {
             FileStream fileStream = null;
-            Flv.H264.H264Decoder decoder = new Flv.H264.H264Decoder();
+            H264Decoder decoder = new H264Decoder();
             List<H264NALU> h264NALULs = new List<H264NALU>();
             FlvEncoder encoder = new FlvEncoder();
             try

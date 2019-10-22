@@ -7,7 +7,6 @@ using JT1078.Protocol;
 using System.IO;
 using System.Linq;
 using JT1078.Protocol.Enums;
-using JT1078.Flv.H264;
 
 namespace JT1078.Flv.Test
 {

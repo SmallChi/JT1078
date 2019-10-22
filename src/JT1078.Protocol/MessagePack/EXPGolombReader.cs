@@ -3,7 +3,7 @@ using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Text;
 
-namespace JT1078.Flv.MessagePack
+namespace JT1078.Protocol.MessagePack
 {
     /// <summary>
     /// Exp-Golomb指数哥伦布编码

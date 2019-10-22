@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace JT1078.Flv.H264
+namespace JT1078.Protocol.H264
 {
     public class H264NALU
     {

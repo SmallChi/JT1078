@@ -1,10 +1,11 @@
 ﻿using JT1078.Flv.Enums;
 using JT1078.Flv.Extensions;
-using JT1078.Flv.H264;
 using JT1078.Flv.MessagePack;
 using JT1078.Flv.Metadata;
 using JT1078.Protocol;
 using JT1078.Protocol.Enums;
+using JT1078.Protocol.H264;
+using JT1078.Protocol.MessagePack;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Buffers.Binary;
@@ -23,7 +24,7 @@ namespace JT1078.Flv
         /// Flv固定头部数据
         /// </summary>
         public static readonly byte[] VideoFlvHeaderBuffer;
-        private static readonly Flv.H264.H264Decoder H264Decoder;
+        private static readonly H264Decoder H264Decoder;
         private static readonly ConcurrentDictionary<string, SPSInfo> VideoSPSDict;
         private static readonly ConcurrentDictionary<string, FlvFrameInfo> FlvFrameInfoDict;
         internal static readonly ConcurrentDictionary<string, (uint PreviousTagSize,byte[] Buffer,bool Changed)> FirstFlvFrameCache;
@@ -35,7 +36,7 @@ namespace JT1078.Flv
             VideoSPSDict = new ConcurrentDictionary<string, SPSInfo>(StringComparer.OrdinalIgnoreCase);
             FlvFrameInfoDict = new ConcurrentDictionary<string, FlvFrameInfo>(StringComparer.OrdinalIgnoreCase);
             FirstFlvFrameCache = new ConcurrentDictionary<string, (uint PreviousTagSize, byte[] Buffer, bool Changed)>(StringComparer.OrdinalIgnoreCase);
-            H264Decoder = new Flv.H264.H264Decoder();
+            H264Decoder = new H264Decoder();
         }
         public FlvEncoder()
         {
@@ -116,11 +117,11 @@ namespace JT1078.Flv
                             }
                             //cache PreviousTagSize
                             FlvFrameInfoDict.TryAdd(key, new FlvFrameInfo
-                            {
-                                PreviousTagSize = firstFlvKeyFrame.PreviousTagSize,
-                                Interval = (uint)(pps.Timestamp - sps.Timestamp),
-                                Timestamp = pps.Timestamp,
-                            }
+                                {
+                                    PreviousTagSize = firstFlvKeyFrame.PreviousTagSize,
+                                    Interval = (uint)(pps.Timestamp - sps.Timestamp),
+                                    Timestamp = pps.Timestamp,
+                                }
                             );
                             FirstFlvFrameCache.TryAdd(key, (firstFlvKeyFrame.PreviousTagSize, firstFlvKeyFrame.Buffer, false));
                             VideoSPSDict.TryAdd(key, spsInfo);
