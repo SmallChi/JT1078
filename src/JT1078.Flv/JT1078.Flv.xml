@@ -53,11 +53,21 @@
             Flv固定头部数据
             </summary>
         </member>
-        <member name="M:JT1078.Flv.FlvEncoder.CreateFlvFrame(JT1078.Protocol.JT1078Package,System.Int32)">
+        <member name="M:JT1078.Flv.FlvEncoder.CreateFlvFrame(System.Collections.Generic.List{JT1078.Flv.H264.H264NALU},System.String,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="nALUs"></param>
+            <param name="key">由于获取的SIM卡可能为000000000000,所以如果有替换JT1078Package.GetKey()的值</param>
+            <param name="minimumLength"></param>
+            <returns></returns>
+        </member>
+        <member name="M:JT1078.Flv.FlvEncoder.CreateFlvFrame(JT1078.Protocol.JT1078Package,System.String,System.Int32)">
             <summary>
             
             </summary>
             <param name="package">完整的1078包</param>
+            <param name="key">由于获取的SIM卡可能为000000000000,所以如果有替换JT1078Package.GetKey()的值</param>
             <param name="minimumLength">默认65535</param>
             <returns></returns>
         </member>
@@ -97,12 +107,13 @@
             根据tag类型
             </summary>
         </member>
-        <member name="M:JT1078.Flv.H264.H264Decoder.ParseNALU(JT1078.Protocol.JT1078Package)">
+        <member name="M:JT1078.Flv.H264.H264Decoder.ParseNALU(JT1078.Protocol.JT1078Package,System.String)">
             <summary>
             
             <see cref="!:https://github.com/samirkumardas/jmuxer/blob/master/src/parsers/h264.js"/>
             </summary>
             <param name="package"></param>
+            <param name="key"></param>
             <returns></returns>
         </member>
         <member name="M:JT1078.Flv.H264.H264Decoder.DiscardEmulationPreventionBytes(System.ReadOnlySpan{System.Byte})">
