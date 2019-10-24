@@ -33,7 +33,7 @@ namespace JT1078.Protocol.Test.H264
         public void ParseNALUTest2()
         {
             JT1078Package Package=null;
-            var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_1.txt"));
+            var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "jt1078_1.txt"));
             int mergeBodyLength = 0;
             foreach (var line in lines)
             {
