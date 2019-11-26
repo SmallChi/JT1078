@@ -1,5 +1,5 @@
-﻿using JT808.Protocol.Attributes;
-using JT808.Protocol.Extensions.JT1078.Formatters;
+﻿using JT808.Protocol.Formatters;
+using JT808.Protocol.MessagePack;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,9 +9,9 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
     /// <summary>
     /// 终端上传乘客流量
     /// </summary>
-    [JT808Formatter(typeof(JT808_0x1005_Formatter))]
-    public class JT808_0x1005 : JT808Bodies
+    public class JT808_0x1005 : JT808Bodies, IJT808MessagePackFormatter<JT808_0x1005>
     {
+        public override ushort MsgId => 0x1005;
         /// <summary>
         /// 起始时间
         /// </summary>
@@ -28,5 +28,23 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
         /// 下车人数
         /// </summary>
         public ushort GettingOffNumber { get; set; }
+
+        public JT808_0x1005 Deserialize(ref JT808MessagePackReader reader, IJT808Config config)
+        {
+            JT808_0x1005 jT808_0x1005 = new JT808_0x1005();
+            jT808_0x1005.BeginTime = reader.ReadDateTime6();
+            jT808_0x1005.EndTime = reader.ReadDateTime6();
+            jT808_0x1005.GettingOnNumber = reader.ReadUInt16();
+            jT808_0x1005.GettingOffNumber = reader.ReadUInt16();
+            return jT808_0x1005;
+        }
+
+        public void Serialize(ref JT808MessagePackWriter writer, JT808_0x1005 value, IJT808Config config)
+        {
+            writer.WriteDateTime6(value.BeginTime);
+            writer.WriteDateTime6(value.EndTime);
+            writer.WriteUInt16(value.GettingOnNumber);
+            writer.WriteUInt16(value.GettingOffNumber);
+        }
     }
 }

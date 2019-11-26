@@ -288,6 +288,6 @@ namespace JT808.Protocol.Extensions.JT1078.Test
     }
     class DefaultGlobalConfig : GlobalConfigBase
     {
-        public override string ConfigId => "Default";
+        public override string ConfigId { protected set; get; } = "Default";
     }
 }
