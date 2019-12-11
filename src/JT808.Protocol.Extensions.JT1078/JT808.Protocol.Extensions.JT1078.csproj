@@ -15,7 +15,7 @@
     <licenseUrl>https://github.com/SmallChi/JT1078/blob/master/LICENSE</licenseUrl>
     <license>https://github.com/SmallChi/JT1078/blob/master/LICENSE</license>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>2.2.1</Version>
+    <Version>2.2.2</Version>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
 
@@ -28,7 +28,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JT808" Version="2.2.1" />
+    <PackageReference Include="JT808" Version="2.2.2" />
   </ItemGroup>
 
   <ItemGroup>

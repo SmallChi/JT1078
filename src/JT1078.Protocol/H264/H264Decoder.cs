@@ -125,7 +125,7 @@ namespace JT1078.Protocol.H264
             var sourceIndex = 0;
             for (i = 0; i < newLength; sourceIndex++, i++)
             {
-                if (sourceIndex == EPBPositions[0])
+                if (EPBPositions.Any()&&sourceIndex == EPBPositions[0])
                 {
                     // Skip this byte
                     sourceIndex++;
