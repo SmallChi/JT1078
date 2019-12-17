@@ -415,11 +415,26 @@ namespace JT1078.Flv
         }
     }
 
+    /// <summary>
+    /// flv存储帧信息
+    /// </summary>
     internal class FlvFrameInfo
     {
+        /// <summary>
+        /// flv上一帧的数据大小
+        /// </summary>
         public uint PreviousTagSize { get; set; }
+        /// <summary>
+        /// 1078当前时间戳
+        /// </summary>
         public ulong Timestamp { get; set; }
+        /// <summary>
+        /// 与flv上一帧相减的时间间隔
+        /// </summary>
         public uint Interval { get; set; }
+        /// <summary>
+        /// 1078数据类型
+        /// </summary>
         public JT1078DataType LastDataType { get; set; }
     }
 }
