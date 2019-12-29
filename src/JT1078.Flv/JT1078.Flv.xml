@@ -79,6 +79,31 @@
             <param name="currentBufferFlvFrame">当前接收到的flv数据</param>
             <returns></returns>
         </member>
+        <member name="T:JT1078.Flv.FlvFrameInfo">
+            <summary>
+            flv存储帧信息
+            </summary>
+        </member>
+        <member name="P:JT1078.Flv.FlvFrameInfo.PreviousTagSize">
+            <summary>
+            flv上一帧的数据大小
+            </summary>
+        </member>
+        <member name="P:JT1078.Flv.FlvFrameInfo.Timestamp">
+            <summary>
+            1078当前时间戳
+            </summary>
+        </member>
+        <member name="P:JT1078.Flv.FlvFrameInfo.Interval">
+            <summary>
+            与flv上一帧相减的时间间隔
+            </summary>
+        </member>
+        <member name="P:JT1078.Flv.FlvFrameInfo.LastDataType">
+            <summary>
+            1078数据类型
+            </summary>
+        </member>
         <member name="P:JT1078.Flv.FlvTags.DataSize">
             <summary>
             Tag Data部分大小
@@ -123,6 +148,27 @@
             </summary>
         </member>
         <!-- Badly formed XML comment ignored for member "T:JT1078.Flv.Metadata.AVCDecoderConfigurationRecord" -->
+        <member name="P:JT1078.Flv.Metadata.IAmf3Metadata.FieldNameLength">
+            <summary>
+            字段长度
+            </summary>
+        </member>
+        <member name="P:JT1078.Flv.Metadata.IAmf3Metadata.FieldName">
+            <summary>
+            字段名称
+            </summary>
+        </member>
+        <member name="P:JT1078.Flv.Metadata.IAmf3Metadata.DataType">
+            <summary>
+            Amf3数据类型
+            ref:video_file_format_spec_v10.pdf scriptdatavalue  type
+            </summary>
+        </member>
+        <member name="P:JT1078.Flv.Metadata.IAmf3Metadata.Value">
+            <summary>
+            对应的值
+            </summary>
+        </member>
         <member name="P:JT1078.Flv.Metadata.VideoTags.FrameType">
             <summary>
             高4位

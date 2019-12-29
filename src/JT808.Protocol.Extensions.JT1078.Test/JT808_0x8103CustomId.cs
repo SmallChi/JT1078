@@ -18,9 +18,10 @@ namespace JT808.Protocol.Extensions.JT1078.Test
         public JT808_0x8103CustomId()
         {
             IServiceCollection serviceDescriptors1 = new ServiceCollection();
-            serviceDescriptors1.AddJT808Configure(new DefaultGlobalConfig()).AddJT1078Configure();
+            serviceDescriptors1.AddJT808Configure(new DefaultGlobalConfig())
+                .AddJT1078Configure();
             var ServiceProvider1 = serviceDescriptors1.BuildServiceProvider();
-            var defaultConfig = ServiceProvider1.GetRequiredService<IJT808Config>();
+            var defaultConfig = ServiceProvider1.GetRequiredService<DefaultGlobalConfig>();
             JT808Serializer = new JT808Serializer(defaultConfig);
         }
         [Fact]
@@ -31,7 +32,7 @@ namespace JT808.Protocol.Extensions.JT1078.Test
                 Header = new JT808Header
                 {
                     MsgId = JT808MsgId.设置终端参数.ToUInt16Value(),
-                    MsgNum = 10,
+                    ManualMsgNum = 10,
                     TerminalPhoneNo = "123456789",
                 },
                 Bodies = new JT808_0x8103
@@ -154,7 +155,6 @@ namespace JT808.Protocol.Extensions.JT1078.Test
                     }
                 }
             };
-            var str = Newtonsoft.Json.JsonConvert.SerializeObject(jT808Package.Bodies);
             var hex = JT808Serializer.Serialize(jT808Package).ToHexString();
             Assert.Equal("7E8103009C000123456789000A070000007515030500040700000006080A00090C0000000B000201000000761B02010303020001070604050B0A08090F0E0C0D1312101117161415000000772B0201030500040700000006080A00090C0000000B000201030500040700000006080A00090C0000000B000200000079030302010000007A04000000010000007B0201020000007C140103020A00230012004500340067005600890078587E", hex);
         }

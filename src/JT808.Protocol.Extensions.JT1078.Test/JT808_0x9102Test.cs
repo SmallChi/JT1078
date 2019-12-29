@@ -51,7 +51,7 @@ namespace JT808.Protocol.Extensions.JT1078.Test
             JT808Package jT808Package = new JT808Package();
             JT808Header header = new JT808Header();
             header.MsgId = 0x9102;
-            header.MsgNum = 1;
+            header.ManualMsgNum = 1;
             header.TerminalPhoneNo = "12345679810";
             jT808Package.Header = header;
             JT808_0x9102 jT808_0X9102 = new JT808_0x9102();

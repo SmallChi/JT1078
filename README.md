@@ -127,29 +127,23 @@ Assert.Equal("00 00 00 01 61 E1 A2 BF 00 98 CF C0 EE 1E 17 28 34 07 78 8E 39 A4 
 
 ``` ini
 
-BenchmarkDotNet=v0.11.5, OS=Windows 10.0.18362
+BenchmarkDotNet=v0.12.0, OS=Windows 10.0.18363
 Intel Core i7-8700K CPU 3.70GHz (Coffee Lake), 1 CPU, 12 logical and 6 physical cores
-  [Host]     : .NET Framework 4.7.2 (CLR 4.0.30319.42000), 64bit RyuJIT-v4.8.4018.0
-  Job-LGLQDK : .NET Core 2.2.7 (CoreCLR 4.6.28008.02, CoreFX 4.6.28008.03), 64bit RyuJIT
-  Job-ZHZJMS : .NET Core 3.0.0 (CoreCLR 4.700.19.46205, CoreFX 4.700.19.46214), 64bit RyuJIT
+.NET Core SDK=3.1.100
+  [Host]     : .NET Core 3.1.0 (CoreCLR 4.700.19.56402, CoreFX 4.700.19.56404), X64 RyuJIT
+  Job-SIQGUC : .NET Core 3.1.0 (CoreCLR 4.700.19.56402, CoreFX 4.700.19.56404), X64 RyuJIT
 
-Platform=AnyCpu  Server=False  
+Platform=AnyCpu  Server=False  Toolchain=.NET Core 3.1  
 
 ```
-|            Method |     Toolchain |      N |          Mean |         Error |        StdDev |      Gen 0 |   Gen 1 | Gen 2 |    Allocated |
-|------------------ |-------------- |------- |--------------:|--------------:|--------------:|-----------:|--------:|------:|-------------:|
-|  **JT1078Serializer** | **.NET Core 2.2** |    **100** |     **549.14 us** |     **6.4469 us** |     **6.0305 us** |    **38.0859** |       **-** |     **-** |    **235.16 KB** |
-| JT1078Deserialize | .NET Core 2.2 |    100 |      42.61 us |     0.2607 us |     0.2439 us |    23.8647 |  0.0610 |     - |    146.88 KB |
-|  JT1078Serializer | .NET Core 3.0 |    100 |     196.98 us |     1.8462 us |     1.7270 us |    37.8418 |       - |     - |    232.81 KB |
-| JT1078Deserialize | .NET Core 3.0 |    100 |      33.64 us |     0.3528 us |     0.3128 us |    23.8037 |       - |     - |    146.09 KB |
-|  **JT1078Serializer** | **.NET Core 2.2** |  **10000** |  **54,292.55 us** |   **221.0286 us** |   **195.9361 us** |  **3800.0000** |       **-** |     **-** |  **23515.63 KB** |
-| JT1078Deserialize | .NET Core 2.2 |  10000 |   4,276.85 us |    25.6729 us |    21.4381 us |  2382.8125 |  7.8125 |     - |   14687.5 KB |
-|  JT1078Serializer | .NET Core 3.0 |  10000 |  17,527.79 us |   203.5101 us |   190.3634 us |  3781.2500 |       - |     - |  23281.25 KB |
-| JT1078Deserialize | .NET Core 3.0 |  10000 |   3,450.90 us |    49.3875 us |    43.7807 us |  2382.8125 |  3.9063 |     - |  14609.38 KB |
-|  **JT1078Serializer** | **.NET Core 2.2** | **100000** | **544,508.44 us** | **4,522.9521 us** | **4,009.4793 us** | **38000.0000** |       **-** |     **-** | **235156.25 KB** |
-| JT1078Deserialize | .NET Core 2.2 | 100000 |  43,453.20 us |   169.8988 us |   158.9234 us | 23833.3333 | 83.3333 |     - |    146875 KB |
-|  JT1078Serializer | .NET Core 3.0 | 100000 | 174,163.26 us |   848.6417 us |   708.6542 us | 38000.0000 |       - |     - |  232812.5 KB |
-| JT1078Deserialize | .NET Core 3.0 | 100000 |  34,266.16 us |   357.1659 us |   334.0932 us | 23800.0000 |       - |     - | 146093.75 KB |
+|            Method |      N |          Mean |        Error |       StdDev |      Gen 0 |  Gen 1 | Gen 2 |    Allocated |
+|------------------ |------- |--------------:|-------------:|-------------:|-----------:|-------:|------:|-------------:|
+|  **JT1078Serializer** |    **100** |     **183.51 us** |     **2.207 us** |     **2.064 us** |    **37.8418** |      **-** |     **-** |    **232.81 KB** |
+| JT1078Deserialize |    100 |      35.88 us |     0.503 us |     0.420 us |    23.8037 |      - |     - |    146.09 KB |
+|  **JT1078Serializer** |  **10000** |  **23,107.15 us** |   **196.882 us** |   **184.164 us** |  **3781.2500** |      **-** |     **-** |  **23281.25 KB** |
+| JT1078Deserialize |  10000 |   3,620.54 us |    45.558 us |    40.386 us |  2382.8125 | 3.9063 |     - |  14609.38 KB |
+|  **JT1078Serializer** | **100000** | **236,213.13 us** | **5,465.042 us** | **6,074.380 us** | **38000.0000** |      **-** |     **-** |  **232812.5 KB** |
+| JT1078Deserialize | 100000 |  37,065.84 us |   665.875 us |   590.281 us | 23785.7143 |      - |     - | 146093.75 KB |
 
 ## <span id="1078flv">基于JT1078的Flv视频编码器</span>
 
@@ -182,26 +176,26 @@ Platform=AnyCpu  Server=False
 
 ``` ini
 
-BenchmarkDotNet=v0.11.5, OS=Windows 10.0.18362
+BenchmarkDotNet=v0.12.0, OS=Windows 10.0.18363
 Intel Core i7-8700K CPU 3.70GHz (Coffee Lake), 1 CPU, 12 logical and 6 physical cores
-.NET Core SDK=3.0.100
-  [Host]     : .NET Core 3.0.0 (CoreCLR 4.700.19.46205, CoreFX 4.700.19.46214), 64bit RyuJIT
-  Job-QJAHWX : .NET Core 3.0.0 (CoreCLR 4.700.19.46205, CoreFX 4.700.19.46214), 64bit RyuJIT
+.NET Core SDK=3.1.100
+  [Host]     : .NET Core 3.1.0 (CoreCLR 4.700.19.56402, CoreFX 4.700.19.56404), X64 RyuJIT
+  Job-GMXLRW : .NET Core 3.1.0 (CoreCLR 4.700.19.56402, CoreFX 4.700.19.56404), X64 RyuJIT
 
-Platform=AnyCpu  Server=False  Toolchain=.NET Core 3.0  
+Platform=AnyCpu  Server=False  Toolchain=.NET Core 3.1  
 
 ```
-|          Method |      N |            Mean |          Error |         StdDev |       Gen 0 |     Gen 1 | Gen 2 |    Allocated |
-|---------------- |------- |----------------:|---------------:|---------------:|------------:|----------:|------:|-------------:|
-| **EXPGolombReader** |    **100** |        **12.15 us** |      **0.2320 us** |      **0.2482 us** |      **1.5259** |         **-** |     **-** |      **9.38 KB** |
-|     H264Decoder |    100 |     1,353.34 us |     10.7795 us |      9.0014 us |    128.9063 |    1.9531 |     - |    795.31 KB |
-|      FlvEncoder |    100 |       215.75 us |      4.3104 us |      8.3047 us |    252.1973 |    3.6621 |     - |   1545.31 KB |
-| **EXPGolombReader** |  **10000** |     **1,125.22 us** |     **13.9630 us** |     **13.0610 us** |    **152.3438** |         **-** |     **-** |     **937.5 KB** |
-|     H264Decoder |  10000 |   136,046.46 us |  2,694.6748 us |  2,388.7590 us |  12750.0000 |  250.0000 |     - |  79531.25 KB |
-|      FlvEncoder |  10000 |    22,609.35 us |    448.6121 us |  1,133.7000 us |  25218.7500 |  343.7500 |     - | 154531.25 KB |
-| **EXPGolombReader** | **100000** |    **11,832.04 us** |    **240.9705 us** |    **321.6888 us** |   **1515.6250** |         **-** |     **-** |      **9375 KB** |
-|     H264Decoder | 100000 | 1,430,712.75 us | 27,590.0058 us | 27,097.0749 us | 129000.0000 | 3000.0000 |     - |  795312.5 KB |
-|      FlvEncoder | 100000 |   224,622.61 us |  4,087.9082 us |  3,823.8318 us | 252000.0000 | 3666.6667 |     - | 1545312.5 KB |
+|          Method |      N |            Mean |        Error |       StdDev |       Gen 0 |     Gen 1 | Gen 2 |     Allocated |
+|---------------- |------- |----------------:|-------------:|-------------:|------------:|----------:|------:|--------------:|
+| **EXPGolombReader** |    **100** |        **11.23 us** |     **0.032 us** |     **0.025 us** |      **1.5259** |         **-** |     **-** |       **9.38 KB** |
+|     H264Decoder |    100 |     1,218.74 us |    23.313 us |    27.752 us |    126.9531 |    1.9531 |     - |     786.72 KB |
+|      FlvEncoder |    100 |       215.40 us |     3.245 us |     2.533 us |    249.0234 |    3.4180 |     - |    1528.91 KB |
+| **EXPGolombReader** |  **10000** |     **1,170.19 us** |    **22.642 us** |    **25.167 us** |    **152.3438** |         **-** |     **-** |      **937.5 KB** |
+|     H264Decoder |  10000 |   119,152.25 us |   955.118 us |   893.418 us |  12800.0000 |  200.0000 |     - |   78672.14 KB |
+|      FlvEncoder |  10000 |    21,582.41 us |   587.627 us |   549.667 us |  24937.5000 |         - |     - |  152890.63 KB |
+| **EXPGolombReader** | **100000** |    **11,687.72 us** |   **162.828 us** |   **152.309 us** |   **1515.6250** |         **-** |     **-** |       **9375 KB** |
+|     H264Decoder | 100000 | 1,192,549.87 us | 7,656.632 us | 7,162.018 us | 128000.0000 | 3000.0000 |     - |  786718.75 KB |
+|      FlvEncoder | 100000 |   216,951.31 us | 3,513.653 us | 2,934.059 us | 249333.3333 |         - |     - | 1528906.66 KB |
 
 ## <span id="808ext">基于JT808扩展的JT1078消息协议</span>
 

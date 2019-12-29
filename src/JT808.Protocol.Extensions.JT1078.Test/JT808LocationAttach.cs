@@ -16,9 +16,10 @@ namespace JT808.Protocol.Extensions.JT1078.Test
         public JT808LocationAttach()
         {
             IServiceCollection serviceDescriptors1 = new ServiceCollection();
-            serviceDescriptors1.AddJT808Configure(new DefaultGlobalConfig()).AddJT1078Configure();
+            serviceDescriptors1.AddJT808Configure(new DefaultGlobalConfig())
+                .AddJT1078Configure();
             var ServiceProvider1 = serviceDescriptors1.BuildServiceProvider();
-            var defaultConfig = ServiceProvider1.GetRequiredService<IJT808Config>();
+            var defaultConfig = ServiceProvider1.GetRequiredService<DefaultGlobalConfig>();
             JT808Serializer = new JT808Serializer(defaultConfig);
         }
         [Fact]
