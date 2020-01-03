@@ -27,6 +27,10 @@ namespace JT1078.Flv
         /// </summary>
         public VideoTags VideoTagsData { get; set; }
         /// <summary>
+        /// 音频数据
+        /// </summary>
+        public AudioTags AudioTagsData { get; set; }
+        /// <summary>
         /// 根据tag类型
         /// </summary>
         public Amf3 DataTagsData { get; set; }

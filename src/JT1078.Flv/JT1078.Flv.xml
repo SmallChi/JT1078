@@ -4,9 +4,151 @@
         <name>JT1078.Flv</name>
     </assembly>
     <members>
+        <member name="P:JT1078.Flv.Audio.State.Valprev">
+            <summary>
+            上一个采样数据，当index为0是该值应该为未压缩的原数据
+            </summary>
+        </member>
+        <member name="P:JT1078.Flv.Audio.State.Reserved">
+            <summary>
+            保留数据（未使用）
+            </summary>
+        </member>
+        <member name="P:JT1078.Flv.Audio.State.Index">
+            <summary>
+            上一个block最后一个index，第一个block的index=0
+            </summary>
+        </member>
+        <member name="M:JT1078.Flv.Audio.AdpcmCodec.ToPcm(System.Byte[],JT1078.Flv.Audio.State)">
+            <summary>
+            将adpcm转为pcm
+            </summary>
+            <see cref="!:https://github.com/ctuning/ctuning-programs/blob/master/program/cbench-telecom-adpcm-d/adpcm.c"/>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:JT1078.Flv.Audio.AdpcmDecoderExtension.ToWav(System.Byte[],System.UInt32,System.Byte)">
+            <summary>
+            添加wav头
+            仅用于测试pcm是否转成成功，因此没考虑性能，因为播放器可播——#
+            </summary>
+            <param name="input">pcm数据</param>
+            <param name="frequency">采样率</param>
+            <param name="bitDepth">位深</param>
+            <returns></returns>
+        </member>
+        <member name="M:JT1078.Flv.Audio.G711ACodec.ToPcm(System.Byte[])">
+            <summary>
+            转至PCM
+            </summary>
+            <param name="g711data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:JT1078.Flv.Audio.G711ACodec.ToG711(System.Byte[])">
+            <summary>
+            转至G711
+            </summary>
+            <param name="pcmdata"></param>
+            <returns></returns>
+        </member>
         <member name="T:JT1078.Flv.FlvBufferWriter">
             <summary>
             <see cref="!:System.Buffers.Writer"/>
+            </summary>
+        </member>
+        <member name="T:JT1078.Flv.Enums.AACPacketType">
+            <summary>
+            Aac tag-body数据包类型
+            </summary>
+        </member>
+        <member name="F:JT1078.Flv.Enums.AACPacketType.AudioSpecificConfig">
+            <summary>
+            音频序列配置
+            </summary>
+        </member>
+        <member name="F:JT1078.Flv.Enums.AACPacketType.AudioFrame">
+            <summary>
+            音频帧
+            </summary>
+        </member>
+        <member name="T:JT1078.Flv.Enums.AudioFormat">
+            <summary>
+            音频格式
+            </summary>
+        </member>
+        <member name="F:JT1078.Flv.Enums.AudioFormat.Pcm_Platform">
+            <summary>
+            Linear PCM, platform endian
+            </summary>
+        </member>
+        <member name="F:JT1078.Flv.Enums.AudioFormat.ADPCM">
+            <summary>
+            ADPCM
+            </summary>
+        </member>
+        <member name="F:JT1078.Flv.Enums.AudioFormat.MP3">
+            <summary>
+            MP3
+            </summary>
+        </member>
+        <member name="F:JT1078.Flv.Enums.AudioFormat.Pcm_Little">
+            <summary>
+            Linear PCM, little endian
+            </summary>
+        </member>
+        <member name="F:JT1078.Flv.Enums.AudioFormat.Nellymoser_16Khz">
+            <summary>
+             16-kHz mono
+            </summary>
+        </member>
+        <member name="F:JT1078.Flv.Enums.AudioFormat.Nellymoser_8Khz">
+            <summary>
+             8-kHz mono
+            </summary>
+        </member>
+        <member name="F:JT1078.Flv.Enums.AudioFormat.Nellymoser">
+            <summary>
+            Nellymoser
+            </summary>
+        </member>
+        <member name="F:JT1078.Flv.Enums.AudioFormat.G711_A_law">
+            <summary>
+             A-law logarithmic PCM
+            </summary>
+        </member>
+        <member name="F:JT1078.Flv.Enums.AudioFormat.G711_mu_law">
+            <summary>
+            mu-law logarithmic PCM
+            </summary>
+        </member>
+        <member name="F:JT1078.Flv.Enums.AudioFormat.AAC">
+            <summary>
+            AAC
+            </summary>
+        </member>
+        <member name="F:JT1078.Flv.Enums.AudioFormat.Speex">
+            <summary>
+            Speex
+            </summary>
+        </member>
+        <member name="F:JT1078.Flv.Enums.AudioFormat.MP3_8Khz">
+            <summary>
+            MP3 8-Khz
+            </summary>
+        </member>
+        <member name="T:JT1078.Flv.Enums.ChannelType">
+            <summary>
+            声道类型
+            </summary>
+        </member>
+        <member name="F:JT1078.Flv.Enums.ChannelType.Mono">
+            <summary>
+            单声道
+            </summary>
+        </member>
+        <member name="F:JT1078.Flv.Enums.ChannelType.Stereo">
+            <summary>
+            立体声
             </summary>
         </member>
         <member name="F:JT1078.Flv.Enums.FrameType.KeyFrame">
@@ -32,6 +174,21 @@
         <member name="F:JT1078.Flv.Enums.FrameType.VideoInfoOrCommandFrame">
             <summary>
             01010000
+            </summary>
+        </member>
+        <member name="T:JT1078.Flv.Enums.SampleBit">
+            <summary>
+            采样位深
+            </summary>
+        </member>
+        <member name="F:JT1078.Flv.Enums.SampleBit.Bit_8">
+            <summary>
+            8位
+            </summary>
+        </member>
+        <member name="F:JT1078.Flv.Enums.SampleBit.Bit_16">
+            <summary>
+            16位
             </summary>
         </member>
         <member name="T:JT1078.Flv.Extensions.HexExtensions">
@@ -94,9 +251,19 @@
             1078当前时间戳
             </summary>
         </member>
+        <member name="P:JT1078.Flv.FlvFrameInfo.AudioTimestamp">
+            <summary>
+            1078当前音频时间戳
+            </summary>
+        </member>
         <member name="P:JT1078.Flv.FlvFrameInfo.Interval">
             <summary>
             与flv上一帧相减的时间间隔
+            </summary>
+        </member>
+        <member name="P:JT1078.Flv.FlvFrameInfo.AudioInterval">
+            <summary>
+            上一帧音频的时间间隔
             </summary>
         </member>
         <member name="P:JT1078.Flv.FlvFrameInfo.LastDataType">
@@ -127,9 +294,19 @@
             根据tag类型
             </summary>
         </member>
+        <member name="P:JT1078.Flv.FlvTags.AudioTagsData">
+            <summary>
+            音频数据
+            </summary>
+        </member>
         <member name="P:JT1078.Flv.FlvTags.DataTagsData">
             <summary>
             根据tag类型
+            </summary>
+        </member>
+        <member name="P:JT1078.Flv.Metadata.AacPacke.RawData">
+            <summary>
+            元数据
             </summary>
         </member>
         <member name="P:JT1078.Flv.Metadata.Amf3.DataType">
@@ -145,6 +322,48 @@
         <member name="P:JT1078.Flv.Metadata.Amf3Metadata_VideoCodecId.Value">
             <summary>
             <see cref="!:typeof(JT1078.Flv.Enums.CodecId.AvcVideoPacke)"/>
+            </summary>
+        </member>
+        <member name="P:JT1078.Flv.Metadata.AudioSpecificConfig.ChannelConfiguration">
+            <summary>
+            其实有很多，这里就固定为立体声
+            </summary>
+        </member>
+        <member name="T:JT1078.Flv.Metadata.AudioSpecificConfig.AudioObjectType">
+            <summary>
+            音频类型
+            其实有很多，这里就列几个，如有需要再加
+            </summary>
+        </member>
+        <member name="P:JT1078.Flv.Metadata.AudioTags.SampleRate">
+            <summary>
+            采样率
+            AAC固定为3
+            0 = 5.5-kHz
+            1 = 11-kHz
+            2 = 22-kHz
+            3 = 44-kHz
+            </summary>
+        </member>
+        <member name="P:JT1078.Flv.Metadata.AudioTags.SampleBit">
+            <summary>
+            采样位深
+            </summary>
+        </member>
+        <member name="P:JT1078.Flv.Metadata.AudioTags.Channel">
+            <summary>
+            声道
+            AAC永远是1
+            </summary>
+        </member>
+        <member name="P:JT1078.Flv.Metadata.AudioTags.SoundType">
+            <summary>
+            音频格式
+            </summary>
+        </member>
+        <member name="P:JT1078.Flv.Metadata.AudioTags.AacPacke">
+            <summary>
+            元数据
             </summary>
         </member>
         <!-- Badly formed XML comment ignored for member "T:JT1078.Flv.Metadata.AVCDecoderConfigurationRecord" -->
