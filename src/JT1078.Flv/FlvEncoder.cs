@@ -27,7 +27,7 @@ namespace JT1078.Flv
         private static readonly H264Decoder H264Decoder;
         private static readonly ConcurrentDictionary<string, SPSInfo> VideoSPSDict;
         private static readonly ConcurrentDictionary<string, FlvFrameInfo> FlvFrameInfoDict;
-        internal static readonly ConcurrentDictionary<string, (uint PreviousTagSize,byte[] Buffer,bool Changed)> FirstFlvFrameCache;
+        internal static readonly ConcurrentDictionary<string, (uint PreviousTagSize, byte[] Buffer, bool Changed)> FirstFlvFrameCache;
         private readonly ILogger logger;
         static FlvEncoder()
         {
@@ -117,11 +117,11 @@ namespace JT1078.Flv
                             }
                             //cache PreviousTagSize
                             FlvFrameInfoDict.TryAdd(key, new FlvFrameInfo
-                                {
-                                    PreviousTagSize = firstFlvKeyFrame.PreviousTagSize,
-                                    Interval = (uint)(pps.Timestamp - sps.Timestamp),
-                                    Timestamp = pps.Timestamp,
-                                }
+                            {
+                                PreviousTagSize = firstFlvKeyFrame.PreviousTagSize,
+                                Interval = (uint)(pps.Timestamp - sps.Timestamp),
+                                Timestamp = pps.Timestamp,
+                            }
                             );
                             FirstFlvFrameCache.TryAdd(key, (firstFlvKeyFrame.PreviousTagSize, firstFlvKeyFrame.Buffer, false));
                             VideoSPSDict.TryAdd(key, spsInfo);
@@ -203,7 +203,7 @@ namespace JT1078.Flv
         /// <param name="key">由于获取的SIM卡可能为000000000000,所以如果有替换JT1078Package.GetKey()的值</param>
         /// <param name="minimumLength">默认65535</param>
         /// <returns></returns>
-        public byte[] CreateFlvFrame(JT1078Package package,string key=null,int minimumLength = 65535)
+        public byte[] CreateFlvFrame(JT1078Package package, string key = null, int minimumLength = 65535)
         {
             var nalus = H264Decoder.ParseNALU(package);
             if (nalus == null || nalus.Count <= 0) return default;
@@ -215,7 +215,7 @@ namespace JT1078.Flv
         /// <param name="key">设备号+通道号(1111111_1)</param>
         /// <param name="currentBufferFlvFrame">当前接收到的flv数据</param>
         /// <returns></returns>
-        public byte[] GetFirstFlvFrame(string key,byte[] currentBufferFlvFrame)
+        public byte[] GetFirstFlvFrame(string key, byte[] currentBufferFlvFrame)
         {
             if (FirstFlvFrameCache.TryGetValue(key, out var firstBuffer))
             {
@@ -248,7 +248,7 @@ namespace JT1078.Flv
                 {
                     FlvArrayPool.Return(buffer);
                 }
-             }
+            }
             return default;
         }
 
@@ -428,10 +428,20 @@ namespace JT1078.Flv
         /// 1078当前时间戳
         /// </summary>
         public ulong Timestamp { get; set; }
+
+        /// <summary>
+        /// 1078当前音频时间戳
+        /// </summary>
+        public ulong AudioTimestamp { get; set; }
         /// <summary>
         /// 与flv上一帧相减的时间间隔
         /// </summary>
         public uint Interval { get; set; }
+
+        /// <summary>
+        /// 上一帧音频的时间间隔
+        /// </summary>
+        public uint AudioInterval { get; set; }
         /// <summary>
         /// 1078数据类型
         /// </summary>
