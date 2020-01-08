@@ -205,71 +205,88 @@
             <param name="separator"></param>
             <returns></returns>
         </member>
-        <member name="F:JT1078.Flv.FlvEncoder.VideoFlvHeaderBuffer">
+        <member name="T:JT1078.Flv.FlvEncoder">
             <summary>
-            Flv固定头部数据
+            Flv编码器
+            一个客户端对应一个实例
+            <para>
+            当实例不适用时，尽量手动调用下<see cref="M:JT1078.Flv.FlvEncoder.Dispose"/>
+            </para>
+            
+            手动编码
+            1、<see cref="M:JT1078.Flv.FlvEncoder.DecoderFlvHeader(System.Boolean,System.Boolean)"/>
+            2、<see cref="M:JT1078.Flv.FlvEncoder.DecoderScriptTag(System.Boolean,System.Double)"/>
+            3、<see cref="M:JT1078.Flv.FlvEncoder.DecoderFirstVideoTag(JT1078.Protocol.H264.H264NALU,JT1078.Protocol.H264.H264NALU,JT1078.Protocol.H264.H264NALU)"/>
+            4、<see cref="M:JT1078.Flv.FlvEncoder.DecoderFirstAudioTag(System.UInt64)"/>
+            5、<see cref="M:JT1078.Flv.FlvEncoder.DecoderVideoTag(JT1078.Protocol.JT1078Package,System.Boolean)"/>第二个参数传false
+            6、<see cref="M:JT1078.Flv.FlvEncoder.DecoderAudioTag(JT1078.Protocol.JT1078Package,System.Boolean)"/>第二个参数传false
+            自动编码
+            1、<see cref="M:JT1078.Flv.FlvEncoder.DecoderFlvHeader(System.Boolean,System.Boolean)"/>
+            2、<see cref="M:JT1078.Flv.FlvEncoder.DecoderScriptTag(System.Boolean,System.Double)"/>
+            3、<see cref="M:JT1078.Flv.FlvEncoder.DecoderVideoTag(JT1078.Protocol.JT1078Package,System.Boolean)"/>第二个参数传true
+            4、<see cref="M:JT1078.Flv.FlvEncoder.DecoderAudioTag(JT1078.Protocol.JT1078Package,System.Boolean)"/>第二个参数传true
             </summary>
         </member>
-        <member name="M:JT1078.Flv.FlvEncoder.CreateFlvFrame(System.Collections.Generic.List{JT1078.Protocol.H264.H264NALU},System.String,System.Int32)">
+        <member name="M:JT1078.Flv.FlvEncoder.DecoderFlvHeader(System.Boolean,System.Boolean)">
             <summary>
-            
+            编码flv头
+            <para>
+            注意：本方法已写入<see cref="F:JT1078.Flv.FlvEncoder.previousTagSize"/>
+            </para>
             </summary>
-            <param name="nALUs"></param>
-            <param name="key">由于获取的SIM卡可能为000000000000,所以如果有替换JT1078Package.GetKey()的值</param>
-            <param name="minimumLength"></param>
+            <param name="hasVideo"></param>
+            <param name="hasAudio"></param>
             <returns></returns>
         </member>
-        <member name="M:JT1078.Flv.FlvEncoder.CreateFlvFrame(JT1078.Protocol.JT1078Package,System.String,System.Int32)">
+        <member name="M:JT1078.Flv.FlvEncoder.DecoderScriptTag(System.Boolean,System.Double)">
             <summary>
-            
+            编码脚本Tag
+            <para>
+            注意：本方法已写入<see cref="F:JT1078.Flv.FlvEncoder.previousTagSize"/>
+            </para>
             </summary>
-            <param name="package">完整的1078包</param>
-            <param name="key">由于获取的SIM卡可能为000000000000,所以如果有替换JT1078Package.GetKey()的值</param>
-            <param name="minimumLength">默认65535</param>
+            <param name="width">视频宽度</param>
+            <param name="height">视频高度</param>
+            <param name="hasAudio">是否含有音频，如果有，则写入音频配置，后来发现即便是有音频，这里给<c>false</c>也没关系</param>
+            <param name="frameRate">帧率</param>
             <returns></returns>
         </member>
-        <member name="M:JT1078.Flv.FlvEncoder.GetFirstFlvFrame(System.String,System.Byte[])">
+        <member name="M:JT1078.Flv.FlvEncoder.DecoderFirstVideoTag(JT1078.Protocol.H264.H264NALU,JT1078.Protocol.H264.H264NALU,JT1078.Protocol.H264.H264NALU)">
             <summary>
-            
+            编码首帧视频，即videoTag[0]
+            <para>
+            注意：本方法已写入<see cref="F:JT1078.Flv.FlvEncoder.previousTagSize"/>
+            </para>
             </summary>
-            <param name="key">设备号+通道号(1111111_1)</param>
-            <param name="currentBufferFlvFrame">当前接收到的flv数据</param>
+            <param name="sps"></param>
+            <param name="pps"></param>
+            <param name="sei"></param>
             <returns></returns>
         </member>
-        <member name="T:JT1078.Flv.FlvFrameInfo">
+        <member name="M:JT1078.Flv.FlvEncoder.DecoderFirstAudioTag(System.UInt64)">
             <summary>
-            flv存储帧信息
+            编码首帧音频，即audioTag[0]
+            <para>
+            注意：本方法已写入<see cref="F:JT1078.Flv.FlvEncoder.previousTagSize"/>
+            </para>
             </summary>
+            <returns></returns>
         </member>
-        <member name="P:JT1078.Flv.FlvFrameInfo.PreviousTagSize">
+        <member name="M:JT1078.Flv.FlvEncoder.DecoderVideoTag(JT1078.Protocol.JT1078Package,System.Boolean)">
             <summary>
-            flv上一帧的数据大小
+            编码非首帧视频
             </summary>
+            <param name="package"></param>
+            <param name="needVideoHeader">是否需要首帧视频</param>
+            <returns></returns>
         </member>
-        <member name="P:JT1078.Flv.FlvFrameInfo.Timestamp">
+        <member name="M:JT1078.Flv.FlvEncoder.DecoderAudioTag(JT1078.Protocol.JT1078Package,System.Boolean)">
             <summary>
-            1078当前时间戳
+            编码非首帧音频
             </summary>
-        </member>
-        <member name="P:JT1078.Flv.FlvFrameInfo.AudioTimestamp">
-            <summary>
-            1078当前音频时间戳
-            </summary>
-        </member>
-        <member name="P:JT1078.Flv.FlvFrameInfo.Interval">
-            <summary>
-            与flv上一帧相减的时间间隔
-            </summary>
-        </member>
-        <member name="P:JT1078.Flv.FlvFrameInfo.AudioInterval">
-            <summary>
-            上一帧音频的时间间隔
-            </summary>
-        </member>
-        <member name="P:JT1078.Flv.FlvFrameInfo.LastDataType">
-            <summary>
-            1078数据类型
-            </summary>
+            <param name="package"></param>
+            <param name="needAacHeader">是否需要首帧音频</param>
+            <returns></returns>
         </member>
         <member name="P:JT1078.Flv.FlvTags.DataSize">
             <summary>

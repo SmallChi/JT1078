@@ -64,14 +64,14 @@ namespace JT1078.Flv.Benchmark
             }
         }
 
-        [Benchmark(Description = "FlvEncoder")]
-        public void FlvEncoder()
-        {
-            for(var i=0;i< N;i++)
-            {
-                var contents = flvEncoder.CreateFlvFrame(H264NALUs);
-            }
-        }
+        //[Benchmark(Description = "FlvEncoder")]
+        //public void FlvEncoder()
+        //{
+        //    for(var i=0;i< N;i++)
+        //    {
+        //        var contents = flvEncoder.CreateFlvFrame(H264NALUs);
+        //    }
+        //}
     }
 
     public class JT1078FlvEncoderConfig : ManualConfig

@@ -15,5 +15,10 @@ namespace JT1078.Flv.Extensions
             flvBuffer.Reverse();
             flvBuffer.CopyTo(value);
         }
+        public static void WriteBool(this IAmf3Metadata metadata, Span<byte> value)
+        {
+            var flvBuffer = BitConverter.GetBytes(Convert.ToBoolean(metadata.Value)).AsSpan();
+            flvBuffer.CopyTo(value);
+        }
     }
 }

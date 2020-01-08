@@ -274,7 +274,7 @@ namespace JT1078.Protocol.Test
             JT1078Label2 label2 = new JT1078Label2(254);
             Assert.Equal(254, label2.ToByte());
             Assert.Equal(1, label2.M);
-            Assert.Equal(126, label2.PT);
+            Assert.Equal(126, (byte)label2.PT);
         }
 
         [Fact]
@@ -283,7 +283,7 @@ namespace JT1078.Protocol.Test
             JT1078Label2 label2 = new JT1078Label2(0, 28);
             Assert.Equal(28, label2.ToByte());
             Assert.Equal(0, label2.M);
-            Assert.Equal(28, label2.PT);
+            Assert.Equal(Jt1078AudioType.AMR, label2.PT);
         }
 
         [Fact]

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JT1078.Protocol.Enums;
+using System;
 using System.Text;
 
 namespace JT1078.Protocol
@@ -12,7 +13,18 @@ namespace JT1078.Protocol
         public JT1078Label2(byte value)
         {
             M =  (byte)(value >> 7);
-            PT = (byte)(value & 0x7f);
+            PT = (Jt1078AudioType)(value & 0x7f);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="m">0-1</param>
+        /// <param name="pt">0-127</param>
+        public JT1078Label2(byte m, Jt1078AudioType pt)
+        {
+            M = m;
+            PT = pt;
         }
 
         /// <summary>
@@ -23,7 +35,7 @@ namespace JT1078.Protocol
         public JT1078Label2(byte m,byte pt)
         {
             M = m;
-            PT = pt;
+            PT = (Jt1078AudioType)pt;
         }
 
         /// <summary>
@@ -34,11 +46,11 @@ namespace JT1078.Protocol
         /// PT - 7 - 负载类型
         /// 用于说明RTP报文中有效载荷的类型，如GSM音频、JPEM图像等
         /// </summary>
-        public byte PT { get; set; }
+        public Jt1078AudioType PT { get; set; }
 
         public byte ToByte()
         {
-            return (byte)((M << 7) | PT);
+            return (byte)((M << 7) | (byte)PT);
         }
 
         public string BinaryCode { get { return ToString(); } }
