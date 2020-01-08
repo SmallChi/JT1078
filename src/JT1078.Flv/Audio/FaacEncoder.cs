@@ -14,7 +14,7 @@ namespace JT1078.Flv.Audio
         private readonly int maxOutput;
         public readonly int frameSize;
         private List<byte> frameCache = new List<byte>();
-        public FaacEncoder(int sampleRate, int channels, int sampleBit)
+        public FaacEncoder(int sampleRate, int channels, int sampleBit, bool adts = false)
         {
             var inputSampleBytes = new byte[4];
             var maxOutputBytes = new byte[4];
@@ -27,7 +27,7 @@ namespace JT1078.Flv.Audio
             var ptr = FaacEncGetCurrentConfiguration(faacEncHandle);
             var configuration = InteropExtensions.IntPtrToStruct<FaacEncConfiguration>(ptr);
             configuration.inputFormat = 1;
-            configuration.outputFormat = 0;
+            configuration.outputFormat = adts ? 1 : 0;
             configuration.useTns = 0;
             configuration.useLfe = 0;
             configuration.aacObjectType = 2;
@@ -97,7 +97,7 @@ namespace JT1078.Flv.Audio
         [DllImport(DLLFile, EntryPoint = "faacEncEncode", CallingConvention = CallingConvention.StdCall)]
         private extern static int FaacEncEncode(IntPtr hEncoder, byte[] inputBuffer, int samplesInput, byte[] outputBuffer, int bufferSize);
 
-        [DllImport(DLLFile, EntryPoint= "faacEncClose", CallingConvention = CallingConvention.StdCall)]
+        [DllImport(DLLFile, EntryPoint = "faacEncClose", CallingConvention = CallingConvention.StdCall)]
         //int FAACAPI faacEncClose(faacEncHandle hEncoder);
         private extern static IntPtr FaacEncClose(IntPtr hEncoder);
 
