@@ -231,11 +231,8 @@ namespace JT1078.Flv
                 nalus.Remove(sei);
                 if (needVideoHeader)
                 {
-                    if (needVideoHeader)
-                    {
-                        var firstVideoTag = EncoderFirstVideoTag(sps, pps, sei);
-                        flvMessagePackWriter.WriteArray(firstVideoTag);
-                    }
+                    var firstVideoTag = EncoderFirstVideoTag(sps, pps, sei);
+                    flvMessagePackWriter.WriteArray(firstVideoTag);
                 }
                 foreach (var naln in nalus)
                 {
