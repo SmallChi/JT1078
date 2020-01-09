@@ -55,6 +55,7 @@ namespace JT1078.Flv.Audio
 
         public void Dispose()
         {
+            frameCache = null;
             if (faacEncHandle != IntPtr.Zero)
             {
                 FaacEncClose(faacEncHandle);
