@@ -11,6 +11,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
     /// </summary>
     public class JT808_0x9304 : JT808Bodies, IJT808MessagePackFormatter<JT808_0x9304>
     {
+        public override string Description => "云台雨刷控制";
         public override ushort MsgId => 0x9304;
         /// <summary>
         /// 逻辑通道号

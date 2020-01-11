@@ -11,6 +11,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
     /// </summary>
     public class JT808_0x9202 : JT808Bodies, IJT808MessagePackFormatter<JT808_0x9202>
     {
+        public override string Description => "平台下发远程录像回放控制";
         public override ushort MsgId => 0x9202;
         /// <summary>
         /// 音视频通道号

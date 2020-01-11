@@ -11,6 +11,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
     /// </summary>
     public class JT808_0x9207 : JT808Bodies, IJT808MessagePackFormatter<JT808_0x9207>
     {
+        public override string Description => "文件上传控制";
         public override ushort MsgId => 0x9207;
         /// <summary>
         /// 流水号

@@ -11,6 +11,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
     /// </summary>
     public class JT808_0x9201 : JT808Bodies, IJT808MessagePackFormatter<JT808_0x9201>
     {
+        public override string Description => "平台下发远程录像回放请求";
         public override ushort MsgId => 0x9201;
         /// <summary>
         /// 服务器IP地址服务

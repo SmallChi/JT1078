@@ -12,6 +12,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
     /// </summary>
     public class JT808_0x1205 : JT808Bodies, IJT808MessagePackFormatter<JT808_0x1205>
     {
+        public override string Description => "终端上传音视频资源列表";
         public override ushort MsgId => 0x1205;
         /// <summary>
         /// 流水号

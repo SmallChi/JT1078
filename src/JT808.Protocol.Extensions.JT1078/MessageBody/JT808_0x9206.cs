@@ -11,6 +11,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
     /// </summary>
     public class JT808_0x9206 : JT808Bodies,IJT808MessagePackFormatter<JT808_0x9206>
     {
+        public override string Description => "文件上传指令";
         public override ushort MsgId => 0x9206;
         /// <summary>
         /// 服务器IP地址服务

@@ -50,6 +50,8 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
 
         public override ushort MsgId => 0x1003;
 
+        public override string Description => "终端上传音视频属性";
+
         public JT808_0x1003 Deserialize(ref JT808MessagePackReader reader, IJT808Config config)
         {
             JT808_0x1003 jT808_0x1003 = new JT808_0x1003();

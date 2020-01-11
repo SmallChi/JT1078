@@ -214,20 +214,20 @@
             </para>
             
             手动编码
-            1、<see cref="M:JT1078.Flv.FlvEncoder.DecoderFlvHeader(System.Boolean,System.Boolean)"/>
-            2、<see cref="M:JT1078.Flv.FlvEncoder.DecoderScriptTag(System.Boolean,System.Double)"/>
-            3、<see cref="M:JT1078.Flv.FlvEncoder.DecoderFirstVideoTag(JT1078.Protocol.H264.H264NALU,JT1078.Protocol.H264.H264NALU,JT1078.Protocol.H264.H264NALU)"/>
-            4、<see cref="M:JT1078.Flv.FlvEncoder.DecoderFirstAudioTag(System.UInt64)"/>
-            5、<see cref="M:JT1078.Flv.FlvEncoder.DecoderVideoTag(JT1078.Protocol.JT1078Package,System.Boolean)"/>第二个参数传false
-            6、<see cref="M:JT1078.Flv.FlvEncoder.DecoderAudioTag(JT1078.Protocol.JT1078Package,System.Boolean)"/>第二个参数传false
+            1、<see cref="M:JT1078.Flv.FlvEncoder.EncoderFlvHeader(System.Boolean,System.Boolean)"/>
+            2、<see cref="M:JT1078.Flv.FlvEncoder.EncoderScriptTag(System.Boolean,System.Double)"/>
+            3、<see cref="M:JT1078.Flv.FlvEncoder.EncoderFirstVideoTag(JT1078.Protocol.H264.H264NALU,JT1078.Protocol.H264.H264NALU,JT1078.Protocol.H264.H264NALU)"/>
+            4、<see cref="M:JT1078.Flv.FlvEncoder.EncoderFirstAudioTag(System.UInt64)"/>
+            5、<see cref="M:JT1078.Flv.FlvEncoder.EncoderVideoTag(JT1078.Protocol.JT1078Package,System.Boolean)"/>第二个参数传false
+            6、<see cref="M:JT1078.Flv.FlvEncoder.EncoderAudioTag(JT1078.Protocol.JT1078Package,System.Boolean)"/>第二个参数传false
             自动编码
-            1、<see cref="M:JT1078.Flv.FlvEncoder.DecoderFlvHeader(System.Boolean,System.Boolean)"/>
-            2、<see cref="M:JT1078.Flv.FlvEncoder.DecoderScriptTag(System.Boolean,System.Double)"/>
-            3、<see cref="M:JT1078.Flv.FlvEncoder.DecoderVideoTag(JT1078.Protocol.JT1078Package,System.Boolean)"/>第二个参数传true
-            4、<see cref="M:JT1078.Flv.FlvEncoder.DecoderAudioTag(JT1078.Protocol.JT1078Package,System.Boolean)"/>第二个参数传true
+            1、<see cref="M:JT1078.Flv.FlvEncoder.EncoderFlvHeader(System.Boolean,System.Boolean)"/>
+            2、<see cref="M:JT1078.Flv.FlvEncoder.EncoderScriptTag(System.Boolean,System.Double)"/>
+            3、<see cref="M:JT1078.Flv.FlvEncoder.EncoderVideoTag(JT1078.Protocol.JT1078Package,System.Boolean)"/>第二个参数传true
+            4、<see cref="M:JT1078.Flv.FlvEncoder.EncoderAudioTag(JT1078.Protocol.JT1078Package,System.Boolean)"/>第二个参数传true
             </summary>
         </member>
-        <member name="M:JT1078.Flv.FlvEncoder.DecoderFlvHeader(System.Boolean,System.Boolean)">
+        <member name="M:JT1078.Flv.FlvEncoder.EncoderFlvHeader(System.Boolean,System.Boolean)">
             <summary>
             编码flv头
             <para>
@@ -238,7 +238,7 @@
             <param name="hasAudio"></param>
             <returns></returns>
         </member>
-        <member name="M:JT1078.Flv.FlvEncoder.DecoderScriptTag(System.Boolean,System.Double)">
+        <member name="M:JT1078.Flv.FlvEncoder.EncoderScriptTag(System.Boolean,System.Double)">
             <summary>
             编码脚本Tag
             <para>
@@ -251,7 +251,7 @@
             <param name="frameRate">帧率</param>
             <returns></returns>
         </member>
-        <member name="M:JT1078.Flv.FlvEncoder.DecoderFirstVideoTag(JT1078.Protocol.H264.H264NALU,JT1078.Protocol.H264.H264NALU,JT1078.Protocol.H264.H264NALU)">
+        <member name="M:JT1078.Flv.FlvEncoder.EncoderFirstVideoTag(JT1078.Protocol.H264.H264NALU,JT1078.Protocol.H264.H264NALU,JT1078.Protocol.H264.H264NALU)">
             <summary>
             编码首帧视频，即videoTag[0]
             <para>
@@ -263,7 +263,7 @@
             <param name="sei"></param>
             <returns></returns>
         </member>
-        <member name="M:JT1078.Flv.FlvEncoder.DecoderFirstAudioTag(System.UInt64)">
+        <member name="M:JT1078.Flv.FlvEncoder.EncoderFirstAudioTag(System.UInt64)">
             <summary>
             编码首帧音频，即audioTag[0]
             <para>
@@ -272,7 +272,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:JT1078.Flv.FlvEncoder.DecoderVideoTag(JT1078.Protocol.JT1078Package,System.Boolean)">
+        <member name="M:JT1078.Flv.FlvEncoder.EncoderVideoTag(JT1078.Protocol.JT1078Package,System.Boolean)">
             <summary>
             编码非首帧视频
             </summary>
@@ -280,7 +280,7 @@
             <param name="needVideoHeader">是否需要首帧视频</param>
             <returns></returns>
         </member>
-        <member name="M:JT1078.Flv.FlvEncoder.DecoderAudioTag(JT1078.Protocol.JT1078Package,System.Boolean)">
+        <member name="M:JT1078.Flv.FlvEncoder.EncoderAudioTag(JT1078.Protocol.JT1078Package,System.Boolean)">
             <summary>
             编码非首帧音频
             </summary>

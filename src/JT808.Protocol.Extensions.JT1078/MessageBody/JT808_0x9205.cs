@@ -11,6 +11,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
     /// </summary>
     public class JT808_0x9205 : JT808Bodies, IJT808MessagePackFormatter<JT808_0x9205>
     {
+        public override string Description => "查询资源列表";
         public override ushort MsgId => 0x9205;
         /// <summary>
         /// 逻辑通道号

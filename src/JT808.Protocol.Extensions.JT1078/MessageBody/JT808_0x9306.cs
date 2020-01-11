@@ -11,6 +11,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
     /// </summary>
     public class JT808_0x9306 : JT808Bodies, IJT808MessagePackFormatter<JT808_0x9306>
     {
+        public override string Description => "云台变倍控制";
         public override ushort MsgId => 0x9306;
         /// <summary>
         /// 逻辑通道号

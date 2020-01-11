@@ -11,6 +11,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
     /// </summary>
     public class JT808_0x9305 : JT808Bodies, IJT808MessagePackFormatter<JT808_0x9305>
     {
+        public override string Description => "红外补光控制";
         public override ushort MsgId => 0x9305;
         /// <summary>
         /// 逻辑通道号

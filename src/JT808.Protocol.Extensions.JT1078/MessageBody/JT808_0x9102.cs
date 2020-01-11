@@ -11,6 +11,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
     /// </summary>
     public class JT808_0x9102:JT808Bodies, IJT808MessagePackFormatter<JT808_0x9102>
     {
+        public override string Description => "音视频实时传输控制";
         public override ushort MsgId => 0x9102;
         /// <summary>
         /// 逻辑通道号

@@ -11,6 +11,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
     /// </summary>
     public class JT808_0x9101:JT808Bodies, IJT808MessagePackFormatter<JT808_0x9101>
     {
+        public override string Description => "实时音视频传输请求";
         public override ushort MsgId => 0x9101;
         /// <summary>
         /// 服务器IP地址长度

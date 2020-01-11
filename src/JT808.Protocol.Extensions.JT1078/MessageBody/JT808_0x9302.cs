@@ -11,6 +11,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
     /// </summary>
     public class JT808_0x9302 : JT808Bodies, IJT808MessagePackFormatter<JT808_0x9302>
     {
+        public override string Description => "云台调整焦距控制";
         public override ushort MsgId => 0x9302;
         /// <summary>
         /// 逻辑通道号

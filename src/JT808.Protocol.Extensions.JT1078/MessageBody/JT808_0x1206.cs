@@ -11,6 +11,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
     /// </summary>
     public class JT808_0x1206 : JT808Bodies, IJT808MessagePackFormatter<JT808_0x1206>
     {
+        public override string Description => "文件上传完成通知";
         public override ushort MsgId => 0x1206;
         /// <summary>
         /// 流水号

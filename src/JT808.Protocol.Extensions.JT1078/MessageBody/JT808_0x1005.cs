@@ -11,6 +11,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
     /// </summary>
     public class JT808_0x1005 : JT808Bodies, IJT808MessagePackFormatter<JT808_0x1005>
     {
+        public override string Description => "终端上传乘客流量";
         public override ushort MsgId => 0x1005;
         /// <summary>
         /// 起始时间
