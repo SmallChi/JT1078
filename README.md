@@ -159,18 +159,15 @@ Platform=AnyCpu  Server=False  Toolchain=.NET Core 3.1
 
 ### 关注点
 
-1. 在组包Flv的时候需要注意PreviousTagSize这个属性，因为该属性涉及到了新老用户、以及主次码流切换是否能播放成功。
+1. 在组包FLV的时候需要注意将解析的NALU值放入VideoTagsData中，格式:[NALU.Length 长度]+[NALU 值]...[NALU.Length 长度]+[NALU 值]可以存放多个NALU。
 
-2. 在组包FLV的时候需要注意将解析的NALU值放入VideoTagsData中，格式:[NALU.Length 长度]+[NALU 值]...[NALU.Length 长度]+[NALU 值]可以存放多个NALU。
-
-3. JT1078的属性大有用处。
+2. JT1078的属性大有用处。
 
 | JT1078属性  | FLV属性 |
 | :--- | :----|
-|Timestamp|JT1078的Timestamp为FLv的Timestamp累加值（当前的1078包与上一包1078的时间戳相减再进行累加）|
+|Timestamp|JT1078的Timestamp为FLv的Timestamp|
 |DataType|JT1078的DataType为FLv的FrameType的值（判断是否为关键帧）|
-|LastIFrameInterval|JT1078的LastIFrameInterval为FLv（关键帧）的CompositionTime值|
-|LastFrameInterval|JT1078的LastIFrameInterval为FLv（B/P帧）的CompositionTime值|
+|LastFrameInterval|JT1078的LastFrameInterval为FLv（B/P帧）的CompositionTime值|
 
 ### 使用BenchmarkDotNet性能测试报告（只是玩玩，不能当真）
 
