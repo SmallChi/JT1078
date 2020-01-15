@@ -22,7 +22,8 @@ namespace JT1078.Flv
     /// </para>
     /// 
     /// 手动编码
-    /// 1、<see cref="EncoderFlvHeader"/>
+    /// 0、<see cref="EncoderFlvHeader"/>
+    /// 1、插入  PriviousTagSize =0  always equal 0
     /// 2、<see cref="EncoderScriptTag"/>
     /// 3、<see cref="EncoderFirstVideoTag"/>
     /// 4、<see cref="EncoderFirstAudioTag"/>
@@ -36,11 +37,8 @@ namespace JT1078.Flv
     /// </summary>
     public class FlvEncoder : IDisposable
     {
-        uint previousTagSize;
-        FlvHeader flvHeader = new FlvHeader(true, true);
         readonly FaacEncoder faacEncoder;
         readonly H264Decoder h264Decoder = new H264Decoder();
-
         public FlvEncoder(int sampleRate = 8000, int channels = 1, int sampleBit = 16, bool adts = false)
         {
             faacEncoder = new FaacEncoder(sampleRate, channels, sampleBit, adts);
@@ -48,32 +46,24 @@ namespace JT1078.Flv
 
         /// <summary>
         /// 编码flv头
-        /// <para>
-        /// 注意：本方法已写入<see cref="previousTagSize"/>
-        /// </para>
         /// </summary>
-        /// <param name="hasVideo"></param>
-        /// <param name="hasAudio"></param>
+        /// <param name="hasVideo">是否有视频</param>
+        /// <param name="hasAudio">是否有音频</param>
         /// <returns></returns>
         public byte[] EncoderFlvHeader(bool hasVideo = true, bool hasAudio = false)
         {
-            previousTagSize = 0;
-            flvHeader = new FlvHeader(hasVideo, hasAudio);
+            var flvHeader = new FlvHeader(hasVideo, hasAudio);
             return flvHeader.ToArray().ToArray();
         }
 
         /// <summary>
         /// 编码脚本Tag
-        /// <para>
-        /// 注意：本方法已写入<see cref="previousTagSize"/>
-        /// </para>
         /// </summary>
-        /// <param name="width">视频宽度</param>
-        /// <param name="height">视频高度</param>
-        /// <param name="hasAudio">是否含有音频，如果有，则写入音频配置，后来发现即便是有音频，这里给<c>false</c>也没关系</param>
-        /// <param name="frameRate">帧率</param>
+        /// <param name="spsInfo">解析后的sps信息</param>
+        /// <param name="hasAudio">是否有音频</param>
+        /// <param name="frameRate">帧率 默认25d 即每秒25帧</param>
         /// <returns></returns>
-        public byte[] EncoderScriptTag(bool hasAudio = false, double frameRate = 25d)
+        public byte[] EncoderScriptTag(SPSInfo spsInfo, bool hasAudio = false, double frameRate = 25d)
         {
             byte[] buffer = FlvArrayPool.Rent(1024);
             try
@@ -93,8 +83,12 @@ namespace JT1078.Flv
                             new Amf3Metadata_VideoDataRate{Value = 0d},
                             new Amf3Metadata_VideoCodecId{Value = 7d},
                             new Amf3Metadata_FrameRate{Value = frameRate},
-                            new Amf3Metadata_Width(),
-                            new Amf3Metadata_Height(),
+                            new Amf3Metadata_Width(){
+                             Value=spsInfo.width
+                            },
+                            new Amf3Metadata_Height(){
+                             Value=spsInfo.height
+                            },
                         }
                     }
                 };
@@ -105,11 +99,9 @@ namespace JT1078.Flv
                     flvTags.DataTagsData.Amf3Metadatas.Add(new Amf3Metadata_AudioSampleSize());
                     flvTags.DataTagsData.Amf3Metadatas.Add(new Amf3Metadata_AudioStereo());
                 }
-                flvMessagePackWriter.WriteUInt32(previousTagSize);
                 flvMessagePackWriter.WriteFlvTag(flvTags);
-                var data = flvMessagePackWriter.FlushAndGetArray();
-                previousTagSize = (uint)(flvTags.DataSize + 11);
-                return data;
+                flvMessagePackWriter.WriteUInt32((uint)(flvTags.DataSize + 11));
+                return flvMessagePackWriter.FlushAndGetArray();
             }
             finally
             {
@@ -118,24 +110,19 @@ namespace JT1078.Flv
         }
 
         /// <summary>
-        /// 编码首帧视频，即videoTag[0]
-        /// <para>
-        /// 注意：本方法已写入<see cref="previousTagSize"/>
-        /// </para>
+        ///  编码首帧视频，即videoTag[0]
         /// </summary>
+        /// <param name="spsInfo">sps 解析后的数据</param>
         /// <param name="sps"></param>
         /// <param name="pps"></param>
         /// <param name="sei"></param>
         /// <returns></returns>
-        public byte[] EncoderFirstVideoTag(H264NALU sps, H264NALU pps, H264NALU sei)
+        public byte[] EncoderFirstVideoTag(SPSInfo spsInfo, H264NALU sps, H264NALU pps, H264NALU sei)
         {
             byte[] buffer = FlvArrayPool.Rent(2048);
             try
             {
                 FlvMessagePackWriter flvMessagePackWriter = new FlvMessagePackWriter(buffer);
-                var rawData = h264Decoder.DiscardEmulationPreventionBytes(sps.RawData);
-                ExpGolombReader h264GolombReader = new ExpGolombReader(rawData);
-                SPSInfo spsInfo = h264GolombReader.ReadSPS();
                 //flv body video tag
                 //flv body tag header
                 FlvTags flvTags = new FlvTags
@@ -163,11 +150,9 @@ namespace JT1078.Flv
                     SPSBuffer = sps.RawData
                 };
                 flvTags.VideoTagsData.VideoData.AVCDecoderConfiguration = aVCDecoderConfigurationRecord;
-                flvMessagePackWriter.WriteUInt32(previousTagSize);
                 flvMessagePackWriter.WriteFlvTag(flvTags);
-                var data = flvMessagePackWriter.FlushAndGetArray();
-                previousTagSize = (uint)(flvTags.DataSize + 11);
-                return data;
+                flvMessagePackWriter.WriteUInt32((uint)(flvTags.DataSize + 11));
+                return flvMessagePackWriter.FlushAndGetArray();
             }
             finally
             {
@@ -177,10 +162,8 @@ namespace JT1078.Flv
 
         /// <summary>
         /// 编码首帧音频，即audioTag[0]
-        /// <para>
-        /// 注意：本方法已写入<see cref="previousTagSize"/>
-        /// </para>
         /// </summary>
+        /// <param name="timestamp"></param>
         /// <returns></returns>
         public byte[] EncoderFirstAudioTag(ulong timestamp)
         {
@@ -197,11 +180,9 @@ namespace JT1078.Flv
                     //flv body tag body
                     AudioTagsData = new AudioTags(AACPacketType.AudioSpecificConfig)
                 };
-                flvMessagePackWriter.WriteUInt32(previousTagSize);
                 flvMessagePackWriter.WriteFlvTag(flvTags);
-                var data = flvMessagePackWriter.FlushAndGetArray();
-                previousTagSize = (uint)(flvTags.DataSize + 11);
-                return data;
+                flvMessagePackWriter.WriteUInt32((uint)(flvTags.DataSize + 11));
+                return flvMessagePackWriter.FlushAndGetArray();
             }
             finally
             {
@@ -210,9 +191,9 @@ namespace JT1078.Flv
         }
 
         /// <summary>
-        /// 编码非首帧视频
+        /// 编码视频
         /// </summary>
-        /// <param name="package"></param>
+        /// <param name="package">1078包</param>
         /// <param name="needVideoHeader">是否需要首帧视频</param>
         /// <returns></returns>
         public byte[] EncoderVideoTag(JT1078Package package, bool needVideoHeader = false)
@@ -231,14 +212,26 @@ namespace JT1078.Flv
                 nalus.Remove(sei);
                 if (needVideoHeader)
                 {
-                    var firstVideoTag = EncoderFirstVideoTag(sps, pps, sei);
+                    //flv header
+                    var flvHeader = EncoderFlvHeader(true, false);
+                    flvMessagePackWriter.WriteArray(flvHeader);
+                    // always 0
+                    flvMessagePackWriter.WriteUInt32(0);
+                    //解析sps 
+                    var rawData = h264Decoder.DiscardEmulationPreventionBytes(sps.RawData);
+                    ExpGolombReader h264GolombReader = new ExpGolombReader(rawData);
+                    SPSInfo spsInfo = h264GolombReader.ReadSPS();
+                    //script tag
+                    var scriptTag = EncoderScriptTag(spsInfo);
+                    flvMessagePackWriter.WriteArray(scriptTag);
+                    // first video tag
+                    var firstVideoTag = EncoderFirstVideoTag(spsInfo, sps, pps, sei);
                     flvMessagePackWriter.WriteArray(firstVideoTag);
                 }
                 foreach (var naln in nalus)
                 {
-                    flvMessagePackWriter.WriteUInt32(previousTagSize);
-                    var videoTag = ConversionNaluToVideoTag(naln);
-                    flvMessagePackWriter.WriteArray(videoTag);
+                    var otherVideoTag = EncoderOtherVideoTag(naln);
+                    flvMessagePackWriter.WriteArray(otherVideoTag);
                 }
             }
             return flvMessagePackWriter.FlushAndGetArray();
@@ -280,15 +273,17 @@ namespace JT1078.Flv
             }
             if (aacFrameData != null && aacFrameData.Any())//编码成功，此时为一帧aac音频数据
             {
-                // PreviousTagSize
-                flvMessagePackWriter.WriteUInt32(previousTagSize);
                 // Data Tag Frame
-                flvMessagePackWriter.WriteArray(ConversionAacDataToAudioTag((uint)package.Timestamp, aacFrameData));
+                flvMessagePackWriter.WriteArray(EncoderAacAudioTag((uint)package.Timestamp, aacFrameData));
             }
             return flvMessagePackWriter.FlushAndGetArray();
         }
-
-        byte[] ConversionNaluToVideoTag(H264NALU nALU)
+        /// <summary>
+        /// 编码非首帧视频
+        /// </summary>
+        /// <param name="nALU"></param>
+        /// <returns></returns>
+        public byte[] EncoderOtherVideoTag(H264NALU nALU)
         {
             byte[] buffer = FlvArrayPool.Rent(65535);
             try
@@ -330,9 +325,8 @@ namespace JT1078.Flv
                 //    flvTags.VideoTagsData.VideoData.MultiData.Add(sei.RawData);
                 //}
                 flvMessagePackWriter.WriteFlvTag(flvTags);
-                var data = flvMessagePackWriter.FlushAndGetArray();
-                previousTagSize = (uint)(flvTags.DataSize + 11);
-                return data;
+                flvMessagePackWriter.WriteUInt32((uint)(flvTags.DataSize + 11));
+                return flvMessagePackWriter.FlushAndGetArray();
             }
             finally
             {
@@ -340,7 +334,7 @@ namespace JT1078.Flv
             }
         }
 
-        byte[] ConversionAacDataToAudioTag(uint timestamp, byte[] aacFrameData)
+        byte[] EncoderAacAudioTag(uint timestamp, byte[] aacFrameData)
         {
             byte[] buffer = FlvArrayPool.Rent(65535);
             try
@@ -358,7 +352,7 @@ namespace JT1078.Flv
                     AudioTagsData = new AudioTags(AACPacketType.AudioFrame, aacFrameData)
                 };
                 flvMessagePackWriter.WriteFlvTag(flvTags);
-                previousTagSize = (uint)(flvTags.DataSize + 11);
+                flvMessagePackWriter.WriteUInt32((uint)(flvTags.DataSize + 11));
                 return flvMessagePackWriter.FlushAndGetArray();
             }
             finally

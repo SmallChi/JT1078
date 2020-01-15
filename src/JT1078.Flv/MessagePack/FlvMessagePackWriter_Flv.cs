@@ -33,7 +33,8 @@ namespace JT1078.Flv.MessagePack
                     //todo:VIDEODATA 
                     break;
             }
-            WriteInt24Return(GetCurrentPosition() - DataSizePosition -3-7, DataSizePosition);
+            tag.DataSize = GetCurrentPosition() - 11;
+            WriteInt24Return(tag.DataSize, DataSizePosition);
         }
 
         public void WriteUInt24(uint value)

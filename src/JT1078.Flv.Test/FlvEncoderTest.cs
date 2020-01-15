@@ -20,306 +20,133 @@ namespace JT1078.Flv.Test
         [Fact]
         public void 测试第一帧的数据()
         {
-            JT1078Package Package = null;
-            var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_1.txt"));
-            int mergeBodyLength = 0;
-            foreach (var line in lines)
+            FileStream fileStream = null;
+            try
             {
-                var data = line.Split(',');
-                var bytes = data[6].ToHexBytes();
-                JT1078Package package = JT1078Serializer.Deserialize(bytes);
-                mergeBodyLength += package.DataBodyLength;
-                Package = JT1078Serializer.Merge(package);
-            }
-            H264Decoder decoder = new H264Decoder();
-            //7 8 6 5 1 1 1 1 1 7 8 6 5 1 1 1 1
-            var nalus = decoder.ParseNALU(Package);
-            Assert.Equal(4, nalus.Count);
+                var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_1.txt"));
+                var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_1.flv");
+                fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
 
-            FlvEncoder encoder = new FlvEncoder();
-            var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_1.flv");
-            if (File.Exists(filepath))
-            {
-                File.Delete(filepath);
+                bool isNeedFirstHeadler = true;
+                FlvEncoder encoder = new FlvEncoder();
+                foreach (var line in lines)
+                {
+                    var data = line.Split(',');
+                    var bytes = data[6].ToHexBytes();
+                    JT1078Package package = JT1078Serializer.Deserialize(bytes);
+                    JT1078Package fullpackage = JT1078Serializer.Merge(package);
+                    if (fullpackage != null)
+                    {
+                        var videoTag = encoder.EncoderVideoTag(fullpackage, isNeedFirstHeadler);
+                        fileStream.Write(videoTag);
+                        isNeedFirstHeadler = false;
+                    }
+                }
             }
-            FileStream fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
-            fileStream.Write(encoder.EncoderFlvHeader());
-            fileStream.Write(encoder.EncoderScriptTag());
-            fileStream.Write(encoder.EncoderVideoTag(Package, true));
-            fileStream.Close();
+            catch (Exception ex)
+            {
+
+            }
+            finally
+            {
+                fileStream?.Close();
+                fileStream?.Dispose();
+            }
         }
 
-        //[Fact]
-        //public void 测试前几帧的数据()
-        //{
-        //    FileStream fileStream = null;
-        //    try
-        //    {
-        //        JT1078Package Package = null;
-        //        List<H264NALU> h264NALULs = new List<H264NALU>();
-        //        H264Decoder decoder = new H264Decoder();
-        //        FlvEncoder encoder = new FlvEncoder();
-        //        var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_2.txt"));
-        //        foreach (var line in lines)
-        //        {
-        //            var data = line.Split(',');
-        //            var bytes = data[6].ToHexBytes();
-        //            JT1078Package package = JT1078Serializer.Deserialize(bytes);
-        //            Package = JT1078Serializer.Merge(package);
-        //            if (Package != null)
-        //            {
-        //                var tmp = decoder.ParseNALU(Package);
-        //                if (tmp != null && tmp.Count > 0)
-        //                {
-        //                    h264NALULs = h264NALULs.Concat(tmp).ToList();
-        //                }
-        //            }
-        //        }
+        [Fact]
+        public void 测试前几帧的数据()
+        {
+            FileStream fileStream = null;
+            try
+            {
+                var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_2.txt"));
+                var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_2.flv");
+                fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
 
-        //        var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_2.flv");
-        //        if (File.Exists(filepath))
-        //        {
-        //            File.Delete(filepath);
-        //        }
-        //        fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
-        //        fileStream.Write(FlvEncoder.VideoFlvHeaderBuffer);
-        //        var totalPage = (h264NALULs.Count + 10 - 1) / 10;
-        //        for (var i = 0; i < totalPage; i++)
-        //        {
-        //            var flv2 = encoder.CreateFlvFrame(h264NALULs.Skip(i * 10).Take(10).ToList());
-        //            if (flv2.Length != 0)
-        //            {
-        //                fileStream.Write(flv2);
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
+                bool isNeedFirstHeadler = true;
+                FlvEncoder encoder = new FlvEncoder();
+                foreach (var line in lines)
+                {
+                    var data = line.Split(',');
+                    var bytes = data[6].ToHexBytes();
+                    JT1078Package package = JT1078Serializer.Deserialize(bytes);
+                    JT1078Package fullpackage = JT1078Serializer.Merge(package);
+                    if (fullpackage != null)
+                    {
+                        var videoTag = encoder.EncoderVideoTag(fullpackage, isNeedFirstHeadler);
+                        fileStream.Write(videoTag);
+                        isNeedFirstHeadler = false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
 
-        //    }
-        //    finally
-        //    {
-        //        fileStream?.Close();
-        //        fileStream?.Dispose();
-        //    }
-        //}
+            }
+            finally
+            {
+                fileStream?.Close();
+                fileStream?.Dispose();
+            }
+        }
 
-        //[Fact]
-        //public void 测试可以播放的Flv1()
-        //{
-        //    FileStream fileStream = null;
-        //    H264Decoder decoder = new H264Decoder();
-        //    List<H264NALU> h264NALULs = new List<H264NALU>();
-        //    FlvEncoder encoder = new FlvEncoder();
-        //    try
-        //    {
-        //        var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_3.flv");
-        //        var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_3.txt"));
-        //        if (File.Exists(filepath))
-        //        {
-        //            File.Delete(filepath);
-        //        }
+        [Fact]
+        public void 测试可以播放的Flv3()
+        {
+            FileStream fileStream = null;
+            try
+            {
+                var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_3.flv");
+                var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_3.txt"));
+                fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
 
-        //        JT1078Package Package = null;
+                bool isNeedFirstHeadler = true;
+                FlvEncoder encoder = new FlvEncoder();
+                foreach (var line in lines)
+                {
+                    var data = line.Split(',');
+                    var bytes = data[6].ToHexBytes();
+                    JT1078Package package = JT1078Serializer.Deserialize(bytes);
+                    JT1078Package fullpackage = JT1078Serializer.Merge(package);
+                    if (fullpackage != null)
+                    {
+                        var videoTag = encoder.EncoderVideoTag(fullpackage, isNeedFirstHeadler);
+                        fileStream.Write(videoTag);
+                        isNeedFirstHeadler = false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Assert.Throws<Exception>(() => { });
+            }
+            finally
+            {
+                fileStream?.Close();
+                fileStream?.Dispose();
+            }
+        }
 
-        //        foreach (var line in lines)
-        //        {
-        //            var data = line.Split(',');
-        //            var bytes = data[6].ToHexBytes();
-        //            JT1078Package package = JT1078Serializer.Deserialize(bytes);
-        //            Package = JT1078Serializer.Merge(package);
-        //            if (Package != null)
-        //            {
-        //                var tmp = decoder.ParseNALU(Package);
-        //                if (tmp != null && tmp.Count > 0)
-        //                {
-        //                    h264NALULs = h264NALULs.Concat(tmp).ToList();
-        //                }
-        //            }
-        //        }
+        [Fact]
+        public void EncoderScriptTag()
+        {
+            FlvEncoder flvEncoder = new FlvEncoder();
+            var hexData = flvEncoder.EncoderScriptTag(new SPSInfo { width = 288, height = 352 });
+            Assert.Equal(155, hexData.Length);
+        }
 
-        //        fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
-        //        fileStream.Write(FlvEncoder.VideoFlvHeaderBuffer);
-        //        var totalPage = (h264NALULs.Count + 10 - 1) / 10;
-        //        for (var i = 0; i < totalPage; i++)
-        //        {
-        //            var flv2 = encoder.CreateFlvFrame(h264NALULs.Skip(i * 10).Take(10).ToList());
-        //            if (flv2.Length != 0)
-        //            {
-        //                fileStream.Write(flv2);
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Assert.Throws<Exception>(() => { });
-        //    }
-        //    finally
-        //    {
-        //        fileStream?.Close();
-        //        fileStream?.Dispose();
-        //    }
-        //}
-
-        //[Fact]
-        //public void 测试可以播放的Flv2()
-        //{
-        //    FileStream fileStream = null;
-        //    H264Decoder decoder = new H264Decoder();
-        //    List<H264NALU> h264NALULs = new List<H264NALU>();
-        //    FlvEncoder encoder = new FlvEncoder();
-        //    try
-        //    {
-        //        var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_4.flv");
-        //        var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_4.txt"));
-        //        if (File.Exists(filepath))
-        //        {
-        //            File.Delete(filepath);
-        //        }
-
-        //        JT1078Package Package = null;
-
-        //        foreach (var line in lines)
-        //        {
-        //            var data = line.Split(',');
-        //            var bytes = data[6].ToHexBytes();
-        //            JT1078Package package = JT1078Serializer.Deserialize(bytes);
-        //            Package = JT1078Serializer.Merge(package);
-        //            if (Package != null)
-        //            {
-        //                var tmp = decoder.ParseNALU(Package);
-        //                if (tmp != null && tmp.Count > 0)
-        //                {
-        //                    h264NALULs = h264NALULs.Concat(tmp).ToList();
-        //                }
-        //            }
-        //        }
-
-        //        fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
-        //        fileStream.Write(FlvEncoder.VideoFlvHeaderBuffer);
-        //        var totalPage = (h264NALULs.Count + 10 - 1) / 10;
-        //        for (var i = 0; i < totalPage; i++)
-        //        {
-        //            var flv2 = encoder.CreateFlvFrame(h264NALULs.Skip(i * 10).Take(10).ToList());
-        //            if (flv2.Length != 0)
-        //            {
-        //                fileStream.Write(flv2);
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Assert.Throws<Exception>(() => { });
-        //    }
-        //    finally
-        //    {
-        //        fileStream?.Close();
-        //        fileStream?.Dispose();
-        //    }
-        //}
-
-        //[Fact]
-        //public void 测试主次码流切换()
-        //{
-        //    FileStream fileStream = null;
-        //    H264Decoder decoder = new H264Decoder();
-        //    List<H264NALU> h264NALULs = new List<H264NALU>();
-        //    FlvEncoder encoder = new FlvEncoder();
-        //    try
-        //    {
-        //        var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_5.flv");
-        //        var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_5.txt"));
-        //        if (File.Exists(filepath))
-        //        {
-        //            File.Delete(filepath);
-        //        }
-
-        //        JT1078Package Package = null;
-
-        //        foreach (var line in lines)
-        //        {
-        //            var data = line.Split(',');
-        //            var bytes = data[6].ToHexBytes();
-        //            JT1078Package package = JT1078Serializer.Deserialize(bytes);
-        //            Package = JT1078Serializer.Merge(package);
-        //            if (Package != null)
-        //            {
-        //                var tmp = decoder.ParseNALU(Package);
-        //                if (tmp != null && tmp.Count > 0)
-        //                {
-        //                    h264NALULs = h264NALULs.Concat(tmp).ToList();
-        //                }
-        //            }
-        //        }
-        //        var tmp1 = h264NALULs.Where(w => w.NALUHeader.NalUnitType == 7).ToList();
-        //        List<SPSInfo> tmpSpss = new List<SPSInfo>();
-        //        List<ulong> times = new List<ulong>();
-        //        List<ushort> lastIFrameIntervals = new List<ushort>();
-        //        List<ushort> lastFrameIntervals = new List<ushort>();
-        //        List<int> type = new List<int>();
-        //        foreach (var item in h264NALULs)
-        //        {
-        //            //type.Add(item.NALUHeader.NalUnitType);
-        //            times.Add(item.Timestamp);
-        //            lastFrameIntervals.Add(item.LastFrameInterval);
-        //            lastIFrameIntervals.Add(item.LastIFrameInterval);
-        //            if (item.NALUHeader.NalUnitType == 7)
-        //            {
-        //                ExpGolombReader expGolombReader = new ExpGolombReader(item.RawData);
-        //                tmpSpss.Add(expGolombReader.ReadSPS());
-        //            }
-        //        }
-        //        fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
-        //        var totalPage = (h264NALULs.Count + 10 - 1) / 10;
-        //        for (var i = 0; i < totalPage; i++)
-        //        {
-        //            var flv2 = encoder.CreateFlvFrame(h264NALULs.Skip(i * 10).Take(10).ToList());
-        //            if (flv2.Length != 0)
-        //            {
-        //                //fileStream.Write(flv2);
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Assert.Throws<Exception>(() => { });
-        //    }
-        //    finally
-        //    {
-        //        fileStream?.Close();
-        //        fileStream?.Dispose();
-        //    }
-        //}
-
-        //[Fact]
-        //public void CreateScriptTagFrameTest()
-        //{
-        //    FlvEncoder flvEncoder = new FlvEncoder();
-        //    var hexData = flvEncoder.CreateScriptTagFrame(288, 352);
-        //    Assert.Equal(151, hexData.Length);
-        //}
-
-        //[Fact]
-        //public void CreateVideoTag0FrameTest()
-        //{
-        //    FlvEncoder flvEncoder = new FlvEncoder();
-        //    var hexData = flvEncoder.CreateVideoTag0Frame(
-        //        new byte[] { 0x67, 0x4D, 0, 0x14, 0x95, 0xA8, 0x58, 0x25, 0x90 },
-        //        new byte[] { 0x68, 0xEE, 0x3C, 0x80 },
-        //        new SPSInfo { levelIdc = 0x14, profileIdc = 0x4d, profileCompat = 0 });
-        //    Assert.Equal(40, hexData.Length);
-        //}
-
-        //[Fact]
-        //public void GetFirstFlvFrameTest()
-        //{
-        //    FlvEncoder flvEncoder = new FlvEncoder();
-        //    string key = "test";
-        //    var bufferFlvFrame = new byte[] { 0xA, 0xB, 0xC, 0xD, 0xE, 0xF };
-        //    FlvEncoder.FirstFlvFrameCache.TryAdd(key, (2, new byte[] { 1, 2, 3, 4, 5, 6 }, true));
-        //    var buffer = flvEncoder.GetFirstFlvFrame(key, bufferFlvFrame);
-        //    //替换PreviousTagSize 4位的长度为首帧的 PreviousTagSize
-        //    Assert.Equal(new byte[] { 1, 2, 3, 4, 5, 6, 0, 0, 0, 2, 0xE, 0xF }, buffer);
-        //}
+        [Fact]
+        public void EncoderFirstVideoTag()
+        {
+            FlvEncoder flvEncoder = new FlvEncoder();
+            var hexData = flvEncoder.EncoderFirstVideoTag(
+                new SPSInfo { levelIdc = 0x14, profileIdc = 0x4d, profileCompat = 0 },
+                new H264NALU { RawData = new byte[] { 0x67, 0x4D, 0, 0x14, 0x95, 0xA8, 0x58, 0x25, 0x90 } },
+                new H264NALU { RawData = new byte[] { 0x68, 0xEE, 0x3C, 0x80 } },
+                new H264NALU()
+           );
+            Assert.Equal(44, hexData.Length);
+        }
     }
 }
