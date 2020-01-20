@@ -98,8 +98,8 @@ namespace JT1078.Flv.Audio
             for (int i = 0, offset = 0; i < g711data.Length; i++)
             {
                 short value = AlawToLinear(g711data[i]);
-                pcmdata[offset++] = (byte)((value >> 8) & 0xff);
                 pcmdata[offset++] = (byte)(value & 0xff);
+                pcmdata[offset++] = (byte)((value >> 8) & 0xff);
             }
             return pcmdata;
         }
