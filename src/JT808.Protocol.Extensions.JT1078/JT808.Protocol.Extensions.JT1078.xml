@@ -78,6 +78,7 @@
         <member name="P:JT808.Protocol.Extensions.JT1078.MessageBody.JT808_0x0200_0x14.VideoRelateAlarm">
             <summary>
             视频相关报警
+            <see cref="T:JT808.Protocol.Extensions.JT1078.Enums.VideoRelateAlarmType"/>
             </summary>
         </member>
         <member name="T:JT808.Protocol.Extensions.JT1078.MessageBody.JT808_0x0200_0x15">
@@ -139,9 +140,14 @@
             数据 长度
             </summary>
         </member>
-        <member name="P:JT808.Protocol.Extensions.JT1078.MessageBody.JT808_0x0200_0x18.AbnormalDrivingBehaviorAlarmInfo">
+        <member name="P:JT808.Protocol.Extensions.JT1078.MessageBody.JT808_0x0200_0x18.AbnormalDrivingBehaviorAlarmType">
             <summary>
-            异常驾驶行为报警详细描述
+            异常驾驶行为报警类型
+            </summary>
+        </member>
+        <member name="P:JT808.Protocol.Extensions.JT1078.MessageBody.JT808_0x0200_0x18.FatigueLevel">
+            <summary>
+            疲劳程度
             </summary>
         </member>
         <member name="T:JT808.Protocol.Extensions.JT1078.MessageBody.JT808_0x1003">

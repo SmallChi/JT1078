@@ -39,32 +39,33 @@ namespace JT808.Protocol.Extensions.JT1078.Test
             };
             jT808UploadLocationRequest.JT808LocationAttachData.Add(0x14, new JT808_0x0200_0x14
             {
-                 VideoRelateAlarm = 100
+                VideoRelateAlarm = 100
             });
             jT808UploadLocationRequest.JT808LocationAttachData.Add(0x15, new JT808_0x0200_0x15
             {
-                 VideoSignalLoseAlarmStatus = 100
+                VideoSignalLoseAlarmStatus = 100
             });
             jT808UploadLocationRequest.JT808LocationAttachData.Add(0x16, new JT808_0x0200_0x16
             {
-                 VideoSignalOcclusionAlarmStatus = 100
+                VideoSignalOcclusionAlarmStatus = 100
             });
             jT808UploadLocationRequest.JT808LocationAttachData.Add(0x17, new JT808_0x0200_0x17
             {
-                 StorageFaultAlarmStatus = 100
+                StorageFaultAlarmStatus = 100
             });
             jT808UploadLocationRequest.JT808LocationAttachData.Add(0x18, new JT808_0x0200_0x18
             {
-                 AbnormalDrivingBehaviorAlarmInfo = 100
+                AbnormalDrivingBehaviorAlarmType = 100,
+                FatigueLevel = 88
             });
             var hex = JT808Serializer.Serialize(jT808UploadLocationRequest).ToHexString();
-            Assert.Equal("000000010000000200BA7F0E07E4F11C0028003C00001807151010101404000000641504000000641604000000641702006418020064", hex);
+            Assert.Equal("000000010000000200BA7F0E07E4F11C0028003C0000180715101010140400000064150400000064160400000064170200641803006458", hex);
         }
 
         [Fact]
         public void Test2()
         {
-            byte[] bodys = "000000010000000200BA7F0E07E4F11C0028003C00001807151010101404000000641504000000641604000000641702006418020064".ToHexBytes();
+            byte[] bodys = "000000010000000200BA7F0E07E4F11C0028003C0000180715101010140400000064150400000064160400000064170200641803006458".ToHexBytes();
             JT808_0x0200 jT808UploadLocationRequest = JT808Serializer.Deserialize<JT808_0x0200>(bodys);
             Assert.Equal(1u, jT808UploadLocationRequest.AlarmFlag);
             Assert.Equal(DateTime.Parse("2018-07-15 10:10:10"), jT808UploadLocationRequest.GPSTime);
@@ -76,7 +77,15 @@ namespace JT808.Protocol.Extensions.JT1078.Test
             Assert.Equal(100u, ((JT808_0x0200_0x15)jT808UploadLocationRequest.JT808LocationAttachData[0x15]).VideoSignalLoseAlarmStatus);
             Assert.Equal(100u, ((JT808_0x0200_0x16)jT808UploadLocationRequest.JT808LocationAttachData[0x16]).VideoSignalOcclusionAlarmStatus);
             Assert.Equal(100u, ((JT808_0x0200_0x17)jT808UploadLocationRequest.JT808LocationAttachData[0x17]).StorageFaultAlarmStatus);
-            Assert.Equal(100u, ((JT808_0x0200_0x18)jT808UploadLocationRequest.JT808LocationAttachData[0x18]).AbnormalDrivingBehaviorAlarmInfo);
+            Assert.Equal(100u, ((JT808_0x0200_0x18)jT808UploadLocationRequest.JT808LocationAttachData[0x18]).AbnormalDrivingBehaviorAlarmType);
+            Assert.Equal(88, ((JT808_0x0200_0x18)jT808UploadLocationRequest.JT808LocationAttachData[0x18]).FatigueLevel);
+        }
+
+        [Fact]
+        public void Test3()
+        {
+            byte[] bodys = "000000010000000200BA7F0E07E4F11C0028003C0000180715101010140400000064150400000064160400000064170200641803006458".ToHexBytes();
+            string json = JT808Serializer.Analyze<JT808_0x0200>(bodys);
         }
     }
 }

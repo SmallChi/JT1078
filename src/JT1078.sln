@@ -21,7 +21,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JT1078.Protocol.Benchmark",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E378A80C-5708-4D0C-BA1A-73EEF08957F6}"
 	ProjectSection(SolutionItems) = preProject
-		..\.travis.yml = ..\.travis.yml
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject

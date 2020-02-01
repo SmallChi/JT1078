@@ -1,6 +1,9 @@
 ﻿using JT808.Protocol.Formatters;
+using JT808.Protocol.Interfaces;
 using JT808.Protocol.MessageBody;
 using JT808.Protocol.MessagePack;
+using System;
+using System.Text.Json;
 
 namespace JT808.Protocol.Extensions.JT1078.MessageBody
 {
@@ -8,7 +11,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
     /// 视频信号丢失报警状态
     /// 0x0200_0x15
     /// </summary>
-    public class JT808_0x0200_0x15 : JT808_0x0200_BodyBase, IJT808MessagePackFormatter<JT808_0x0200_0x15>
+    public class JT808_0x0200_0x15 : JT808_0x0200_BodyBase, IJT808MessagePackFormatter<JT808_0x0200_0x15>, IJT808Analyze
     {
         public override byte AttachInfoId { get; set; } = 0x15;
         /// <summary>
@@ -20,13 +23,40 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
         /// </summary>
         public uint VideoSignalLoseAlarmStatus { get; set; }
 
+        public void Analyze(ref JT808MessagePackReader reader, Utf8JsonWriter writer, IJT808Config config)
+        {
+            JT808_0x0200_0x15 value = new JT808_0x0200_0x15();
+            value.AttachInfoId = reader.ReadByte();
+            writer.WriteNumber($"[{value.AttachInfoId.ReadNumber()}]附加信息Id", value.AttachInfoId);
+            value.AttachInfoLength = reader.ReadByte();
+            writer.WriteNumber($"[{value.AttachInfoLength.ReadNumber()}]附加信息长度", value.AttachInfoLength);
+            value.VideoSignalLoseAlarmStatus = reader.ReadUInt32();
+            writer.WriteNumber($"[{value.VideoSignalLoseAlarmStatus.ReadNumber()}]视频信号丢失报警状态", value.VideoSignalLoseAlarmStatus);
+            var videoSignalLoseAlarmStatusSpan = Convert.ToString(value.VideoSignalLoseAlarmStatus, 2).PadLeft(32, '0').AsSpan();
+            writer.WriteStartArray("视频信号丢失报警状态集合");
+            int index = 0;
+            foreach (var item in videoSignalLoseAlarmStatusSpan)
+            {
+                if (item == '1')
+                {
+                    writer.WriteStringValue($"{index}通道视频信号丢失");
+                }
+                else
+                {
+                    writer.WriteStringValue($"{index}通道视频正常");
+                }
+                index++;
+            }
+            writer.WriteEndArray();
+        }
+
         public JT808_0x0200_0x15 Deserialize(ref JT808MessagePackReader reader, IJT808Config config)
         {
-            JT808_0x0200_0x15 jT808_0x0200_0x15 = new JT808_0x0200_0x15();
-            jT808_0x0200_0x15.AttachInfoId = reader.ReadByte();
-            jT808_0x0200_0x15.AttachInfoLength = reader.ReadByte();
-            jT808_0x0200_0x15.VideoSignalLoseAlarmStatus = reader.ReadUInt32();
-            return jT808_0x0200_0x15;
+            JT808_0x0200_0x15 value = new JT808_0x0200_0x15();
+            value.AttachInfoId = reader.ReadByte();
+            value.AttachInfoLength = reader.ReadByte();
+            value.VideoSignalLoseAlarmStatus = reader.ReadUInt32();
+            return value;
         }
 
         public void Serialize(ref JT808MessagePackWriter writer, JT808_0x0200_0x15 value, IJT808Config config)
