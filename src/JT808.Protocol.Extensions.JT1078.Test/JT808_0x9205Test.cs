@@ -63,5 +63,10 @@ namespace JT808.Protocol.Extensions.JT1078.Test
             Assert.Equal(4, jT808_0x9205.MemoryType);
             Assert.Equal(5, jT808_0x9205.StreamType);
         }
+        [Fact]
+        public void Test3()
+        {
+            var jT808_0x9205 = JT808Serializer.Analyze<JT808_0x9205>("0319071610101019071610101100000001020504".ToHexBytes());
+        }
     }
 }

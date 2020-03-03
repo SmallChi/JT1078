@@ -1,7 +1,9 @@
 ﻿using JT808.Protocol.Formatters;
+using JT808.Protocol.Interfaces;
 using JT808.Protocol.MessageBody;
 using JT808.Protocol.MessagePack;
 using System.Collections.Generic;
+using System.Text.Json;
 
 namespace JT808.Protocol.Extensions.JT1078.MessageBody
 {
@@ -9,7 +11,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
     /// 图像分析报警参数设置
     /// 0x8103_0x007B
     /// </summary>
-    public class JT808_0x8103_0x007B : JT808_0x8103_BodyBase, IJT808MessagePackFormatter<JT808_0x8103_0x007B>
+    public class JT808_0x8103_0x007B : JT808_0x8103_BodyBase, IJT808MessagePackFormatter<JT808_0x8103_0x007B>, IJT808Analyze
     {
         public override uint ParamId { get; set; } = 0x007B;
         /// <summary>
@@ -24,6 +26,19 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
         /// 疲劳程度阈值
         /// </summary>
         public byte FatigueThreshold  { get; set; }
+
+        public void Analyze(ref JT808MessagePackReader reader, Utf8JsonWriter writer, IJT808Config config)
+        {
+            JT808_0x8103_0x007B value = new JT808_0x8103_0x007B();
+            value.ParamId = reader.ReadUInt32();
+            writer.WriteNumber($"[{value.ParamId.ReadNumber()}]参数 ID", value.ParamId);
+            value.ParamLength = reader.ReadByte();
+            writer.WriteNumber($"[{value.ParamLength.ReadNumber()}]数据长度", value.ParamLength);
+            value.NuclearLoadNumber = reader.ReadByte();
+            writer.WriteNumber($"[{value.NuclearLoadNumber.ReadNumber()}]车辆核载人数", value.NuclearLoadNumber);
+            value.FatigueThreshold = reader.ReadByte();
+            writer.WriteNumber($"[{value.FatigueThreshold.ReadNumber()}]疲劳程度阈值", value.FatigueThreshold);
+        }
 
         public JT808_0x8103_0x007B Deserialize(ref JT808MessagePackReader reader, IJT808Config config)
         {

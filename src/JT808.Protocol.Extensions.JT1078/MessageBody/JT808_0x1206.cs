@@ -1,15 +1,17 @@
 ﻿using JT808.Protocol.Formatters;
+using JT808.Protocol.Interfaces;
 using JT808.Protocol.MessagePack;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json;
 
 namespace JT808.Protocol.Extensions.JT1078.MessageBody
 {
     /// <summary>
     /// 文件上传完成通知
     /// </summary>
-    public class JT808_0x1206 : JT808Bodies, IJT808MessagePackFormatter<JT808_0x1206>
+    public class JT808_0x1206 : JT808Bodies, IJT808MessagePackFormatter<JT808_0x1206>, IJT808Analyze
     {
         public override string Description => "文件上传完成通知";
         public override ushort MsgId => 0x1206;
@@ -21,6 +23,27 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
         /// 结果
         /// </summary>
         public byte Result{ get; set; }
+
+        public void Analyze(ref JT808MessagePackReader reader, Utf8JsonWriter writer, IJT808Config config)
+        {
+            JT808_0x1206 value = new JT808_0x1206();
+            value.MsgNum = reader.ReadUInt16();
+            writer.WriteNumber($"[{value.MsgNum.ReadNumber()}]流水号", value.MsgNum);
+            value.Result = reader.ReadByte();
+            writer.WriteString($"[{value.Result.ReadNumber()}]结果", ResultDisplay(value.Result));
+            string ResultDisplay(byte Result) {
+                switch (Result)
+                {
+                    case 0:
+                        return "成功";
+                    case 1:
+                        return "失败";
+                    default:
+                        return "未知";
+                }
+            }
+        }
+
         public JT808_0x1206 Deserialize(ref JT808MessagePackReader reader, IJT808Config config)
         {
             JT808_0x1206 jT808_0x1206 = new JT808_0x1206();

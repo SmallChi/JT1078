@@ -83,5 +83,10 @@ namespace JT808.Protocol.Extensions.JT1078.Test
             Assert.Equal("tk", jT808_0x9206.UserName);
             Assert.Equal(2, jT808_0x9206.UserNameLength);
         }
+        [Fact]
+        public void Test3()
+        {
+            var jT808_0x9206 = JT808Serializer.Analyze<JT808_0x9206>("093132372E302E302E31032802746B0631323334353608443A2F2F31313132031907161010101907161010110000000102050407".ToHexBytes());
+        }
     }
 }

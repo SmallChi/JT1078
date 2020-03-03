@@ -1,8 +1,10 @@
 ﻿using JT808.Protocol.Formatters;
+using JT808.Protocol.Interfaces;
 using JT808.Protocol.MessageBody;
 using JT808.Protocol.MessagePack;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 
 namespace JT808.Protocol.Extensions.JT1078.MessageBody
 {
@@ -10,7 +12,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
     ///单独视频通道参数设置
     /// 0x8103_0x0077
     /// </summary>
-    public class JT808_0x8103_0x0077 : JT808_0x8103_BodyBase, IJT808MessagePackFormatter<JT808_0x8103_0x0077>
+    public class JT808_0x8103_0x0077 : JT808_0x8103_BodyBase, IJT808MessagePackFormatter<JT808_0x8103_0x0077>, IJT808Analyze
     {
         public override uint ParamId { get; set; } = 0x0077;
         /// <summary>
@@ -23,6 +25,26 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
         public byte NeedSetChannelTotal { get; set; }
 
         public List<JT808_0x8103_0x0077_SignalChannel> SignalChannels { get; set; }
+
+        public void Analyze(ref JT808MessagePackReader reader, Utf8JsonWriter writer, IJT808Config config)
+        {
+            JT808_0x8103_0x0077 value = new JT808_0x8103_0x0077();
+            value.ParamId = reader.ReadUInt32();
+            writer.WriteNumber($"[{value.ParamId.ReadNumber()}]参数 ID", value.ParamId);
+            value.ParamLength = reader.ReadByte();
+            writer.WriteNumber($"[{value.ParamLength.ReadNumber()}]数据长度", value.ParamLength);
+            value.NeedSetChannelTotal = reader.ReadByte();
+            writer.WriteNumber($"[{value.NeedSetChannelTotal.ReadNumber()}]需单独设置视频参数的通道数量", value.NeedSetChannelTotal);
+            writer.WriteStartArray("音视频通道对照表");
+            for (int i = 0; i < value.NeedSetChannelTotal; i++)
+            {
+                writer.WriteStartObject();
+                var formatter = config.GetMessagePackFormatter<JT808_0x8103_0x0077_SignalChannel>();
+                formatter.Analyze(ref reader, writer, config);
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+        }
 
         public JT808_0x8103_0x0077 Deserialize(ref JT808MessagePackReader reader, IJT808Config config)
         {

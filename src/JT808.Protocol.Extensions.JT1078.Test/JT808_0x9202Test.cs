@@ -57,5 +57,10 @@ namespace JT808.Protocol.Extensions.JT1078.Test
             Assert.Equal(2, jT808_0x9202.FastForwardOrFastRewindMultiples);
             Assert.Equal(3, jT808_0x9202.PlayBackControl);
         }
+        [Fact]
+        public void Test3()
+        {
+            var jT808_0x9202 = JT808Serializer.Analyze<JT808_0x9202>("010302190716101010".ToHexBytes());
+        }
     }
 }

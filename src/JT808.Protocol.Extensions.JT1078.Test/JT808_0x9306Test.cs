@@ -53,5 +53,11 @@ namespace JT808.Protocol.Extensions.JT1078.Test
             Assert.Equal(1, jT808_0x9306.LogicChannelNo);
             Assert.Equal(2, jT808_0x9306.ChangeMultipleControl);
         }
+        [Fact]
+        public void Test3()
+        {
+            var jT808_0x9306 = JT808Serializer.Analyze<JT808_0x9306>("0102".ToHexBytes());
+
+        }
     }
 }

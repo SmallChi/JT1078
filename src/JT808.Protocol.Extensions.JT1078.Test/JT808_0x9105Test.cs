@@ -53,5 +53,10 @@ namespace JT808.Protocol.Extensions.JT1078.Test
             Assert.Equal(1, jT808_0x9105.LogicChannelNo);
             Assert.Equal(2, jT808_0x9105.DropRate);
         }
+        [Fact]
+        public void Test3()
+        {
+            var jT808_0x9105 = JT808Serializer.Analyze<JT808_0x9105>("0102".ToHexBytes());
+        }
     }
 }

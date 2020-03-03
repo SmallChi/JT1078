@@ -56,5 +56,10 @@ namespace JT808.Protocol.Extensions.JT1078.Test
             Assert.Equal(7, jT808_0x1003.TerminalSupportedMaxNumberOfAudioPhysicalChannels);
             Assert.Equal(8, jT808_0x1003.TerminalSupportedMaxNumberOfVideoPhysicalChannels);
         }
+        [Fact]
+        public void Test3()
+        {
+            var json = JT808Serializer.Analyze<JT808_0x1003>("03020504000101060708".ToHexBytes());
+        }
     }
 }

@@ -1,8 +1,10 @@
 ﻿using JT808.Protocol.Formatters;
+using JT808.Protocol.Interfaces;
 using JT808.Protocol.MessageBody;
 using JT808.Protocol.MessagePack;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 
 namespace JT808.Protocol.Extensions.JT1078.MessageBody
 {
@@ -10,7 +12,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
     /// 音视频通道列表设置
     /// 0x8103_0x0076
     /// </summary>
-    public class JT808_0x8103_0x0076 : JT808_0x8103_BodyBase, IJT808MessagePackFormatter<JT808_0x8103_0x0076>
+    public class JT808_0x8103_0x0076 : JT808_0x8103_BodyBase, IJT808MessagePackFormatter<JT808_0x8103_0x0076>, IJT808Analyze
     {
         public override uint ParamId { get; set; } = 0x0076;
         /// <summary>
@@ -37,6 +39,32 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
         /// 4*(l+m+n)
         /// </summary>
         public List<JT808_0x8103_0x0076_AVChannelRefTable> AVChannelRefTables { get; set; }
+
+        public void Analyze(ref JT808MessagePackReader reader, Utf8JsonWriter writer, IJT808Config config)
+        {
+            JT808_0x8103_0x0076 value = new JT808_0x8103_0x0076();
+            value.ParamId = reader.ReadUInt32();
+            writer.WriteNumber($"[{value.ParamId.ReadNumber()}]参数 ID", value.ParamId);
+            value.ParamLength = reader.ReadByte();
+            writer.WriteNumber($"[{value.ParamLength.ReadNumber()}]数据长度", value.ParamLength);
+            value.AVChannelTotal = reader.ReadByte();
+            writer.WriteNumber($"[{value.AVChannelTotal.ReadNumber()}]音视频通道总数", value.AVChannelTotal);
+            value.AudioChannelTotal = reader.ReadByte();
+            writer.WriteNumber($"[{value.AudioChannelTotal.ReadNumber()}]音频通道总数", value.AudioChannelTotal);
+            value.VudioChannelTotal = reader.ReadByte();
+            writer.WriteNumber($"[{value.VudioChannelTotal.ReadNumber()}]视频通道总数", value.VudioChannelTotal);
+            var channelTotal = value.AVChannelTotal + value.AudioChannelTotal + value.VudioChannelTotal;//通道总数
+
+            writer.WriteStartArray("音视频通道对照表");
+            for (int i = 0; i < channelTotal; i++)
+            {
+                writer.WriteStartObject();
+                var formatter = config.GetMessagePackFormatter<JT808_0x8103_0x0076_AVChannelRefTable>();
+                formatter.Analyze(ref reader, writer, config);
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+        }
 
         public JT808_0x8103_0x0076 Deserialize(ref JT808MessagePackReader reader, IJT808Config config)
         {
