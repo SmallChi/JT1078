@@ -217,7 +217,11 @@ namespace JT1078.Flv
                     flvMessagePackWriter.WriteArray(flvHeader);
                     // always 0
                     flvMessagePackWriter.WriteUInt32(0);
-                    //解析sps 
+                    //解析sps
+                    if (sps == null)
+                    {
+                        return null;
+                    } 
                     var rawData = h264Decoder.DiscardEmulationPreventionBytes(sps.RawData);
                     ExpGolombReader h264GolombReader = new ExpGolombReader(rawData);
                     SPSInfo spsInfo = h264GolombReader.ReadSPS();
