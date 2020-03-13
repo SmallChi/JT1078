@@ -53,5 +53,10 @@ namespace JT808.Protocol.Extensions.JT1078.Test
             Assert.Equal(1, jT808_0x1206.MsgNum);
             Assert.Equal(1, jT808_0x1206.Result);
         }
+        [Fact]
+        public void Test3()
+        {
+            var jT808_0x1206 = JT808Serializer.Analyze<JT808_0x1206>("000101".ToHexBytes());
+        }
     }
 }

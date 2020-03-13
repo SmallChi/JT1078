@@ -49,9 +49,8 @@ namespace JT808.Protocol.Extensions.JT1078.Test
         [Fact]
         public void Test2()
         {
-            var jT808_0x9305 = JT808Serializer.Deserialize<JT808_0x9305>("0102".ToHexBytes());
-            Assert.Equal(1, jT808_0x9305.LogicChannelNo);
-            Assert.Equal(2, jT808_0x9305.StartOrStop);
+            var jT808_0x9305 = JT808Serializer.Analyze<JT808_0x9305>("0102".ToHexBytes());
+
         }
     }
 }

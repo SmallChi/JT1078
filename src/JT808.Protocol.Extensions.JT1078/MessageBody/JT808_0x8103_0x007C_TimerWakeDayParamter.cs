@@ -1,7 +1,9 @@
 ﻿using JT808.Protocol.Formatters;
+using JT808.Protocol.Interfaces;
 using JT808.Protocol.MessageBody;
 using JT808.Protocol.MessagePack;
 using System.Collections.Generic;
+using System.Text.Json;
 
 namespace JT808.Protocol.Extensions.JT1078.MessageBody
 {
@@ -9,7 +11,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
     ///终端休眠模式唤醒设置
     /// 0x8103_0x007C
     /// </summary>
-    public class JT808_0x8103_0x007C_TimerWakeDayParamter:IJT808MessagePackFormatter<JT808_0x8103_0x007C_TimerWakeDayParamter>
+    public class JT808_0x8103_0x007C_TimerWakeDayParamter:IJT808MessagePackFormatter<JT808_0x8103_0x007C_TimerWakeDayParamter>, IJT808Analyze
     {
         /// <summary>
         /// 定时唤醒启用标志
@@ -55,6 +57,37 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
         /// 2
         /// </summary>
         public string TimePeriod4CloseTime { get; set; }
+
+        public void Analyze(ref JT808MessagePackReader reader, Utf8JsonWriter writer, IJT808Config config)
+        {
+            JT808_0x8103_0x007C_TimerWakeDayParamter value = new JT808_0x8103_0x007C_TimerWakeDayParamter();
+            value.TimerWakeEnableFlag = reader.ReadByte();
+            writer.WriteString($"[{value.TimerWakeEnableFlag.ReadNumber()}]定时唤醒启用标志", TimerWakeEnableFlagDisplay(value.TimerWakeEnableFlag));
+            value.TimePeriod1WakeTime = reader.ReadBCD(4);
+            writer.WriteString($"[{value.TimePeriod1WakeTime}]时间段1唤醒时间", value.TimePeriod1WakeTime);
+            value.TimePeriod1CloseTime = reader.ReadBCD(4);
+            writer.WriteString($"[{value.TimePeriod1CloseTime}]时间段1关闭时间", value.TimePeriod1CloseTime);
+            value.TimePeriod2WakeTime = reader.ReadBCD(4);
+            writer.WriteString($"[{value.TimePeriod2WakeTime}]时间段2唤醒时间", value.TimePeriod2WakeTime);
+            value.TimePeriod2CloseTime = reader.ReadBCD(4);
+            writer.WriteString($"[{value.TimePeriod2CloseTime}]时间段2关闭时间", value.TimePeriod2CloseTime);
+            value.TimePeriod3WakeTime = reader.ReadBCD(4);
+            writer.WriteString($"[{value.TimePeriod3WakeTime}]时间段3唤醒时间", value.TimePeriod3WakeTime);
+            value.TimePeriod3CloseTime = reader.ReadBCD(4);
+            writer.WriteString($"[{value.TimePeriod3CloseTime}]时间段3关闭时间", value.TimePeriod3CloseTime);
+            value.TimePeriod4WakeTime = reader.ReadBCD(4);
+            writer.WriteString($"[{value.TimePeriod4WakeTime}]时间段4唤醒时间", value.TimePeriod4WakeTime);
+            value.TimePeriod4CloseTime = reader.ReadBCD(4);
+            writer.WriteString($"[{value.TimePeriod4CloseTime}]时间段4关闭时间", value.TimePeriod4CloseTime);
+            string TimerWakeEnableFlagDisplay(byte TimerWakeEnableFlag) {
+                string timerWakeEnableFlagDisplay = string.Empty;
+                timerWakeEnableFlagDisplay += (TimerWakeEnableFlag & 0x01) == 1 ? ",时间段1唤醒时间启用" : "";
+                timerWakeEnableFlagDisplay += (TimerWakeEnableFlag & 0x01) == 1 ? ",时间段2唤醒时间启用" : "";
+                timerWakeEnableFlagDisplay += (TimerWakeEnableFlag & 0x01) == 1 ? ",时间段3唤醒时间启用" : "";
+                timerWakeEnableFlagDisplay += (TimerWakeEnableFlag & 0x01) == 1 ? ",时间段4唤醒时间启用" : "";
+                return timerWakeEnableFlagDisplay.Length > 0 ? timerWakeEnableFlagDisplay.Substring(1) : "";
+            }
+        }
 
         public JT808_0x8103_0x007C_TimerWakeDayParamter Deserialize(ref JT808MessagePackReader reader, IJT808Config config)
         {

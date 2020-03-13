@@ -78,6 +78,7 @@
         <member name="P:JT808.Protocol.Extensions.JT1078.MessageBody.JT808_0x0200_0x14.VideoRelateAlarm">
             <summary>
             视频相关报警
+            <see cref="T:JT808.Protocol.Extensions.JT1078.Enums.VideoRelateAlarmType"/>
             </summary>
         </member>
         <member name="T:JT808.Protocol.Extensions.JT1078.MessageBody.JT808_0x0200_0x15">
@@ -139,9 +140,14 @@
             数据 长度
             </summary>
         </member>
-        <member name="P:JT808.Protocol.Extensions.JT1078.MessageBody.JT808_0x0200_0x18.AbnormalDrivingBehaviorAlarmInfo">
+        <member name="P:JT808.Protocol.Extensions.JT1078.MessageBody.JT808_0x0200_0x18.AbnormalDrivingBehaviorAlarmType">
             <summary>
-            异常驾驶行为报警详细描述
+            异常驾驶行为报警类型
+            </summary>
+        </member>
+        <member name="P:JT808.Protocol.Extensions.JT1078.MessageBody.JT808_0x0200_0x18.FatigueLevel">
+            <summary>
+            疲劳程度
             </summary>
         </member>
         <member name="T:JT808.Protocol.Extensions.JT1078.MessageBody.JT808_0x1003">
@@ -784,7 +790,7 @@
         </member>
         <member name="P:JT808.Protocol.Extensions.JT1078.MessageBody.JT808_0x9201.ServerIpLength">
             <summary>
-            服务器IP地址服务
+            服务器IP地址长度
             </summary>
         </member>
         <member name="P:JT808.Protocol.Extensions.JT1078.MessageBody.JT808_0x9201.ServerIp">
@@ -827,12 +833,7 @@
             回放方式
             </summary>
         </member>
-        <member name="P:JT808.Protocol.Extensions.JT1078.MessageBody.JT808_0x9201.FastForwardOrFastRewindMultiples1">
-            <summary>
-            快进或快退倍数
-            </summary>
-        </member>
-        <member name="P:JT808.Protocol.Extensions.JT1078.MessageBody.JT808_0x9201.FastForwardOrFastRewindMultiples2">
+        <member name="P:JT808.Protocol.Extensions.JT1078.MessageBody.JT808_0x9201.FastForwardOrFastRewindMultiples">
             <summary>
             快进或快退倍数
             </summary>

@@ -12,6 +12,9 @@ namespace JT1078.Flv.Test
 {
     public class H264ToFlvTest
     {
+        /// <summary>
+        /// jt1078 转成 H264数据包
+        /// </summary>
         [Fact]
         public void Test_1()
         {

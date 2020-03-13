@@ -10,7 +10,7 @@ namespace JT1078.Flv
         /// Tag Data部分大小
         /// 3个字节
         /// </summary>
-        public uint DataSize { get; set; }
+        public int DataSize { get; set; }
         /// <summary>
         /// Tag时间戳
         /// 3个字节

@@ -43,8 +43,7 @@ namespace JT808.Protocol.Extensions.JT1078.Test
                 AVItemType = 2,
                 BeginTime = Convert.ToDateTime("2019-07-16 10:10:10"),
                 EndTime = Convert.ToDateTime("2019-07-16 10:10:10"),
-                FastForwardOrFastRewindMultiples1=3,
-                FastForwardOrFastRewindMultiples2=4,
+                FastForwardOrFastRewindMultiples=3,
                 MemType=5,
                 PlayBackWay=6,
                 ServerIp="127.0.0.1",
@@ -54,19 +53,18 @@ namespace JT808.Protocol.Extensions.JT1078.Test
                 UdpPort=8080
             };
             var hex = JT808Serializer.Serialize(jT808_0x9201).ToHexString();
-            Assert.Equal("093132372E302E302E3100501F9001020705060304190716101010190716101010", hex);
+            Assert.Equal("093132372E302E302E3100501F90010207050603190716101010190716101010", hex);
         }
 
         [Fact]
         public void Test2()
         {
-            var jT808_0x9201 = JT808Serializer.Deserialize<JT808_0x9201>("093132372E302E302E3100501F9001020705060304190716101010190716101010".ToHexBytes());
+            var jT808_0x9201 = JT808Serializer.Deserialize<JT808_0x9201>("093132372E302E302E3100501F90010207050603190716101010190716101010".ToHexBytes());
             Assert.Equal(1, jT808_0x9201.LogicChannelNo);
             Assert.Equal(2, jT808_0x9201.AVItemType);
             Assert.Equal(Convert.ToDateTime("2019-07-16 10:10:10"), jT808_0x9201.BeginTime);
             Assert.Equal(Convert.ToDateTime("2019-07-16 10:10:10"), jT808_0x9201.EndTime);
-            Assert.Equal(3, jT808_0x9201.FastForwardOrFastRewindMultiples1);
-            Assert.Equal(4, jT808_0x9201.FastForwardOrFastRewindMultiples2);
+            Assert.Equal(3, jT808_0x9201.FastForwardOrFastRewindMultiples);
             Assert.Equal(5, jT808_0x9201.MemType);
             Assert.Equal(6, jT808_0x9201.PlayBackWay);
             Assert.Equal("127.0.0.1", jT808_0x9201.ServerIp);
@@ -74,6 +72,11 @@ namespace JT808.Protocol.Extensions.JT1078.Test
             Assert.Equal(7, jT808_0x9201.StreamType);
             Assert.Equal(80, jT808_0x9201.TcpPort);
             Assert.Equal(8080, jT808_0x9201.UdpPort);
+        }
+        [Fact]
+        public void Test3()
+        {
+            var jT808_0x9201 = JT808Serializer.Analyze<JT808_0x9201>("093132372E302E302E3100501F90010207050603190716101010190716101010".ToHexBytes());
         }
     }
 }

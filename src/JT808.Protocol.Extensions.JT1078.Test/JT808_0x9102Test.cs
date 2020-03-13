@@ -64,5 +64,10 @@ namespace JT808.Protocol.Extensions.JT1078.Test
             //7E910200040123456798100001010100001E7E
             Assert.Equal("7E910200040123456798100001010100001E7E", hex);
         }
+        [Fact]
+        public void Test4()
+        {
+            var jT808_0rX9102 = JT808Serializer.Analyze<JT808_0x9102>("01010000".ToHexBytes());
+        }
     }
 }

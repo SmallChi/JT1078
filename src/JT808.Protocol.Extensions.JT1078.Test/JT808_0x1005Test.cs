@@ -57,5 +57,10 @@ namespace JT808.Protocol.Extensions.JT1078.Test
             Assert.Equal(1, jT808_0x1005.GettingOffNumber);
             Assert.Equal(1, jT808_0x1005.GettingOnNumber);
         }
+        [Fact]
+        public void Test3()
+        {
+            var json = JT808Serializer.Analyze<JT808_0x1005>("19071610200119071610250200010001".ToHexBytes());
+        }
     }
 }

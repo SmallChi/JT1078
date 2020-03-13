@@ -1,7 +1,9 @@
 ﻿using JT808.Protocol.Formatters;
+using JT808.Protocol.Interfaces;
 using JT808.Protocol.MessageBody;
 using JT808.Protocol.MessagePack;
 using System.Collections.Generic;
+using System.Text.Json;
 
 namespace JT808.Protocol.Extensions.JT1078.MessageBody
 {
@@ -9,7 +11,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
     /// 视频相关报警屏蔽字
     /// 0x8103_0x007A
     /// </summary>
-    public class JT808_0x8103_0x007A : JT808_0x8103_BodyBase, IJT808MessagePackFormatter<JT808_0x8103_0x007A>
+    public class JT808_0x8103_0x007A : JT808_0x8103_BodyBase, IJT808MessagePackFormatter<JT808_0x8103_0x007A>, IJT808Analyze
     {
         public override uint ParamId { get; set; } = 0x007A;
         /// <summary>
@@ -20,6 +22,37 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
         /// 视频相关屏蔽报警字
         /// </summary>
         public uint AlarmShielding { get; set; }
+
+        public void Analyze(ref JT808MessagePackReader reader, Utf8JsonWriter writer, IJT808Config config)
+        {
+            JT808_0x8103_0x007A value = new JT808_0x8103_0x007A();
+            value.ParamId = reader.ReadUInt32();
+            writer.WriteNumber($"[{value.ParamId.ReadNumber()}]参数 ID", value.ParamId);
+            value.ParamLength = reader.ReadByte();
+            writer.WriteNumber($"[{value.ParamLength.ReadNumber()}]数据长度", value.ParamLength);
+            value.AlarmShielding = reader.ReadUInt32();
+            writer.WriteString($"[{value.AlarmShielding.ReadNumber()}]视频相关屏蔽报警字", AlarmShieldingDisplay(value.AlarmShielding));
+            string AlarmShieldingDisplay(uint AlarmShielding)
+            {
+                switch (AlarmShielding)
+                {
+                    case 0x14:
+                        return "视频相关报警";
+                    case 0x15:
+                        return "视频信号丢失报警状态";
+                    case 0x16:
+                        return "视频信号遮挡报警状态";
+                    case 0x17:
+                        return "存储器故障报警状态";
+                    case 0x18:
+                        return "异常驾驶行为详细描述";
+                    default:
+                        break;
+                }
+                return "未知";
+            }
+        }
+
         public JT808_0x8103_0x007A Deserialize(ref JT808MessagePackReader reader, IJT808Config config)
         {
             JT808_0x8103_0x007A jT808_0x8103_0x007A = new JT808_0x8103_0x007A();

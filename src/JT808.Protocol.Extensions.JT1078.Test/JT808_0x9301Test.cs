@@ -55,5 +55,11 @@ namespace JT808.Protocol.Extensions.JT1078.Test
             Assert.Equal(2, jT808_0x9301.Speed);
             Assert.Equal(3, jT808_0x9301.Direction);
         }
+        [Fact]
+        public void Test3()
+        {
+            var jT808_0x9301 = JT808Serializer.Analyze<JT808_0x9301>("010302".ToHexBytes());
+
+        }
     }
 }
