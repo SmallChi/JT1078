@@ -18,6 +18,9 @@ namespace JT1078.Flv.MessagePack
             WriteUInt24(tag.StreamId);
             switch (tag.Type)
             {
+                case TagType.Audio:
+                    WriteAudioTags(tag.AudioTagsData);
+                    break;
                 case TagType.Video:
                     //VideoTag
                     WriteVideoTags(tag.VideoTagsData);
@@ -29,11 +32,8 @@ namespace JT1078.Flv.MessagePack
                     //flv Amf3
                     WriteAmf3(tag.DataTagsData);
                     break;
-                case TagType.Audio:
-                    //todo:VIDEODATA 
-                    break;
             }
-            tag.DataSize = GetCurrentPosition() - 11;
+            tag.DataSize = (GetCurrentPosition() - DataSizePosition - 3 - 7);
             WriteInt24Return(tag.DataSize, DataSizePosition);
         }
 
@@ -57,28 +57,33 @@ namespace JT1078.Flv.MessagePack
         public void WriteVideoTags(VideoTags videoTags)
         {
             WriteByte((byte)((byte)videoTags.FrameType | (byte)videoTags.CodecId));
-            if (videoTags.CodecId== CodecId.AvcVideoPacke)
+            if (videoTags.CodecId == CodecId.AvcVideoPacke)
             {
                 WriteAvcVideoPacke(videoTags.VideoData);
             }
         }
 
+        public void WriteAudioTags(AudioTags audioTags)
+        {
+            WriteArray(audioTags.ToArray());
+        }
+
         public void WriteAvcVideoPacke(AvcVideoPacke videoPacke)
         {
             WriteByte((byte)videoPacke.AvcPacketType);
-            if (videoPacke.AvcPacketType== AvcPacketType.SequenceHeader)
+            if (videoPacke.AvcPacketType == AvcPacketType.SequenceHeader)
             {
                 //videoPacke.CompositionTime = 0;
                 WriteUInt24(0);
                 //AVCDecoderConfigurationRecord
                 WriteAVCDecoderConfigurationRecord(videoPacke.AVCDecoderConfiguration);
             }
-            else if(videoPacke.AvcPacketType == AvcPacketType.Raw)
+            else if (videoPacke.AvcPacketType == AvcPacketType.Raw)
             {
                 WriteUInt24(videoPacke.CompositionTime);
-                if (videoPacke.MultiData != null && videoPacke.MultiData.Count>0)
+                if (videoPacke.MultiData != null && videoPacke.MultiData.Count > 0)
                 {
-                    foreach(var item in videoPacke.MultiData)
+                    foreach (var item in videoPacke.MultiData)
                     {
                         WriteInt32(item.Length);
                         WriteArray(item);
