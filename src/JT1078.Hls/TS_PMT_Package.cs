@@ -2,6 +2,7 @@
 using JT1078.Hls.MessagePack;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace JT1078.Hls
@@ -11,6 +12,7 @@ namespace JT1078.Hls
     /// </summary>
     public class TS_PMT_Package : ITSMessagePackFormatter
     {
+        public TS_Header Header { get; set; }
         /// <summary>
         /// PMT表取值随意
         /// 8bit
@@ -93,28 +95,27 @@ namespace JT1078.Hls
         public uint CRC32 { get; set; }
         public void ToBuffer(ref TSMessagePackWriter writer)
         {
+            Header.ToBuffer(ref writer);
             writer.WriteByte(TableId);
             //SectionSyntaxIndicator   Zero  Reserved1   SectionLength
             //1 0 11 0000 0000 0000
-            //(ushort)(1011_0000_0000_0000 | SectionLength)
-            // todo:
-            //writer.WriteUInt16((ushort)(1011_0000_0000_0000 | SectionLength));
+            //(ushort)(0b_1011_0000_0000_0000 | SectionLength)
             writer.Skip(2, out int SectionLengthPosition);
             writer.WriteUInt16(ProgramNumber);
             //Reserved2 VersionNumber CurrentNextIndicator
             //11 00000 1
-            var a = Reserved2 & 0xC0;
-            var b = VersionNumber & 0x3E;
-            var c=(byte)(a | b | CurrentNextIndicator);
+            var a = 0xC0 & (Reserved2 << 6);
+            var b = 0x3E & (VersionNumber << 3);
+            var c = (byte)(a | b | CurrentNextIndicator);
             writer.WriteByte(c);
             writer.WriteByte(SectionNumber);
             writer.WriteByte(LastSectionNumber);
             //Reserved3 PCR_PID
             //111   0000 0000 0000 0
-            writer.WriteUInt16((ushort)(0111_0000_0000_0000 | PCR_PID));
+            writer.WriteUInt16((ushort)(0b_1110_0000_0000_0000 | PCR_PID));
             //Reserved4 ProgramInfoLength
             //1111 0000 0000 0000
-            writer.WriteUInt16((ushort)(1111_0000_0000_0000 | ProgramInfoLength));
+            writer.WriteUInt16((ushort)(0b_1111_0000_0000_0000 | ProgramInfoLength));
             if (Components != null)
             {
                 foreach(var component in Components)
@@ -122,8 +123,13 @@ namespace JT1078.Hls
                     component.ToBuffer(ref writer);
                 }
             }
-            writer.WriteUInt16Return((ushort)(1011_0000_0000_0000 | (ushort)(writer.GetCurrentPosition() - SectionLengthPosition - 2)), SectionLengthPosition);
-            writer.WriteCRC32(SectionLengthPosition);
+            const int crcLength = 4;
+            writer.WriteUInt16Return((ushort)(0b_1011_0000_0000_0000 | (ushort)(writer.GetCurrentPosition() - SectionLengthPosition - 2) + crcLength), SectionLengthPosition);
+            //打包ts流时PAT和PMT表是没有adaptation field的，不够的长度直接补0xff即可。
+            //ts header(4B) + adaptation field length(1)
+            writer.WriteCRC32(5);
+            var size = TSConstants.FiexdPackageLength - writer.GetCurrentPosition();
+            writer.WriteArray(Enumerable.Range(0, size).Select(s => (byte)0xFF).ToArray());
         }
     }
 }

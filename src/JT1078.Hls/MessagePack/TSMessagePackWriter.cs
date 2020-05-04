@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Buffers.Binary;
 
 namespace JT1078.Hls.MessagePack
@@ -127,9 +129,11 @@ namespace JT1078.Hls.MessagePack
             }
             var crcSpan = writer.Written.Slice(start);
             uint crc = 0xFFFFFFFF;
+            byte j = 0;
             for (int i = 0; i < crcSpan.Length; i++)
             {
-                crc = (crc << 8) ^ Util.crcTable[(crc >> 24) ^ crcSpan[i]];
+                j = (byte)(((crc >> 24) ^ crcSpan[i]) & 0xff);
+                crc = (crc << 8) ^ Util.crcTable[j];
             }
             WriteUInt32(crc);
         }

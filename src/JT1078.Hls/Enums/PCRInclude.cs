@@ -6,6 +6,7 @@ namespace JT1078.Hls.Enums
 {
     /// <summary>
     /// 取0x50表示包含PCR或0x40表示不包含PCR
+    /// 注意:关键帧需要加pcr
     /// </summary>
     public enum PCRInclude:byte
     {

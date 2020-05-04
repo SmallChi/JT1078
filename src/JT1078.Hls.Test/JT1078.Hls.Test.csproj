@@ -17,4 +17,10 @@
     <ProjectReference Include="..\JT1078.Hls\JT1078.Hls.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="file\demo.264">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

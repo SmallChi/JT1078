@@ -3,6 +3,7 @@ using JT1078.Hls.Formatters;
 using JT1078.Hls.MessagePack;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace JT1078.Hls
@@ -19,13 +20,20 @@ namespace JT1078.Hls
         /// 5B
         /// </summary>
         public long PCR { get; set; }
-
+        /// <summary>
+        /// 填充字节大小
+        /// </summary>
+        public byte FillSize { get; set; }
         public void ToBuffer(ref TSMessagePackWriter writer)
         {
             writer.WriteByte((byte)PCRIncluded);
             if (PCRIncluded== PCRInclude.包含)
             {
                 writer.WriteInt5(PCR);
+            }
+            if (FillSize > 0)
+            {
+                writer.WriteArray(Enumerable.Range(0, FillSize).Select(s => (byte)0xFF).ToArray());
             }
         }
     }

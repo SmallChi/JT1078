@@ -15,7 +15,7 @@ namespace JT1078.Hls
         public ushort ProgramNumber { get; set; }
         /// <summary>
         /// 固定为二进制111(7)
-        /// 1110_0000_0000_0000
+        /// 0b_1110_0000_0000_0000
         /// 3bit
         /// </summary>
         internal byte Reserved1 { get; set; } = 0x07;
@@ -28,7 +28,7 @@ namespace JT1078.Hls
         public void ToBuffer(ref TSMessagePackWriter writer)
         {
             writer.WriteUInt16(ProgramNumber);
-            writer.WriteUInt16((ushort)(1110_0000_0000_0000 | PID));
+            writer.WriteUInt16((ushort)(0b_1110_0000_0000_0000 | PID));
         }
     }
 }

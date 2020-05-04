@@ -34,7 +34,7 @@ namespace JT1078.Hls
         /// </summary>
         public ushort PID { get; set; }
         /// <summary>
-        /// 传输优先级，0为低优先级，1为高优先级，通常取0
+        /// 传输加扰控制
         /// 2bit
         /// </summary>
         internal byte TransportScramblingControl { get; set; } = 0;
@@ -62,8 +62,8 @@ namespace JT1078.Hls
             writer.WriteByte(SyncByte);
             //TransportErrorIndicator   PayloadUnitStartIndicator   TransportPriority   PID
             //0 1   0   0000 0000 0000 0
-            writer.WriteUInt16((ushort)(0100_0000_0000_0000 | PID));
-            writer.WriteByte((byte)((int)AdaptationFieldControl | ContinuityCounter));
+            writer.WriteUInt16((ushort)(0b_0100_0000_0000_0000 | PID));
+            writer.WriteByte((byte)((byte)AdaptationFieldControl | ContinuityCounter));
             if (Adaptation != null)
             {
                 writer.Skip(1, out int AdaptationLengthPosition);
