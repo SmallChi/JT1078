@@ -1,5 +1,5 @@
 ﻿using JT1078.Hls.Enums;
-using JT1078.Hls.Formatters;
+using JT1078.Hls.Interfaces;
 using JT1078.Hls.MessagePack;
 using System;
 using System.Collections.Generic;
@@ -18,7 +18,7 @@ namespace JT1078.Hls
         /// 音频取值（0xc0-0xdf），通常为0xc0
         /// 视频取值（0xe0-0xef），通常为0xe0
         /// </summary>
-        public byte StreamId { get; set; }
+        public byte StreamId { get; set; } = 0xe0;
         /// <summary>
         /// 后面pes数据的长度，0表示长度不限制，只有视频数据长度会超过0xffff
         /// </summary>

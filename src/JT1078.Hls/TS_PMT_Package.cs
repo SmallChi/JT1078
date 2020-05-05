@@ -1,4 +1,4 @@
-﻿using JT1078.Hls.Formatters;
+﻿using JT1078.Hls.Interfaces;
 using JT1078.Hls.MessagePack;
 using System;
 using System.Collections.Generic;

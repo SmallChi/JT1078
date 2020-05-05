@@ -1,5 +1,5 @@
 ﻿using JT1078.Hls.Enums;
-using JT1078.Hls.Formatters;
+using JT1078.Hls.Interfaces;
 using JT1078.Hls.MessagePack;
 using System;
 using System.Collections.Generic;
@@ -16,6 +16,7 @@ namespace JT1078.Hls
         /// </summary>
         public PCRInclude PCRIncluded { get; set; }
         /// <summary>
+        /// 第一包的数据、关键帧
         /// Program Clock Reference,节目时钟参考,用于恢复出与编码端一致的系统时序时钟STC（System Time Clock）
         /// 5B
         /// </summary>
