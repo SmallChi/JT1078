@@ -1,16 +1,14 @@
-﻿using JT809.Protocol.Attributes;
-using JT809.Protocol.Extensions.JT1078.Formatters;
+﻿using JT809.Protocol.Extensions.JT1078.Enums;
+using JT809.Protocol.Formatters;
+using JT809.Protocol.MessagePack;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace JT809.Protocol.Extensions.JT1078.MessageBody
 {
     /// <summary>
     /// 远程录像回放请求消息
     /// </summary>
-    [JT809Formatter(typeof(JT809_JT1078_0x9A00_0x9A01_Formatter))]
-    public class JT809_JT1078_0x9A00_0x9A01 : JT809SubBodies
+    public class JT809_JT1078_0x9A00_0x9A01 : JT809SubBodies, IJT809MessagePackFormatter<JT809_JT1078_0x9A00_0x9A01>
     {
         /// <summary>
         /// 逻辑通道号
@@ -46,5 +44,35 @@ namespace JT809.Protocol.Extensions.JT1078.MessageBody
         /// 36
         /// </summary>
         public byte[] GnssData { get; set; }
+
+        public override ushort SubMsgId { get; } = JT809_JT1078_SubBusinessType.远程录像回放请求消息.ToUInt16Value();
+
+        public override string Description { get; } = "远程录像回放请求消息";
+
+        public JT809_JT1078_0x9A00_0x9A01 Deserialize(ref JT809MessagePackReader reader, IJT809Config config)
+        {
+            JT809_JT1078_0x9A00_0x9A01 jT808_JT1078_0x9A00_0x9A01 = new JT809_JT1078_0x9A00_0x9A01();
+            jT808_JT1078_0x9A00_0x9A01.ChannelId = reader.ReadByte();
+            jT808_JT1078_0x9A00_0x9A01.AVItemType = reader.ReadByte();
+            jT808_JT1078_0x9A00_0x9A01.StreamType = reader.ReadByte();
+            jT808_JT1078_0x9A00_0x9A01.MemType = reader.ReadByte();
+            jT808_JT1078_0x9A00_0x9A01.PlayBackStartTime = reader.ReadUTCDateTime();
+            jT808_JT1078_0x9A00_0x9A01.PlayBackEndTime = reader.ReadUTCDateTime();
+            jT808_JT1078_0x9A00_0x9A01.AuthorizeCode = reader.ReadArray(64).ToArray();
+            jT808_JT1078_0x9A00_0x9A01.GnssData = reader.ReadArray(36).ToArray();
+            return jT808_JT1078_0x9A00_0x9A01;
+        }
+
+        public void Serialize(ref JT809MessagePackWriter writer, JT809_JT1078_0x9A00_0x9A01 value, IJT809Config config)
+        {
+            writer.WriteByte(value.ChannelId);
+            writer.WriteByte(value.AVItemType);
+            writer.WriteByte(value.StreamType);
+            writer.WriteByte(value.MemType);
+            writer.WriteUTCDateTime(value.PlayBackStartTime);
+            writer.WriteUTCDateTime(value.PlayBackEndTime);
+            writer.WriteArray(value.AuthorizeCode);
+            writer.WriteArray(value.GnssData);
+        }
     }
 }
