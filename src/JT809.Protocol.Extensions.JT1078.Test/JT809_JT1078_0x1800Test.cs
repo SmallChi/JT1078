@@ -35,7 +35,7 @@ namespace JT809.Protocol.Extensions.JT1078.Test
                 SubBodies=  new JT809_JT1078_0x1800_0x1801() {
                     ServerIp="127.0.0.1",
                     ServerPort=8080,
-                    Result=1
+                    Result= JT809_JT1078_0x1800_0x1801_Result.失败
                  }
             };
             var hex = JT809Serializer.Serialize(jT809_JT1078_0x1800).ToHexString();
@@ -52,7 +52,7 @@ namespace JT809.Protocol.Extensions.JT1078.Test
             var jT809_JT1078_0x1800_0x1801 = jT809_JT1078_0x1800.SubBodies as JT809_JT1078_0x1800_0x1801;
             Assert.Equal("127.0.0.1", jT809_JT1078_0x1800_0x1801.ServerIp);
             Assert.Equal(8080, jT809_JT1078_0x1800_0x1801.ServerPort);
-            Assert.Equal(1, jT809_JT1078_0x1800_0x1801.Result);
+            Assert.Equal(1, (byte)jT809_JT1078_0x1800_0x1801.Result);
         }
 
         [Fact]
@@ -64,7 +64,7 @@ namespace JT809.Protocol.Extensions.JT1078.Test
                 VehicleColor = Protocol.Enums.JT809VehicleColorType.黄色,
                 SubBusinessType = (ushort)JT809_JT1078_SubBusinessType.主动请求停止实时音视频传输应答消息,
                 SubBodies = new JT809_JT1078_0x1800_0x1802() {
-                     Result=1
+                     Result= JT809_JT1078_0x1800_0x1802_Result.失败
                 }
             };
             var hex = JT809Serializer.Serialize(jT809_JT1078_0x1800).ToHexString();
@@ -79,7 +79,7 @@ namespace JT809.Protocol.Extensions.JT1078.Test
             Assert.Equal(Protocol.Enums.JT809VehicleColorType.黄色, jT809_JT1078_0x1800.VehicleColor);
             Assert.Equal((ushort)JT809_JT1078_SubBusinessType.主动请求停止实时音视频传输应答消息, jT809_JT1078_0x1800.SubBusinessType);
             var jT809_JT1078_0x1800_0x1802 = jT809_JT1078_0x1800.SubBodies as JT809_JT1078_0x1800_0x1802;
-            Assert.Equal(1, jT809_JT1078_0x1800_0x1802.Result);
+            Assert.Equal(1, (byte)jT809_JT1078_0x1800_0x1802.Result);
         }
     }
 }

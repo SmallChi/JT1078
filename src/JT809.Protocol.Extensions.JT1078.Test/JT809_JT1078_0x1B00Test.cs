@@ -45,7 +45,7 @@ namespace JT809.Protocol.Extensions.JT1078.Test
                  SubBusinessType= (ushort)JT809_JT1078_SubBusinessType.远程录像下载请求应答消息, 
                  SubBodies=  new JT809_JT1078_0x1B00_0x1B01()
                  {
-                    Result=1,
+                    Result= JT809_JT1078_0x1B00_0x1B01_Result.失败,
                     SessionId=2
                  }
             };
@@ -61,8 +61,8 @@ namespace JT809.Protocol.Extensions.JT1078.Test
             Assert.Equal(Protocol.Enums.JT809VehicleColorType.黄色, jT809_JT1078_0x1B00.VehicleColor);
             Assert.Equal((ushort)JT809_JT1078_SubBusinessType.远程录像下载请求应答消息, jT809_JT1078_0x1B00.SubBusinessType);
             var jT809_JT1078_0x1B00_0x1B01 = jT809_JT1078_0x1B00.SubBodies as JT809_JT1078_0x1B00_0x1B01;
-            Assert.Equal(1, jT809_JT1078_0x1B00_0x1B01.Result);
-            Assert.Equal(2, jT809_JT1078_0x1B00_0x1B01.SessionId);
+            Assert.Equal(1, (byte)jT809_JT1078_0x1B00_0x1B01.Result);
+            Assert.Equal(2, (byte)jT809_JT1078_0x1B00_0x1B01.SessionId);
         }
 
         [Fact]
@@ -74,7 +74,7 @@ namespace JT809.Protocol.Extensions.JT1078.Test
                 VehicleColor = Protocol.Enums.JT809VehicleColorType.黄色,
                 SubBusinessType = (ushort)JT809_JT1078_SubBusinessType.远程录像下载通知消息,
                 SubBodies = new JT809_JT1078_0x1B00_0x1B02() {
-                    Result=1, 
+                    Result= JT809_JT1078_0x1B00_0x1B02_Result.失败, 
                     UserName="tk",
                     SessionId=2,
                     ServerIp="127.0.0.1",
@@ -95,7 +95,7 @@ namespace JT809.Protocol.Extensions.JT1078.Test
             Assert.Equal(Protocol.Enums.JT809VehicleColorType.黄色, jT809_JT1078_0x1B00.VehicleColor);
             Assert.Equal((ushort)JT809_JT1078_SubBusinessType.远程录像下载通知消息, jT809_JT1078_0x1B00.SubBusinessType);
             var jT809_JT1078_0x1B00_0x1B02 = jT809_JT1078_0x1B00.SubBodies as JT809_JT1078_0x1B00_0x1B02;
-            Assert.Equal(1, jT809_JT1078_0x1B00_0x1B02.Result);
+            Assert.Equal(1, (byte)jT809_JT1078_0x1B00_0x1B02.Result);
             Assert.Equal("tk", jT809_JT1078_0x1B00_0x1B02.UserName);
             Assert.Equal(2, jT809_JT1078_0x1B00_0x1B02.SessionId);
             Assert.Equal("127.0.0.1", jT809_JT1078_0x1B00_0x1B02.ServerIp);
@@ -114,7 +114,7 @@ namespace JT809.Protocol.Extensions.JT1078.Test
                 SubBusinessType = (ushort)JT809_JT1078_SubBusinessType.远程录像下载控制应答消息,
                 SubBodies = new JT809_JT1078_0x1B00_0x1B03()
                 {
-                    Result = 1                   
+                    Result =  JT809_JT1078_0x1B00_0x1B03_Result.失败                   
                 }
             };
             var hex = JT809Serializer.Serialize(jT809_JT1078_0x1B00).ToHexString();
@@ -129,7 +129,7 @@ namespace JT809.Protocol.Extensions.JT1078.Test
             Assert.Equal(Protocol.Enums.JT809VehicleColorType.黄色, jT809_JT1078_0x1B00.VehicleColor);
             Assert.Equal((ushort)JT809_JT1078_SubBusinessType.远程录像下载控制应答消息, jT809_JT1078_0x1B00.SubBusinessType);
             var jT809_JT1078_0x1B00_0x1B03 = jT809_JT1078_0x1B00.SubBodies as JT809_JT1078_0x1B00_0x1B03;
-            Assert.Equal(1, jT809_JT1078_0x1B00_0x1B03.Result);
+            Assert.Equal(1, (byte)jT809_JT1078_0x1B00_0x1B03.Result);
         }
     }
 }

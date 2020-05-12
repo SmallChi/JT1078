@@ -4,6 +4,11 @@
         <name>JT809.Protocol.Extensions.JT1078</name>
     </assembly>
     <members>
+        <member name="T:JT809.Protocol.Extensions.JT1078.Enums.ControlType">
+            <summary>
+            控制类型
+            </summary>
+        </member>
         <member name="F:JT809.Protocol.Extensions.JT1078.Enums.JT809_JT1078_BusinessType.主链路时效口令业务类">
             <summary>
             主链路时效口令业务类

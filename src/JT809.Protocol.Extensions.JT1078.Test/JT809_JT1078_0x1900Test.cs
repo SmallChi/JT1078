@@ -111,7 +111,7 @@ namespace JT809.Protocol.Extensions.JT1078.Test
                 VehicleColor = Protocol.Enums.JT809VehicleColorType.黄色,
                 SubBusinessType = (ushort)JT809_JT1078_SubBusinessType.查询音视频资源目录应答消息,
                 SubBodies = new JT809_JT1078_0x1900_0x1902() {
-                    Result=1,
+                    Result= JT809_JT1078_0x1900_0x1902_Result.失败,
                     ItemNum=2,
                     ItemList = new List<JT809_JT1078_0x1900_Record> {
                         new JT809_JT1078_0x1900_Record{
@@ -150,7 +150,7 @@ namespace JT809.Protocol.Extensions.JT1078.Test
             Assert.Equal((ushort)JT809_JT1078_SubBusinessType.查询音视频资源目录应答消息, jT809_JT1078_0x1900.SubBusinessType);
             var jT809_JT1078_0x1900_0x1902 = jT809_JT1078_0x1900.SubBodies as JT809_JT1078_0x1900_0x1902;
             Assert.Equal(2u, jT809_JT1078_0x1900_0x1902.ItemNum);
-            Assert.Equal(1, jT809_JT1078_0x1900_0x1902.Result);
+            Assert.Equal(1, (byte)jT809_JT1078_0x1900_0x1902.Result);
 
             Assert.Equal(1u, jT809_JT1078_0x1900_0x1902.ItemList[0].AlarmType);
             Assert.Equal(2, jT809_JT1078_0x1900_0x1902.ItemList[0].AVItemType);

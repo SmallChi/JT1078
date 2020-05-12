@@ -45,7 +45,7 @@ namespace JT809.Protocol.Extensions.JT1078.Test
                  SubBusinessType= (ushort)JT809_JT1078_SubBusinessType.远程录像回放请求应答消息, 
                  SubBodies=  new JT809_JT1078_0x1A00_0x1A01()
                  {
-                    Result=1,
+                    Result= JT809_JT1078_0x1A00_0x1A01_Result.失败,
                     ServerIp="127.0.0.1",
                     ServerPort=8080
                  }
@@ -62,7 +62,7 @@ namespace JT809.Protocol.Extensions.JT1078.Test
             Assert.Equal(Protocol.Enums.JT809VehicleColorType.黄色, jT809_JT1078_0x1A00.VehicleColor);
             Assert.Equal((ushort)JT809_JT1078_SubBusinessType.远程录像回放请求应答消息, jT809_JT1078_0x1A00.SubBusinessType);
             var jT809_JT1078_0x1A00_0x1A01 = jT809_JT1078_0x1A00.SubBodies as JT809_JT1078_0x1A00_0x1A01;
-            Assert.Equal(1, jT809_JT1078_0x1A00_0x1A01.Result);
+            Assert.Equal(1, (byte)jT809_JT1078_0x1A00_0x1A01.Result);
             Assert.Equal("127.0.0.1", jT809_JT1078_0x1A00_0x1A01.ServerIp);
             Assert.Equal(8080, jT809_JT1078_0x1A00_0x1A01.ServerPort);
         }
@@ -76,7 +76,7 @@ namespace JT809.Protocol.Extensions.JT1078.Test
                 VehicleColor = Protocol.Enums.JT809VehicleColorType.黄色,
                 SubBusinessType = (ushort)JT809_JT1078_SubBusinessType.远程录像回放控制应答消息,
                 SubBodies = new JT809_JT1078_0x1A00_0x1A02() {
-                  Result=1
+                  Result= JT809_JT1078_0x1A00_0x1A02_Result.失败
                 }
             };
             var hex = JT809Serializer.Serialize(jT809_JT1078_0x1A00).ToHexString();
@@ -91,7 +91,7 @@ namespace JT809.Protocol.Extensions.JT1078.Test
             Assert.Equal(Protocol.Enums.JT809VehicleColorType.黄色, jT809_JT1078_0x1A00.VehicleColor);
             Assert.Equal((ushort)JT809_JT1078_SubBusinessType.远程录像回放控制应答消息, jT809_JT1078_0x1A00.SubBusinessType);
             var jT809_JT1078_0x1A00_0x1A02 = jT809_JT1078_0x1A00.SubBodies as JT809_JT1078_0x1A00_0x1A02;
-            Assert.Equal(1, jT809_JT1078_0x1A00_0x1A02.Result);
+            Assert.Equal(1, (byte)jT809_JT1078_0x1A00_0x1A02.Result);
         }
     }
 }

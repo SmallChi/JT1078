@@ -39,7 +39,7 @@ namespace JT809.Protocol.Extensions.JT1078.Test
         public void Test1()
         {
             var GnssDatas = Enumerable.Range(0, 36).Select(m => (byte)m).ToArray();
-            var AuthorizeCodes = Enumerable.Range(0, 64).Select(m => (byte)m).ToArray();
+            var AuthorizeCodes = "0123456789012345678901234567890123456789012345678901234567890123";
             JT809_JT1078_0x9A00 jT809_JT1078_0x9A00 = new JT809_JT1078_0x9A00()
             {
                 VehicleNo = "粤B12345",
@@ -57,15 +57,15 @@ namespace JT809.Protocol.Extensions.JT1078.Test
                  }
             };
             var hex = JT809Serializer.Serialize(jT809_JT1078_0x9A00).ToHexString();
-            Assert.Equal("D4C142313233343500000000000000000000000000029A01000000780201040300000000596ACB0200000000596C1C82000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E3F000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F20212223", hex);
+            Assert.Equal("D4C142313233343500000000000000000000000000029A01000000780201040300000000596ACB0200000000596C1C8230313233343536373839303132333435363738393031323334353637383930313233343536373839303132333435363738393031323334353637383930313233000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F20212223", hex);
         }
 
         [Fact]
         public void Test2()
         {
             var GnssDatas = Enumerable.Range(0, 36).Select(m => (byte)m).ToArray();
-            var AuthorizeCodes = Enumerable.Range(0, 64).Select(m => (byte)m).ToArray();
-            var jT809_JT1078_0x9A00 = JT809Serializer.Deserialize<JT809_JT1078_0x9A00>("D4C142313233343500000000000000000000000000029A01000000780201040300000000596ACB0200000000596C1C82000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E3F000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F20212223".ToHexBytes());
+            var AuthorizeCodes = "0123456789012345678901234567890123456789012345678901234567890123";
+            var jT809_JT1078_0x9A00 = JT809Serializer.Deserialize<JT809_JT1078_0x9A00>("D4C142313233343500000000000000000000000000029A01000000780201040300000000596ACB0200000000596C1C8230313233343536373839303132333435363738393031323334353637383930313233343536373839303132333435363738393031323334353637383930313233000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F20212223".ToHexBytes());
             Assert.Equal("粤B12345", jT809_JT1078_0x9A00.VehicleNo);
             Assert.Equal(Protocol.Enums.JT809VehicleColorType.黄色, jT809_JT1078_0x9A00.VehicleColor);
             Assert.Equal((ushort)JT809_JT1078_SubBusinessType.远程录像回放请求消息, jT809_JT1078_0x9A00.SubBusinessType);
@@ -91,9 +91,9 @@ namespace JT809.Protocol.Extensions.JT1078.Test
                 VehicleColor = Protocol.Enums.JT809VehicleColorType.黄色,
                 SubBusinessType = (ushort)JT809_JT1078_SubBusinessType.远程录像回放控制消息,
                 SubBodies = new JT809_JT1078_0x9A00_0x9A02() {
-                    ControlType=1,
+                    ControlType= ControlType.暂停回放,
                     DateTime= Convert.ToDateTime("2017-07-17 10:10:10"),
-                    FastTime=1
+                    FastTime= FastTime._1倍
                 }
             };
             var hex = JT809Serializer.Serialize(jT809_JT1078_0x9A00).ToHexString();
@@ -108,9 +108,9 @@ namespace JT809.Protocol.Extensions.JT1078.Test
             Assert.Equal(Protocol.Enums.JT809VehicleColorType.黄色, jT809_JT1078_0x9A00.VehicleColor);
             Assert.Equal((ushort)JT809_JT1078_SubBusinessType.远程录像回放控制消息, jT809_JT1078_0x9A00.SubBusinessType);
             var jT809_JT1078_0x9A00_0x9A02 = jT809_JT1078_0x9A00.SubBodies as JT809_JT1078_0x9A00_0x9A02;
-            Assert.Equal(1, jT809_JT1078_0x9A00_0x9A02.ControlType);
+            Assert.Equal(1, (byte)jT809_JT1078_0x9A00_0x9A02.ControlType);
             Assert.Equal(Convert.ToDateTime("2017-07-17 10:10:10"), jT809_JT1078_0x9A00_0x9A02.DateTime);
-            Assert.Equal(1, jT809_JT1078_0x9A00_0x9A02.FastTime);
+            Assert.Equal(1, (byte)jT809_JT1078_0x9A00_0x9A02.FastTime);
         }
     }
 }
