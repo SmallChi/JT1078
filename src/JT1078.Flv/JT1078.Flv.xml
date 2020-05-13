@@ -266,6 +266,7 @@
             <summary>
             编码视频
             </summary>
+            <remarks><paramref name="package"/>必须是组包后的数据</remarks>
             <param name="package">1078包</param>
             <param name="needVideoHeader">是否需要首帧视频</param>
             <returns></returns>

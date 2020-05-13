@@ -193,13 +193,14 @@ namespace JT1078.Flv
         /// <summary>
         /// 编码视频
         /// </summary>
+        /// <remarks><paramref name="package"/>必须是组包后的数据</remarks>
         /// <param name="package">1078包</param>
         /// <param name="needVideoHeader">是否需要首帧视频</param>
         /// <returns></returns>
         public byte[] EncoderVideoTag(JT1078Package package, bool needVideoHeader = false)
         {
             if (package.Label3.DataType == JT1078DataType.音频帧) return default;
-            byte[] buffer = FlvArrayPool.Rent(65535);
+            byte[] buffer = FlvArrayPool.Rent(package.Bodies.Length);
             FlvMessagePackWriter flvMessagePackWriter = new FlvMessagePackWriter(buffer);
             var nalus = h264Decoder.ParseNALU(package);
             if (nalus != null && nalus.Count > 0)
@@ -221,7 +222,7 @@ namespace JT1078.Flv
                     if (sps == null)
                     {
                         return null;
-                    } 
+                    }
                     var rawData = h264Decoder.DiscardEmulationPreventionBytes(sps.RawData);
                     ExpGolombReader h264GolombReader = new ExpGolombReader(rawData);
                     SPSInfo spsInfo = h264GolombReader.ReadSPS();
@@ -289,7 +290,7 @@ namespace JT1078.Flv
         /// <returns></returns>
         public byte[] EncoderOtherVideoTag(H264NALU nALU)
         {
-            byte[] buffer = FlvArrayPool.Rent(65535);
+            byte[] buffer = FlvArrayPool.Rent(nALU.RawData.Length);
             try
             {
                 FlvMessagePackWriter flvMessagePackWriter = new FlvMessagePackWriter(buffer);
@@ -340,7 +341,7 @@ namespace JT1078.Flv
 
         byte[] EncoderAacAudioTag(uint timestamp, byte[] aacFrameData)
         {
-            byte[] buffer = FlvArrayPool.Rent(65535);
+            byte[] buffer = FlvArrayPool.Rent(aacFrameData.Length);
             try
             {
                 FlvMessagePackWriter flvMessagePackWriter = new FlvMessagePackWriter(buffer);
