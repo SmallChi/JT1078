@@ -199,7 +199,6 @@ namespace JT1078.Hls
                     package.Payload.Payload.NALUs.Add(dataReader.Slice(index, remainingLength).ToArray());
                     index += remainingLength;
                     package.ToBuffer(ref messagePackReader);
-
                     while(index!= jt1078Package.Bodies.Length)
                     {
                         if (counter > 0xf)
@@ -240,6 +239,7 @@ namespace JT1078.Hls
             //package.Header.Adaptation.FillSize
             if (nalu.Length < FiexdSegmentPESLength)
             {
+                package.Header.PackageType = PackageType.Data_End;
                 package.Header.Adaptation = new TS_AdaptationInfo();
                 package.Header.Adaptation.PCRIncluded = PCRInclude.不包含;
                 package.Header.Adaptation.FillSize = (byte)(FiexdSegmentPESLength - nalu.Length);

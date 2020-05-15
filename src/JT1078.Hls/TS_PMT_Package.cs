@@ -1,4 +1,5 @@
-﻿using JT1078.Hls.Interfaces;
+﻿using JT1078.Hls.Enums;
+using JT1078.Hls.Interfaces;
 using JT1078.Hls.MessagePack;
 using System;
 using System.Collections.Generic;
@@ -95,6 +96,7 @@ namespace JT1078.Hls
         public uint CRC32 { get; set; }
         public void ToBuffer(ref TSMessagePackWriter writer)
         {
+            Header.PackageType = PackageType.PMT;
             Header.ToBuffer(ref writer);
             writer.WriteByte(TableId);
             //SectionSyntaxIndicator   Zero  Reserved1   SectionLength

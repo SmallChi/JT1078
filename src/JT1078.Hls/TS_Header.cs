@@ -57,6 +57,8 @@ namespace JT1078.Hls
         /// </summary>
         public TS_AdaptationInfo Adaptation { get; set; }
 
+        public PackageType PackageType { get; set; }
+
         public void ToBuffer(ref TSMessagePackWriter writer)
         {
             writer.WriteByte(SyncByte);
@@ -64,16 +66,22 @@ namespace JT1078.Hls
             //0 1   0   0000 0000 0000 0
             writer.WriteUInt16((ushort)(0b_0100_0000_0000_0000 | PID));
             writer.WriteByte((byte)((byte)AdaptationFieldControl | ContinuityCounter));
-            if (Adaptation != null)
+            if(PackageType== PackageType.PAT ||
+               PackageType == PackageType.PMT ||
+               PackageType == PackageType.Data_Start ||
+               PackageType == PackageType.Data_End)
             {
-                writer.Skip(1, out int AdaptationLengthPosition);
-                Adaptation.ToBuffer(ref writer);
-                writer.WriteByteReturn((byte)(writer.GetCurrentPosition() - AdaptationLengthPosition - 1), AdaptationLengthPosition);
+                if (Adaptation != null)
+                {
+                    writer.Skip(1, out int AdaptationLengthPosition);
+                    Adaptation.ToBuffer(ref writer);
+                    writer.WriteByteReturn((byte)(writer.GetCurrentPosition() - AdaptationLengthPosition - 1), AdaptationLengthPosition);
+                }
+                else
+                {
+                    writer.WriteByte(0);
+                }
             }
-            else
-            {
-                writer.WriteByte(0);
-            } 
         }
     }
 }
