@@ -163,5 +163,11 @@ namespace JT1078.Hls.MessagePack
         {
             return writer.WrittenCount;
         }
+        public void WriteString(string value)
+        {
+            byte[] codeBytes = TSConstants.Encoding.GetBytes(value);
+            codeBytes.CopyTo(writer.Free);
+            writer.Advance(codeBytes.Length);
+        }
     }
 }
