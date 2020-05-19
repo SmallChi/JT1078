@@ -5,12 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="H264\JT1078_3.rar" />
-    <None Remove="H264\JT1078_4.rar" />
-    <None Remove="H264\JT1078_5.rar" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageReference Include="xunit" Version="2.4.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
@@ -20,7 +14,18 @@
   <ItemGroup>
     <ProjectReference Include="..\JT1078.Flv\JT1078.Flv.csproj" />
   </ItemGroup>
-
+  <ItemGroup>
+    <Folder Include="H264\" />
+    <None Include="..\..\doc\video\jt1078_3.txt" Link="H264\jt1078_3.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\doc\video\jt1078_1.txt" Link="H264\jt1078_1.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\doc\video\jt1078_2.txt" Link="H264\jt1078_2.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <ItemGroup>
     <None Update="H264\index.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -35,12 +40,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="H264\JT1078_3.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="H264\JT1078_4.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="H264\JT1078_5.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

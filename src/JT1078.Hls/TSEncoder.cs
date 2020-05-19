@@ -24,8 +24,6 @@ namespace JT1078.Hls
     {
         private const int FiexdSegmentPESLength = 184;
         private const int FiexdTSLength = 188;
-        private ConcurrentDictionary<string, byte> PATCounter = new ConcurrentDictionary<string, byte>();
-        private ConcurrentDictionary<string, byte> PMTCounter = new ConcurrentDictionary<string, byte>();
         private ConcurrentDictionary<string, byte> VideoCounter = new ConcurrentDictionary<string, byte>();
         //private ConcurrentDictionary<string, byte> AudioCounter = new ConcurrentDictionary<string, byte>();
         public byte[] CreatePAT(JT1078Package jt1078Package, int minBufferSize = 188)
@@ -35,20 +33,16 @@ namespace JT1078.Hls
             {
                 TS_PAT_Package package = new TS_PAT_Package();
                 package.Header = new TS_Header();
-                package.Header.ContinuityCounter = PATCounter.AddOrUpdate(jt1078Package.GetKey(), 0, (a, b) =>
-                {
-                    if (b > 0xf)
-                    {
-                        return 0;
-                    }
-                    else
-                    {
-                        return (byte)(b +1);
-                    }
-                });
+                package.Header.ContinuityCounter = 0;
                 package.Header.AdaptationFieldControl = AdaptationFieldControl.无自适应域_仅含有效负载;
                 package.Header.PayloadUnitStartIndicator = 1;
                 package.Header.PID = 0;
+                package.Programs = new List<TS_PAT_Program>();
+                package.Programs.Add(new TS_PAT_Program()
+                {
+                    ProgramNumber = 0x0001,
+                    PID = 0x1000,
+                });
                 TSMessagePackWriter messagePackReader = new TSMessagePackWriter(buffer);
                 package.ToBuffer(ref messagePackReader);
                 return messagePackReader.FlushAndGetArray();
@@ -65,17 +59,7 @@ namespace JT1078.Hls
             {
                 TS_PMT_Package package = new TS_PMT_Package();
                 package.Header = new TS_Header();
-                package.Header.ContinuityCounter = PMTCounter.AddOrUpdate(jt1078Package.GetKey(), 0, (a, b) =>
-                {
-                    if (b > 0xf)
-                    {
-                        return 0;
-                    }
-                    else
-                    {
-                        return (byte)(b + 1);
-                    }
-                });
+                package.Header.ContinuityCounter = 0;
                 package.Header.AdaptationFieldControl = AdaptationFieldControl.无自适应域_仅含有效负载;
                 package.Header.PayloadUnitStartIndicator = 1;
                 package.Header.PID = 4096;
@@ -209,6 +193,7 @@ namespace JT1078.Hls
                         if(segmentFullSize >= FiexdSegmentPESLength)
                         {
                             CreateSegmentPES(ref messagePackReader, dataReader.Slice(index, FiexdSegmentPESLength).ToArray(), counter++);
+                            index += FiexdSegmentPESLength;
                         }
                         else
                         {
@@ -247,6 +232,7 @@ namespace JT1078.Hls
             }
             else
             {
+                package.Header.PackageType = PackageType.Data_Segment;
                 package.Header.AdaptationFieldControl = AdaptationFieldControl.无自适应域_仅含有效负载;
             }
             package.Payload = nalu;

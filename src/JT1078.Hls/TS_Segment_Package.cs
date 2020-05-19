@@ -13,7 +13,6 @@ namespace JT1078.Hls
         public byte[] Payload { get; set; }
         public void ToBuffer(ref TSMessagePackWriter writer)
         {
-            Header.PackageType = PackageType.Data_Segment;
             Header.ToBuffer(ref writer);
             writer.WriteArray(Payload);
         }

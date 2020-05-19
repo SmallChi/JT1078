@@ -10,7 +10,7 @@ using System.Buffers.Binary;
 namespace JT1078.Hls.Test
 {
     /// <summary>
-    /// 使用demo0.ts
+    /// 使用doc/video/demo0.ts
     /// </summary>
     public class TS_PMT_Package_Test
     {
