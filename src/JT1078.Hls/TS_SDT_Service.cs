@@ -63,14 +63,14 @@ namespace JT1078.Hls
         public void ToBuffer(ref TSMessagePackWriter writer)
         {
             writer.WriteUInt16(ServiceId);
-            writer.WriteByte((byte)((ReservedFutureUse << 2) | (EITScheduleFlag << 1) | EITPresentFollowingFlag));
+            writer.WriteByte((byte)(ReservedFutureUse << 2 | EITScheduleFlag << 1 | EITPresentFollowingFlag));
             writer.Skip(2, out var position);
             foreach (var descriptor in Descriptors)
             {
                 descriptor.ToBuffer(ref writer);
             }
             DescriptorsLoopLength = (ushort)(writer.GetCurrentPosition() - position);
-            writer.WriteUInt16Return((ushort)(((ushort)RunningStatus << 13) | ((ushort)FreeCAMode << 12) | DescriptorsLoopLength), position);
+            writer.WriteUInt16Return((ushort)((ushort)RunningStatus << 13 | (ushort)FreeCAMode << 12 | DescriptorsLoopLength), position);
         }
     }
 }
