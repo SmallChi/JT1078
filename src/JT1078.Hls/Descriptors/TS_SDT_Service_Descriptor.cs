@@ -11,18 +11,17 @@ namespace JT1078.Hls.Descriptors
     /// <summary>
     /// 业务描述服务描述
     /// </summary>
-    public class TS_SDT_Service_Descriptor : ITSMessagePackFormatter
+    public class TS_SDT_Service_Descriptor : DescriptorBase
     {
         /// <summary>
         /// 业务描述符
         /// 8bit
         /// </summary>
-        public byte DescriptorTag { get; set; } = 0x48;
+        public override byte Tag { get; set; } = 0x48;
         /// <summary>
-        /// 
         /// 8bit
         /// </summary>
-        internal byte DescriptorLength { get; set; }
+        public override byte Length { get; set; }
         /// <summary>
         /// 
         /// 8bit
@@ -48,9 +47,9 @@ namespace JT1078.Hls.Descriptors
         /// ServiceNameLenth
         /// </summary>
         internal string ServiceName { get; set; }
-        public void ToBuffer(ref TSMessagePackWriter writer)
+        public override void ToBuffer(ref TSMessagePackWriter writer)
         {
-            writer.WriteByte(DescriptorTag);
+            writer.WriteByte(Tag);
             writer.Skip(1,out var position);
             writer.WriteByte((byte)ServiceType);
             writer.Skip(1, out var serviceProviderLengthPosition);

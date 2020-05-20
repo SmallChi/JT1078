@@ -37,7 +37,11 @@ namespace JT1078.Hls.Test
                     JT1078Package fullpackage = JT1078Serializer.Merge(package);
                     if (fullpackage != null)
                     {
+                        var sdt = tSEncoder.CreateSDT(fullpackage);
+                        string sdtHEX = sdt.ToHexString();
+                        fileStream.Write(sdt);
                         var pat = tSEncoder.CreatePAT(fullpackage);
+                        string patHEX = pat.ToHexString();
                         fileStream.Write(pat);
                         var pmt = tSEncoder.CreatePMT(fullpackage);
                         fileStream.Write(pmt);
@@ -56,6 +60,7 @@ namespace JT1078.Hls.Test
                 fileStream?.Dispose();
             }
         }
+
         [Fact]
         public void ToBufferTest3()
         {

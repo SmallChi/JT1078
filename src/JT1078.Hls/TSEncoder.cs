@@ -10,6 +10,7 @@ using JT1078.Hls.MessagePack;
 using JT1078.Hls.Enums;
 using System.Collections.Concurrent;
 using System.Security.Cryptography;
+using JT1078.Hls.Descriptors;
 
 [assembly: InternalsVisibleTo("JT1078.Hls.Test")]
 
@@ -24,8 +25,54 @@ namespace JT1078.Hls
     {
         private const int FiexdSegmentPESLength = 184;
         private const int FiexdTSLength = 188;
+        private const string ServiceProvider = "JTT1078";
+        private const string ServiceName = "Koike&TK";
         private ConcurrentDictionary<string, byte> VideoCounter = new ConcurrentDictionary<string, byte>();
         //private ConcurrentDictionary<string, byte> AudioCounter = new ConcurrentDictionary<string, byte>();
+        public byte[] CreateSDT(JT1078Package jt1078Package, int minBufferSize = 188)
+        {
+            byte[] buffer = TSArrayPool.Rent(minBufferSize);
+            try
+            {
+                TS_SDT_Package package = new TS_SDT_Package();
+                package.Header = new TS_Header();
+                package.Header.PID = 0x0011;
+                package.Header.AdaptationFieldControl = AdaptationFieldControl.无自适应域_仅含有效负载;
+                package.Header.ContinuityCounter = 0;
+                package.TableId = 0x42;
+                package.TransportStreamId = 0x0001;
+                package.VersionNumber = 0;
+                package.CurrentNextIndicator = 0x01;
+                package.SectionNumber = 0x00;
+                package.LastSectionNumber = 0x00;
+                package.OriginalNetworkId = 0xFF01;
+                package.Services = new List<TS_SDT_Service>();
+                package.Services.Add(new TS_SDT_Service()
+                {
+                    ServiceId = 0x0001,
+                    EITScheduleFlag = 0x00,
+                    EITPresentFollowingFlag = 0x00,
+                    RunningStatus = TS_SDT_Service_RunningStatus.运行,
+                    FreeCAMode = 0x00,
+                    Descriptors = new List<TS_SDT_Service_Descriptor> 
+                    {
+                         new TS_SDT_Service_Descriptor{
+                            Tag=0x48,
+                            ServiceType= TS_SDT_Service_Descriptor_ServiceType.数字电视业务,
+                            ServiceProvider=ServiceProvider,
+                            ServiceName=ServiceName
+                         }
+                    }
+                });
+                TSMessagePackWriter writer = new TSMessagePackWriter(buffer);
+                package.ToBuffer(ref writer);
+                return  writer.FlushAndGetArray();
+            }
+            finally
+            {
+                TSArrayPool.Return(buffer);
+            }
+        }
         public byte[] CreatePAT(JT1078Package jt1078Package, int minBufferSize = 188)
         {
             byte[] buffer = TSArrayPool.Rent(minBufferSize);

@@ -31,6 +31,8 @@ namespace JT1078.Hls
             if (PCRIncluded== PCRInclude.包含)
             {
                 writer.WriteInt5(PCR);
+#warning PCR 0????
+                writer.WriteByte(0);
             }
             if (FillSize > 0)
             {

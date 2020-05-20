@@ -37,10 +37,10 @@ namespace JT1078.Hls.Test
                 FreeCAMode = 0x00,
                 Descriptors = new List<Descriptors.TS_SDT_Service_Descriptor> {
                      new Descriptors.TS_SDT_Service_Descriptor{
-                            DescriptorTag=0x48,
+                             Tag=0x48,
                              ServiceType= TS_SDT_Service_Descriptor_ServiceType.数字电视业务,
-                              ServiceProvider="FFmpeg",
-                               ServiceName="Service01"
+                             ServiceProvider="FFmpeg",
+                             ServiceName="Service01"
                      }
                 }
             }) ;
