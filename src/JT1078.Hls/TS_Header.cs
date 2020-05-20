@@ -32,7 +32,7 @@ namespace JT1078.Hls
         /// pid值
         /// 13bit
         /// </summary>
-        public ushort PID { get; set; }
+        public ushort PID { get; set; } = 0x0011;
         /// <summary>
         /// 传输加扰控制
         /// 2bit
@@ -69,7 +69,8 @@ namespace JT1078.Hls
             if(PackageType== PackageType.PAT ||
                PackageType == PackageType.PMT ||
                PackageType == PackageType.Data_Start ||
-               PackageType == PackageType.Data_End)
+               PackageType == PackageType.Data_End ||
+                PackageType == PackageType.SDT)
             {
                 if (Adaptation != null)
                 {

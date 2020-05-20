@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace JT1078.Hls
+namespace JT1078.Hls.Descriptors
 {
     /// <summary>
     /// 业务描述服务描述
@@ -14,7 +14,7 @@ namespace JT1078.Hls
     public class TS_SDT_Service_Descriptor : ITSMessagePackFormatter
     {
         /// <summary>
-        /// 
+        /// 业务描述符
         /// 8bit
         /// </summary>
         public byte DescriptorTag { get; set; } = 0x48;
@@ -22,12 +22,12 @@ namespace JT1078.Hls
         /// 
         /// 8bit
         /// </summary>
-        internal byte DescriptorLength { get; set; } = 0x12;
+        internal byte DescriptorLength { get; set; }
         /// <summary>
         /// 
         /// 8bit
         /// </summary>
-        internal byte ServiceType { get; set; } = 0x01;
+        internal TS_SDT_Service_Descriptor_ServiceType ServiceType { get; set; } =  TS_SDT_Service_Descriptor_ServiceType.数字电视业务;
         /// <summary>
         /// 
         /// 8bit
@@ -52,14 +52,14 @@ namespace JT1078.Hls
         {
             writer.WriteByte(DescriptorTag);
             writer.Skip(1,out var position);
-            writer.WriteByte(ServiceType);
+            writer.WriteByte((byte)ServiceType);
             writer.Skip(1, out var serviceProviderLengthPosition);
             writer.WriteString(ServiceProvider);
-            writer.WriteByteReturn((byte)(writer.GetCurrentPosition() - serviceProviderLengthPosition), serviceProviderLengthPosition);
+            writer.WriteByteReturn((byte)(writer.GetCurrentPosition() - serviceProviderLengthPosition-1), serviceProviderLengthPosition);
             writer.Skip(1, out int SeviceNameLengthPosition);
             writer.WriteString(ServiceName);
-            writer.WriteByteReturn((byte)(writer.GetCurrentPosition() - SeviceNameLengthPosition), SeviceNameLengthPosition);
-            writer.WriteByteReturn((byte)(writer.GetCurrentPosition() - position), position);
+            writer.WriteByteReturn((byte)(writer.GetCurrentPosition() - SeviceNameLengthPosition-1), SeviceNameLengthPosition);
+            writer.WriteByteReturn((byte)(writer.GetCurrentPosition() - position-1), position);
         }
     }
 }

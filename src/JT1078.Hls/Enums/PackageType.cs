@@ -11,5 +11,6 @@ namespace JT1078.Hls.Enums
         Data_Start=3,
         Data_Segment = 4,
         Data_End = 5,
+        SDT=6
     }
 }
