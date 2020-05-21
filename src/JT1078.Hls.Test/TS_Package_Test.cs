@@ -154,6 +154,35 @@ namespace JT1078.Hls.Test
                 fileStream?.Close();
                 fileStream?.Dispose();
             }
-        }        
+        }
+        [Fact]
+        public void PTSTest()
+        {
+            //pts
+            //31 00 09 08 97 
+
+            long ptsvalue = 132171;
+            var str = Convert.ToString(ptsvalue, 2).PadLeft(40, '0');
+            str = str.Insert(str.Length, "1");
+            str = str.Insert(str.Length - 16, "1");
+            str = str.Insert(str.Length - 32, "1");
+            str = str.Insert(str.Length - 36, "0011");
+            str = str.Substring(str.Length - 40, 40);
+            var pts = Convert.ToInt64(str, 2);
+        }
+        [Fact]
+        public void DTSTest1()
+        {
+            //dts
+            //11 00 07 D8 61 
+            long value = 126000;
+            var str = Convert.ToString(value, 2).PadLeft(40, '0');
+            str = str.Insert(str.Length, "1");
+            str = str.Insert(str.Length - 16, "1");
+            str = str.Insert(str.Length - 32, "1");
+            str = str.Insert(str.Length - 36, "0001");
+            str = str.Substring(str.Length - 40, 40);
+            var dts = Convert.ToInt64(str, 2);
+        }
     }
 }
