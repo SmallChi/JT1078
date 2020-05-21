@@ -16,6 +16,10 @@ namespace JT1078.Hls
         /// 固定包长度
         /// </summary>
         public const int FiexdPackageLength = 188;
+        /// <summary>
+        /// 固定ES包头的长度
+        /// </summary>
+        public const int FiexdESPackageHeaderLength = 6;
         
     }
 }

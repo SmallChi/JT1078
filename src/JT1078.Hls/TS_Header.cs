@@ -64,7 +64,8 @@ namespace JT1078.Hls
             writer.WriteByte(SyncByte);
             //TransportErrorIndicator   PayloadUnitStartIndicator   TransportPriority   PID
             //0 1   0   0000 0000 0000 0
-            writer.WriteUInt16((ushort)(0b_0100_0000_0000_0000 | PID));
+            //writer.WriteUInt16((ushort)((0b_0100_0000_0000_0000 & (PayloadUnitStartIndicator<<14)) | PID));
+            writer.WriteUInt16((ushort)((PayloadUnitStartIndicator<<14) | PID));
             writer.WriteByte((byte)((byte)AdaptationFieldControl | ContinuityCounter));
             if(PackageType== PackageType.PAT ||
                PackageType == PackageType.PMT ||

@@ -26,8 +26,12 @@ namespace JT1078.Hls
         private const int FiexdSegmentPESLength = 184;
         private const int FiexdTSLength = 188;
         private const string ServiceProvider = "JTT1078";
-        private const string ServiceName = "Koike&TK";
-        private ConcurrentDictionary<string, byte> VideoCounter = new ConcurrentDictionary<string, byte>();
+        private const string ServiceName = "Koike&TK"; 
+        public TSEncoder()
+        {
+            VideoCounter = new ConcurrentDictionary<string, byte>(StringComparer.OrdinalIgnoreCase);
+        }
+        private ConcurrentDictionary<string, byte> VideoCounter;
         //private ConcurrentDictionary<string, byte> AudioCounter = new ConcurrentDictionary<string, byte>();
         public byte[] CreateSDT(JT1078Package jt1078Package, int minBufferSize = 188)
         {
@@ -143,38 +147,41 @@ namespace JT1078.Hls
                 //ts header 4
                 totalLength += 4;
                 package.Header.PID = 256;
+                package.Header.PackageType = PackageType.Data_Start;
                 string key = jt1078Package.GetKey();
-                if (VideoCounter.TryGetValue(key, out byte counter))
+                //if (jt1078Package.Label3.DataType == JT1078DataType.视频P帧)
+                //{
+
+                //}
+                byte counter = VideoCounter.AddOrUpdate(key, 0, (a, b) =>
                 {
-                    if (counter > 0xf)
+                    if (b > 0xf)
                     {
-                        counter = 0;
+                        return 0;
                     }
-                    package.Header.ContinuityCounter = counter++;
-                    VideoCounter.TryUpdate(key, counter, counter);
-                }
-                else
-                {
-                    package.Header.ContinuityCounter = counter++;
-                    VideoCounter.TryAdd(key, counter);
-                }
+                    else
+                    {
+                        return b;
+                    }
+                });
+                package.Header.ContinuityCounter = counter;
                 package.Header.PayloadUnitStartIndicator = 1;
                 package.Header.Adaptation = new TS_AdaptationInfo();
                 package.Payload = new PES_Package();
                 package.Payload.StreamId = 0xe0;
                 package.Payload.PESPacketLength = 0;
-                //PESStartCode + StreamId + PESPacketLength
-                //3 + 1 + 2
-                totalLength += (3+1+2);
+                //PESStartCode + StreamId+ Flag1 + PTS_DTS_Flag + PESPacketLength
+                //3 + 1 + 1 + 1 + 2
+                totalLength += (3+1+1+1+2);
                 package.Payload.PTS_DTS_Flag = PTS_DTS_Flags.all;
                 if (jt1078Package.Label3.DataType== JT1078DataType.视频I帧)
                 {
                     //ts header adaptation
-                    //PCRIncluded + PCR
-                    //1 + 5
-                    totalLength += (1 + 5);
+                    //PCRIncluded + Timestamp
+                    //1 + 6
+                    totalLength += (1 + 6);
                     package.Header.Adaptation.PCRIncluded = PCRInclude.包含;
-                    package.Header.Adaptation.PCR = (long)jt1078Package.Timestamp;
+                    package.Header.Adaptation.Timestamp = (long)jt1078Package.Timestamp;
                     package.Payload.DTS = jt1078Package.LastIFrameInterval;
                     package.Payload.PTS = jt1078Package.LastIFrameInterval;
                 }
@@ -189,8 +196,9 @@ namespace JT1078.Hls
                     package.Payload.PTS = jt1078Package.LastFrameInterval;
                 }
                 //Flag1 + PTS_DTS_Flag + DTS + PTS
-                //1 + 1 + 5 + 5
+                //1 + 1 + 5 + 5 = 12
                 totalLength += 12;
+                totalLength += TSConstants.FiexdESPackageHeaderLength;
                 //根据计算剩余的长度进行是否需要填充第一包
                 var remainingLength = FiexdTSLength - totalLength;
                 int index = 0;
@@ -202,6 +210,7 @@ namespace JT1078.Hls
                 package.Payload.Payload = new ES_Package();
                 if (fullSize < 0)
                 {
+                    counter++;
                     //这个很重要，需要控制
                     package.Header.AdaptationFieldControl = AdaptationFieldControl.同时带有自适应域和有效负载;
                     //还差一点
@@ -212,6 +221,7 @@ namespace JT1078.Hls
                 }
                 else if(fullSize==0)
                 {
+                    counter++;
                     //这个很重要，需要控制
                     package.Header.AdaptationFieldControl = AdaptationFieldControl.无自适应域_仅含有效负载;
                     //刚刚好
@@ -230,7 +240,7 @@ namespace JT1078.Hls
                     package.Payload.Payload.NALUs.Add(dataReader.Slice(index, remainingLength).ToArray());
                     index += remainingLength;
                     package.ToBuffer(ref messagePackReader);
-                    while(index!= jt1078Package.Bodies.Length)
+                    while (index!= jt1078Package.Bodies.Length)
                     {
                         if (counter > 0xf)
                         {
@@ -248,8 +258,18 @@ namespace JT1078.Hls
                             index += segmentFullSize;
                         }
                     }
-                    VideoCounter.TryUpdate(key, counter, counter);
                 }
+                VideoCounter.AddOrUpdate(key, counter, (a, b) =>
+                {
+                    if (b > 0xf)
+                    {
+                        return 0;
+                    }
+                    else
+                    {
+                        return b;
+                    }
+                });
                 return messagePackReader.FlushAndGetArray();
             }
             finally
@@ -274,7 +294,9 @@ namespace JT1078.Hls
                 package.Header.PackageType = PackageType.Data_End;
                 package.Header.Adaptation = new TS_AdaptationInfo();
                 package.Header.Adaptation.PCRIncluded = PCRInclude.不包含;
-                package.Header.Adaptation.FillSize = (byte)(FiexdSegmentPESLength - nalu.Length);
+                //AdaptationLengthPosition + PCRIncluded
+                //1 + 1
+                package.Header.Adaptation.FillSize = (byte)(FiexdSegmentPESLength - 1 - 1 - nalu.Length);
                 package.Header.AdaptationFieldControl = AdaptationFieldControl.同时带有自适应域和有效负载;
             }
             else
