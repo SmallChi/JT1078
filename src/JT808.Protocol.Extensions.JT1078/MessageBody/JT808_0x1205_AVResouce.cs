@@ -28,7 +28,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
         /// <summary>
         /// 报警标志
         /// </summary>
-        public uint AlarmFlag { get; set; }
+        public UInt64 AlarmFlag { get; set; }
         /// <summary>
         /// 音视频资源类型
         /// </summary>
@@ -148,7 +148,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
             jT808_0x1205_AVResouce.LogicChannelNo = reader.ReadByte();
             jT808_0x1205_AVResouce.BeginTime = reader.ReadDateTime6();
             jT808_0x1205_AVResouce.EndTime = reader.ReadDateTime6();
-            jT808_0x1205_AVResouce.AlarmFlag = reader.ReadUInt32();
+            jT808_0x1205_AVResouce.AlarmFlag = reader.ReadUInt64();
             jT808_0x1205_AVResouce.AVResourceType = reader.ReadByte();
             jT808_0x1205_AVResouce.StreamType = reader.ReadByte();
             jT808_0x1205_AVResouce.MemoryType = reader.ReadByte();
@@ -161,7 +161,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
             writer.WriteByte(value.LogicChannelNo);
             writer.WriteDateTime6(value.BeginTime);
             writer.WriteDateTime6(value.EndTime);
-            writer.WriteUInt32(value.AlarmFlag);
+            writer.WriteUInt64(value.AlarmFlag);
             writer.WriteByte(value.AVResourceType);
             writer.WriteByte(value.StreamType);
             writer.WriteByte(value.MemoryType);
