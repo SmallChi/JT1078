@@ -174,7 +174,7 @@ namespace JT1078.Hls
                     //1 + 5
                     totalLength += (1 + 5);
                     package.Header.Adaptation.PCRIncluded = PCRInclude.包含;
-                    package.Header.Adaptation.PCR = jt1078Package.LastIFrameInterval;
+                    package.Header.Adaptation.PCR = (long)jt1078Package.Timestamp;
                     package.Payload.DTS = jt1078Package.LastIFrameInterval;
                     package.Payload.PTS = jt1078Package.LastIFrameInterval;
                 }

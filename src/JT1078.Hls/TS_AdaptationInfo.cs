@@ -30,7 +30,7 @@ namespace JT1078.Hls
             writer.WriteByte((byte)PCRIncluded);
             if (PCRIncluded== PCRInclude.包含)
             {
-                writer.WriteInt5(PCR);
+                writer.WritePCR(PCR);
 #warning PCR 0????
                 writer.WriteByte(0);
             }

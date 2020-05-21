@@ -21,6 +21,56 @@ namespace JT1078.Hls.Test
         [Fact]
         public void ToBufferTest1()
         {
+            //47 41 00 30 07 50 00 00 7B 0C 7E 00 00 00 01 E0 00 00 80 C0 0A 31 00 09 08 97 11 00 07 D8 61 00 00 00 01 09 F0 00 00 00 01 67 64 00 1F AC D9 40 88 1E 68 40 00 00 03 01 80 00 00 57 83 C6 0C 65 80 00 00 00 01 68 EB E3 CB 22 C0 00 00 01 06 05 FF FF AB DC 45 E9 BD E6 D9 48 B7 96 2C D8 20 D9 23 EE EF 78 32 36 34 20 2D 20 63 6F 72 65 20 31 35 38 20 72 32 39 38 34 20 33 37 35 39 66 63 62 20 2D 20 48 2E 32 36 34 2F 4D 50 45 47 2D 34 20 41 56 43 20 63 6F 64 65 63 20 2D 20 43 6F 70 79 6C 65 66 74 20 32 30 30 33 2D 32 30 31 39 20 2D 20 68 74 74 70 3A 2F 2F 77 77 77 2E
+
+            //47 41 00 30 07 50 00 00 7B 0C 7E 00 00 00 01 E0 00 00 80 C0 0A 31 00 09 08 97 11 00 07 D8 61 00 00 00 01 09 F0 00 00 00 01 67 64 00 1F AC D9 40 88 1E 68 40 00 00 03 01 80 00 00 57 83 C6 0C 65 80 00 00 00 01 68 EB E3 CB 22 C0 00 00 01 06 05 FF FF AB DC 45 E9 BD E6 D9 48 B7 96 2C D8 20 D9 23 EE EF 78 32 36 34 20 2D 20 63 6F 72 65 20 31 35 38 20 72 32 39 38 34 20 33 37 35 39 66 63 62 20 2D 20 48 2E 32 36 34 2F 4D 50 45 47 2D 34 20 41 56 43 20 63 6F 64 65 63 20 2D 20 43 6F 70 79 6C 65 66 74 20 32 30 30 33 2D 32 30 31 39 20 2D 20 68 74 74 70 3A 2F 2F 77 77 77 2E
+            //47 41 00 30 07 50 00 90 32 10 7E 00 00 00 01 E0 00 00 80 C0 0A 00 00 02 04 4B 00 00 01EC300000000109FF000000016764001FACD940881E6840000003018000005783C60C65800000000168EBE3CB22C00000010605FFFFABDC45E9BDE6D948B7962CD820D923EEEF78323634202D20636F7265203135382072323938342033373539666362202D20482E3236342F4D5045472D342041564320636F646563202D20436F70796C65667420323030332D32303139202D20687474703A2F2F7777772E
+
+            //47 
+            //41 00 
+            //30 
+            //07 
+            //50 
+            //00 00 7B 0C 7E 
+            //00 
+            //00 00 01 
+            //E0 
+            //00 00 
+            //80 
+            //C0 
+            //0A 
+            //31 00 09 08 97 
+            //11 00 07 D8 61 
+            //00 00 00 01 
+            //09 
+            //F0
+
+            //00 00 00 01 67 64 00 1F AC D9 40 88 1E 68 40 00 00 03 01 80 00 00 57 83 C6 0C 65 80 00 00 00 01 68 EB E3 CB 22 C0 00 00 01 06 05 FF FF AB DC 45 E9 BD E6 D9 48 B7 96 2C D8 20 D9 23 EE EF 78 32 36 34 20 2D 20 63 6F 72 65 20 31 35 38 20 72 32 39 38 34 20 33 37 35 39 66 63 62 20 2D 20 48 2E 32 36 34 2F 4D 50 45 47 2D 34 20 41 56 43 20 63 6F 64 65 63 20 2D 20 43 6F 70 79 6C 65 66 74 20 32 30 30 33 2D 32 30 31 39 20 2D 20 68 74 74 70 3A 2F 2F 77 77 77 2E 
+            TS_Package package = new TS_Package();
+            package.Header = new TS_Header();
+            package.Header.PID = 0x100;
+            package.Header.AdaptationFieldControl = AdaptationFieldControl.同时带有自适应域和有效负载;
+            package.Header.ContinuityCounter = 0;
+            package.Header.PackageType = PackageType.Data_Start;
+            package.Header.PayloadUnitStartIndicator = 1;
+            package.Header.Adaptation = new TS_AdaptationInfo();
+            package.Header.Adaptation.PCR = 18900000;
+            package.Header.Adaptation.PCRIncluded =  PCRInclude.包含;
+            package.Payload = new PES_Package();
+            package.Payload.PTS = 132171;
+            package.Payload.DTS = 126000;
+            package.Payload.PTS_DTS_Flag =  PTS_DTS_Flags.all;
+            package.Payload.Payload = new ES_Package();
+            package.Payload.Payload.NALUs = new List<byte[]>();
+            package.Payload.Payload.NALUs.Add("00 00 00 01 67 64 00 1F AC D9 40 88 1E 68 40 00 00 03 01 80 00 00 57 83 C6 0C 65 80 00 00 00 01 68 EB E3 CB 22 C0 00 00 01 06 05 FF FF AB DC 45 E9 BD E6 D9 48 B7 96 2C D8 20 D9 23 EE EF 78 32 36 34 20 2D 20 63 6F 72 65 20 31 35 38 20 72 32 39 38 34 20 33 37 35 39 66 63 62 20 2D 20 48 2E 32 36 34 2F 4D 50 45 47 2D 34 20 41 56 43 20 63 6F 64 65 63 20 2D 20 43 6F 70 79 6C 65 66 74 20 32 30 30 33 2D 32 30 31 39 20 2D 20 68 74 74 70 3A 2F 2F 77 77 77 2E".ToHexBytes());
+            TSMessagePackWriter writer = new TSMessagePackWriter(new byte[188]);
+            package.ToBuffer(ref writer);
+            var patData = writer.FlushAndGetArray().ToHexString();
+        }
+
+        [Fact]
+        public void ToBufferTest2()
+        {
             FileStream fileStream = null;
             try
             {
