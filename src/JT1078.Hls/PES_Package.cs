@@ -59,23 +59,45 @@ namespace JT1078.Hls
             writer.WriteUInt16(PESPacketLength);
             writer.WriteByte(Flag1);
             writer.WriteByte((byte)PTS_DTS_Flag);
-            if(PTS_DTS_Flag== PTS_DTS_Flags.all)
+            if (PTS_DTS_Flag== PTS_DTS_Flags.all)
             {
                 writer.WriteByte(10);
-                writer.WriteInt5(PTS);
-                writer.WriteInt5(DTS);
+                writer.WriteInt5(ToPTS());
+                writer.WriteInt5(ToDTS());
             }
             else if(PTS_DTS_Flag == PTS_DTS_Flags.pts)
             {
                 writer.WriteByte(5);
-                writer.WriteInt5(PTS);
+                writer.WriteInt5(ToPTS());
             }
             else if (PTS_DTS_Flag == PTS_DTS_Flags.dts)
             {
                 writer.WriteByte(5);
-                writer.WriteInt5(DTS);
+                writer.WriteInt5(ToDTS());
             }
             Payload.ToBuffer(ref writer);
+        }
+
+        public long ToPTS()
+        {
+            var str = Convert.ToString(PTS, 2).PadLeft(40, '0');
+            str = str.Insert(str.Length, "1");
+            str = str.Insert(str.Length - 16, "1");
+            str = str.Insert(str.Length - 32, "1");
+            str = str.Insert(str.Length - 36, "0011");
+            str = str.Substring(str.Length - 40, 40);
+            return Convert.ToInt64(str, 2);
+        }   
+        
+        public long ToDTS()
+        {
+            var str = Convert.ToString(DTS, 2).PadLeft(40, '0');
+            str = str.Insert(str.Length, "1");
+            str = str.Insert(str.Length - 16, "1");
+            str = str.Insert(str.Length - 32, "1");
+            str = str.Insert(str.Length - 36, "0001");
+            str = str.Substring(str.Length - 40, 40);
+            return Convert.ToInt64(str, 2);
         }
     }
 }

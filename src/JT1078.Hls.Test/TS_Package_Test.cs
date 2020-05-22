@@ -5,6 +5,7 @@ using JT1078.Protocol;
 using JT1078.Protocol.Extensions;
 using System;
 using System.Buffers.Binary;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
@@ -162,12 +163,29 @@ namespace JT1078.Hls.Test
                 fileStream?.Dispose();
             }
         }
+        /// <summary>
+        ///         
+        /// PTS[32..30]                                3              bslbf
+        /// marker_bit                                 1              bslbf
+        /// PTS[29..15]                                15             bslbf
+        /// marker_bit                                 1              bslbf
+        /// PTS[14..0]                                 15             bslbf
+        /// marker_bit                                 1              bslbf
+        /// '0001'                                     4              bslbf
+        /// DTS[32..30]                                3              bslbf
+        /// marker_bit                                 1              bslbf
+        /// DTS[29..15]                                15             bslbf
+        /// marker_bit                                 1              bslbf
+        /// DTS[14..0]                                 15             bslbf
+        /// marker_bit                                 1              bslbf
+        /// 
+        /// </summary>
         [Fact]
         public void PTSTest()
         {
             //pts
             //31 00 09 08 97 
-
+            //'0011'
             long ptsvalue = 132171;
             var str = Convert.ToString(ptsvalue, 2).PadLeft(40, '0');
             str = str.Insert(str.Length, "1");
@@ -176,7 +194,9 @@ namespace JT1078.Hls.Test
             str = str.Insert(str.Length - 36, "0011");
             str = str.Substring(str.Length - 40, 40);
             var pts = Convert.ToInt64(str, 2);
+            //210453989527
         }
+
         [Fact]
         public void DTSTest1()
         {
