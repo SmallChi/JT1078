@@ -48,13 +48,13 @@ namespace JT808.Protocol.Extensions.JT1078.Test
                 StreamType =5
             };
             var hex = JT808Serializer.Serialize(jT808_0x9205).ToHexString();
-            Assert.Equal("0319071610101019071610101100000001020504", hex);
+            Assert.Equal("031907161010101907161010110000000000000001020504", hex);
         }
 
         [Fact]
         public void Test2()
         {
-            var jT808_0x9205 = JT808Serializer.Deserialize<JT808_0x9205>("0319071610101019071610101100000001020504".ToHexBytes());
+            var jT808_0x9205 = JT808Serializer.Deserialize<JT808_0x9205>("031907161010101907161010110000000000000001020504".ToHexBytes());
             Assert.Equal(1u, jT808_0x9205.AlarmFlag);
             Assert.Equal(2, jT808_0x9205.AVResourceType);
             Assert.Equal(Convert.ToDateTime("2019-07-16 10:10:10"), jT808_0x9205.BeginTime);
@@ -66,7 +66,7 @@ namespace JT808.Protocol.Extensions.JT1078.Test
         [Fact]
         public void Test3()
         {
-            var jT808_0x9205 = JT808Serializer.Analyze<JT808_0x9205>("0319071610101019071610101100000001020504".ToHexBytes());
+            var jT808_0x9205 = JT808Serializer.Analyze<JT808_0x9205>("031907161010101907161010110000000000000001020504".ToHexBytes());
         }
     }
 }

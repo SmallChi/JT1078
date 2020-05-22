@@ -28,7 +28,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
         /// <summary>
         /// 报警标志
         /// </summary>
-        public UInt64 AlarmFlag { get; set; }
+        public ulong AlarmFlag { get; set; }
         /// <summary>
         /// 音视频资源类型
         /// </summary>
