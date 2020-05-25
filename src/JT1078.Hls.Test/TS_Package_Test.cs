@@ -112,6 +112,9 @@ namespace JT1078.Hls.Test
             }
         }
 
+        /// <summary>
+        /// 可以用ffplay播放的JT1078_3.ts
+        /// </summary>
         [Fact]
         public void ToBufferTest3()
         {

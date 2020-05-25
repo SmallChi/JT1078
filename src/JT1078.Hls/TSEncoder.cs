@@ -28,6 +28,7 @@ namespace JT1078.Hls
         private const int FiexdTSLength = 188;
         private const string ServiceProvider = "JTT1078";
         private const string ServiceName = "Koike&TK"; 
+        private const int H264DefaultHZ = 90; 
         public TSEncoder()
         {
             VideoCounter = new Dictionary<string, byte>(StringComparer.OrdinalIgnoreCase);
@@ -133,11 +134,6 @@ namespace JT1078.Hls
             }
         }
 
-        public static long LastIFrameInterval = 0;
-        public static long LastFrameInterval = 0;
-        public static ulong? PrevTimestamp;
-        public static ulong TimestampTotal = 0;
-
         public byte[] CreatePES(JT1078Package jt1078Package, int minBufferSize = 188)
         {
             //将1078一帧的数据拆分成一小段一小段的PES包
@@ -156,10 +152,6 @@ namespace JT1078.Hls
                 package.Header.PID = 256;
                 package.Header.PackageType = PackageType.Data_Start;
                 string key = jt1078Package.GetKey();
-                if (jt1078Package.Label3.DataType == JT1078DataType.视频P帧)
-                {
-
-                }
                 if(VideoCounter.TryGetValue(key,out byte counter))
                 {
                     if (counter > 0xf)
@@ -182,6 +174,7 @@ namespace JT1078.Hls
                 //3 + 1 + 1 + 1 + 2
                 totalLength += (3+1+1+1+2);
                 package.Payload.PTS_DTS_Flag = PTS_DTS_Flags.all;
+                long timestamp= (long)jt1078Package.Timestamp;
                 if (jt1078Package.Label3.DataType== JT1078DataType.视频I帧)
                 {
                     //ts header adaptation
@@ -189,32 +182,19 @@ namespace JT1078.Hls
                     //1 + 6
                     totalLength += (1 + 6);
                     package.Header.Adaptation.PCRIncluded = PCRInclude.包含;
-                    if (!PrevTimestamp.HasValue)
-                    {
-                        PrevTimestamp = jt1078Package.Timestamp;
-                        TimestampTotal = 0;
-                    }
-                    else
-                    {
-                        TimestampTotal += (jt1078Package.Timestamp - PrevTimestamp.Value);
-                        PrevTimestamp = jt1078Package.Timestamp;
-                    }
-                    package.Header.Adaptation.Timestamp = (long)(jt1078Package.Timestamp / 1000);
-                    //package.Header.Adaptation.Timestamp = (long)TimestampTotal;
-                    LastIFrameInterval += jt1078Package.LastIFrameInterval;
-                    package.Payload.DTS = LastIFrameInterval;
-                    package.Payload.PTS = LastIFrameInterval;
+                    package.Header.Adaptation.Timestamp = timestamp;
+                    package.Payload.DTS = timestamp * H264DefaultHZ;
+                    package.Payload.PTS = package.Payload.DTS + jt1078Package.LastIFrameInterval * H264DefaultHZ;
                 }
-                else
+                else if(jt1078Package.Label3.DataType == JT1078DataType.视频P帧)
                 {
                     //ts header adaptation
                     //PCRIncluded 
                     //1
                     totalLength += 1;
                     package.Header.Adaptation.PCRIncluded = PCRInclude.不包含;
-                    LastFrameInterval += jt1078Package.LastFrameInterval;
-                    package.Payload.DTS = LastFrameInterval;
-                    package.Payload.PTS = LastFrameInterval;
+                    package.Payload.DTS = timestamp * H264DefaultHZ;
+                    package.Payload.PTS = package.Payload.DTS + jt1078Package.LastFrameInterval * H264DefaultHZ;
                 }
                 //Flag1 + PTS_DTS_Flag + DTS + PTS
                 //1 + 1 + 5 + 5 = 12
