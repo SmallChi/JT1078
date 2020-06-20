@@ -33,7 +33,6 @@ namespace JT809.Protocol.Extensions.JT1078.MessageBody
             if (value.ItemNum > 0)
             {
                 writer.WriteStartArray("资源目录项列表");
-                List<JT809_JT1078_0x1900_Record> jT808_JT1078_0x1900_0x1901_RecordList = new List<JT809_JT1078_0x1900_Record>();
                 var formatter = config.GetMessagePackFormatter<JT809_JT1078_0x1900_Record>();
                 for (int i = 0; i < value.ItemNum; i++)
                 {

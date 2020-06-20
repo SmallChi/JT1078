@@ -7,7 +7,7 @@
     <Authors>SmallChi(Koike)</Authors>
     <PackageId>JT809.Protocol.Extensions.JT1078</PackageId>
     <Product>JT809.Protocol.Extensions.JT1078</Product>
-    <Description>JT1078协议、GB1078协议、道路运输车辆卫星定位系统-视频通讯协议</Description>
+    <Description>基于JT809协议、GB809协议扩展的视频消息协议</Description>
     <PackageReleaseNotes>基于JT809协议、GB809协议扩展的视频消息协议</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryUrl>https://github.com/SmallChi/JT1078</RepositoryUrl>
@@ -15,7 +15,7 @@
     <licenseUrl>https://github.com/SmallChi/JT1078/blob/master/LICENSE</licenseUrl>
     <license>https://github.com/SmallChi/JT1078/blob/master/LICENSE</license>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>2.1.4-preview1</Version>
+    <Version>2.1.4-preview4</Version>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <FileVersion>2.1.4.0</FileVersion>
   </PropertyGroup>
@@ -36,7 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="JT809" Version="2.1.4-preview1" />
+    <PackageReference Include="JT809" Version="2.1.4-preview4" />
   </ItemGroup>
 
 </Project>
