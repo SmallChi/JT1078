@@ -124,7 +124,7 @@ namespace JT1078.Hls.Test
                 var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_3.ts");
                 File.Delete(filepath);
                 var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_3.txt"));
-                fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
+
                 bool isNeedFirstHeadler = true;
                 TSEncoder tSEncoder = new TSEncoder();
                 foreach (var line in lines)
@@ -166,6 +166,148 @@ namespace JT1078.Hls.Test
                 fileStream?.Dispose();
             }
         }
+        /// <summary>
+        /// 生成m3u8索引文件
+        /// </summary>
+        [Fact]
+        public void Test4()
+        {
+            try
+            {
+                int file_count = 10;
+                int file_max_second = 10;               
+                int first_serialno = 0;
+                double file_real_second = 10;
+
+                var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_3.txt")); 
+                bool isNeedFirstHeadler = true;
+                TSEncoder tSEncoder = new TSEncoder();
+                
+                ulong init_seconds = 0;
+                int duration = 0;
+                int temp_seconds = 0;
+
+                var m3u8Filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_HLS.m3u8");
+                AppendM3U8Start(m3u8Filepath, file_max_second, first_serialno);
+                byte[] fileData = new byte[1888888888];
+                int fileIndex = 0;
+                foreach (var line in lines)
+                {
+                    var data = line.Split(',');
+                    var bytes = data[6].ToHexBytes();
+                    JT1078Package package = JT1078Serializer.Deserialize(bytes);
+                    JT1078Package fullpackage = JT1078Serializer.Merge(package);
+                    if (fullpackage != null)
+                    {
+                        if (temp_seconds / 1000>= file_max_second) {                
+                            file_real_second = temp_seconds / 1000.0;//秒
+                           //生成一个文件
+                            var file_name = $"JT1078_{first_serialno}.ts";
+                            var ts_filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", file_name);
+                            CreateTsFile(ts_filepath, fileData);
+                            //更新m3u8文件
+                            AppendTSFile(m3u8Filepath, file_real_second, file_name);
+                            //删除最早一个文件
+                            var del_file_name = $"JT1078_{first_serialno- file_count}.ts";
+                            var del_ts_filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", del_file_name);
+                            DeleteTsFile(del_ts_filepath);
+                            fileData = new byte[1888888888];
+                            temp_seconds = 0;
+                            first_serialno = first_serialno + 1;
+                        }
+
+                        if (init_seconds == 0)
+                        {
+                            init_seconds = fullpackage.Timestamp;
+                        }
+                        else {
+                            duration =(int)( fullpackage.Timestamp - init_seconds);
+                            init_seconds = fullpackage.Timestamp;
+                            temp_seconds = Convert.ToInt32(temp_seconds) + duration;
+                        }
+
+                        if (isNeedFirstHeadler)
+                        {
+                            var sdt = tSEncoder.CreateSDT(fullpackage);
+                            string sdtHEX = sdt.ToHexString();
+                            sdt.CopyTo(fileData, fileIndex);
+                            fileIndex = sdt.Length;
+                            var pat = tSEncoder.CreatePAT(fullpackage);
+                            string patHEX = pat.ToHexString();
+                            pat.CopyTo(fileData, fileIndex);
+                            fileIndex = fileIndex + pat.Length;
+                            var pmt = tSEncoder.CreatePMT(fullpackage);
+                            pmt.CopyTo(fileData, fileIndex);
+                            fileIndex = fileIndex + pmt.Length;
+                            var pes = tSEncoder.CreatePES(fullpackage, 18888);
+                            pes.CopyTo(fileData, fileIndex);
+                            fileIndex = fileIndex + pes.Length;
+                            isNeedFirstHeadler = false;
+                        }
+                        else
+                        {
+                            var pes = tSEncoder.CreatePES(fullpackage, 18888);
+                            pes.CopyTo(fileData, fileIndex);
+                            fileIndex = fileIndex + pes.Length;
+                        }
+                    }
+                }
+                AppendM3U8End(m3u8Filepath);
+            }
+            catch (Exception ex)
+            {
+                Assert.Throws<Exception>(() => { });
+            }
+        }
+
+        private void DeleteTsFile(string tsFilepath) {
+            if (File.Exists(tsFilepath)) File.Delete(tsFilepath);
+        }
+        private void CreateTsFile(string tsFilepath, byte[] data) {
+            using (var fileStream = new FileStream(tsFilepath, FileMode.OpenOrCreate, FileAccess.Write))
+            {
+                fileStream.Write(data);
+            }
+        }
+
+        private void AppendTSFile(string filepath,double tsRealSecond, string tsName) {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"#EXTINF:{tsRealSecond},");//extra info，分片TS的信息，如时长，带宽等
+            sb.AppendLine($"{tsName}");//文件名
+            using (StreamWriter sw = new StreamWriter(filepath))
+            {
+                sw.WriteLine(sb);
+            }
+        }
+
+        private void AppendM3U8Start(string filepath,int fileMaxSecond,int firstTSSerialno) {
+            if(File.Exists(filepath)) File.Delete(filepath);
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("#EXTM3U");//开始
+            sb.AppendLine("#EXT-X-VERSION:3");//版本号
+            sb.AppendLine("#EXT-X-ALLOW-CACHE:NO");//是否允许cache    
+
+            sb.AppendLine($"#EXT-X-TARGETDURATION:{fileMaxSecond}");//每个分片TS的最大的时长  
+            sb.AppendLine($"#EXT-X-MEDIA-SEQUENCE:{firstTSSerialno}");//第一个TS分片的序列号  
+            using (StreamWriter sw = new StreamWriter(filepath))
+            {
+                sw.WriteLine(sb);
+            }
+        }
+        /// <summary>
+        /// 添加结束标识
+        /// </summary>
+        /// <param name="filepath"></param>
+        private void AppendM3U8End(string filepath) {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("#EXT-X-ENDLIST"); //m3u8文件结束符 表示视频已经结束 有这个标志同时也说明当前流是一个非直播流
+                                             //#EXT-X-PLAYLIST-TYPE:VOD/Live   //VOD表示当前视频流不是一个直播流，而是点播流(也就是视频的全部ts文件已经生成)
+            using (StreamWriter sw = new StreamWriter(filepath))
+            {
+                sw.WriteLine(sb);
+            }
+        }
+
         /// <summary>
         ///         
         /// PTS[32..30]                                3              bslbf
