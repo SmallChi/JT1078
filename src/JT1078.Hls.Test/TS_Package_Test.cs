@@ -4,6 +4,7 @@ using JT1078.Hls.MessagePack;
 using JT1078.Protocol;
 using JT1078.Protocol.Extensions;
 using System;
+using System.Buffers;
 using System.Buffers.Binary;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace JT1078.Hls.Test
     /// </summary>
     public class TS_Package_Test
     {
+
         [Fact]
         public void ToBufferTest1()
         {
@@ -174,10 +176,9 @@ namespace JT1078.Hls.Test
         {
             try
             {
-                int file_count = 10;
-                int file_max_second = 10;               
-                int first_serialno = 0;
-                double file_real_second = 10;
+                ArrayPool<byte> arrayPool = ArrayPool<byte>.Create();
+                M3U8Config m3U8Config = new M3U8Config();
+                double file_real_second = m3U8Config.TsFileMaxSecond;
 
                 var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_3.txt")); 
                 bool isNeedFirstHeadler = true;
@@ -185,11 +186,13 @@ namespace JT1078.Hls.Test
                 
                 ulong init_seconds = 0;
                 int duration = 0;
-                int temp_seconds = 0;
+                int accu_seconds = 0;
 
-                var m3u8Filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_HLS.m3u8");
-                AppendM3U8Start(m3u8Filepath, file_max_second, first_serialno);
-                byte[] fileData = new byte[1888888888];
+                var m3u8Filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "index.m3u8");
+                AppendM3U8Start(m3u8Filepath, m3U8Config.TsFileMaxSecond, m3U8Config.FirstTsSerialNo);
+
+               var fileData= arrayPool.Rent(18888888);
+
                 int fileIndex = 0;
                 foreach (var line in lines)
                 {
@@ -199,21 +202,25 @@ namespace JT1078.Hls.Test
                     JT1078Package fullpackage = JT1078Serializer.Merge(package);
                     if (fullpackage != null)
                     {
-                        if (temp_seconds / 1000>= file_max_second) {                
-                            file_real_second = temp_seconds / 1000.0;//秒
-                           //生成一个文件
-                            var file_name = $"JT1078_{first_serialno}.ts";
-                            var ts_filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", file_name);
-                            CreateTsFile(ts_filepath, fileData);
+                        if (accu_seconds / 1000>= m3U8Config.TsFileMaxSecond) {
+                            //ecode_slice_header error  以非关键帧开始得
+                            file_real_second = accu_seconds / 1000.0;//秒
+                            //生成一个ts文件
+                            var ts_name = $"{m3U8Config.FirstTsSerialNo}.ts";
+                            var ts_filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", ts_name);
+                            CreateTsFile(ts_filepath, fileData.AsSpan().Slice(0, fileIndex).ToArray());
+                            isNeedFirstHeadler = true;
+                            arrayPool.Return(fileData);
+                            fileData = arrayPool.Rent(18888888);
+                            fileIndex = 0;
+                            var media_sequence_no = m3U8Config.FirstTsSerialNo - m3U8Config.TsFileCount;
+                            var del_ts_name=$"{media_sequence_no}.ts";
+                            var del_ts_filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264",$"{media_sequence_no}.ts");
                             //更新m3u8文件
-                            AppendTSFile(m3u8Filepath, file_real_second, file_name);
-                            //删除最早一个文件
-                            var del_file_name = $"JT1078_{first_serialno- file_count}.ts";
-                            var del_ts_filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", del_file_name);
-                            DeleteTsFile(del_ts_filepath);
-                            fileData = new byte[1888888888];
-                            temp_seconds = 0;
-                            first_serialno = first_serialno + 1;
+                            UpdateM3U8File(m3u8Filepath, file_real_second, media_sequence_no+1, del_ts_filepath, del_ts_name,ts_name);
+
+                            accu_seconds = 0;
+                            m3U8Config.FirstTsSerialNo = m3U8Config.FirstTsSerialNo + 1;
                         }
 
                         if (init_seconds == 0)
@@ -223,7 +230,7 @@ namespace JT1078.Hls.Test
                         else {
                             duration =(int)( fullpackage.Timestamp - init_seconds);
                             init_seconds = fullpackage.Timestamp;
-                            temp_seconds = Convert.ToInt32(temp_seconds) + duration;
+                            accu_seconds = Convert.ToInt32(accu_seconds) + duration;
                         }
 
                         if (isNeedFirstHeadler)
@@ -260,21 +267,75 @@ namespace JT1078.Hls.Test
             }
         }
 
-        private void DeleteTsFile(string tsFilepath) {
-            if (File.Exists(tsFilepath)) File.Delete(tsFilepath);
-        }
-        private void CreateTsFile(string tsFilepath, byte[] data) {
-            using (var fileStream = new FileStream(tsFilepath, FileMode.OpenOrCreate, FileAccess.Write))
+        private void CreateTsFile(string ts_filepath, byte[] data) {
+            using (var fileStream = new FileStream(ts_filepath, FileMode.OpenOrCreate, FileAccess.Write))
             {
                 fileStream.Write(data);
             }
         }
 
-        private void AppendTSFile(string filepath,double tsRealSecond, string tsName) {
+       
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filepath"></param>
+        /// <param name="tsRealSecond"></param>
+        /// <param name="count"></param>
+        /// <param name="tsName"></param>
+        private void UpdateM3U8File(string m3u8_filepath,double tsRealSecond,int media_sequence_no, string del_ts_filepath,string del_ts_name, string ts_name) {
             StringBuilder sb = new StringBuilder();
+            if (File.Exists(del_ts_filepath))
+            {
+                //删除最早一个ts文件
+                File.Delete(del_ts_filepath);
+                bool startAppendFileContent = true;
+                bool isFirstEXTINF = true;
+                using (StreamReader sr = new StreamReader(m3u8_filepath))
+                {
+                    while (!sr.EndOfStream)
+                    {
+                        var text = sr.ReadLine();
+                        if (text.Length == 0) continue;
+                        if (text.StartsWith("#EXT-X-MEDIA-SEQUENCE"))
+                        {
+                            string media_sequence = $"#EXT-X-MEDIA-SEQUENCE:{media_sequence_no}";
+                            sb.AppendLine(media_sequence);
+                            continue;
+                        }
+                        if (text.StartsWith("#EXTINF") && isFirstEXTINF)
+                        {
+                            startAppendFileContent = false;
+                            continue;
+                        }
+                        if (text.StartsWith(del_ts_name) && isFirstEXTINF)
+                        {
+                            isFirstEXTINF = false;
+                            startAppendFileContent = true;
+                            continue;
+                        }
+                        if (startAppendFileContent)
+                        {
+                            sb.AppendLine(text);
+                        }
+                    }
+                }
+                AppendM3u8(m3u8_filepath, tsRealSecond, ts_name, sb, false);
+            }
+            else {
+                AppendM3u8(m3u8_filepath, tsRealSecond, ts_name, sb);
+            }
+        }
+        /// <summary>
+        /// m3u8追加ts文件
+        /// </summary>
+        /// <param name="filepath"></param>
+        /// <param name="tsRealSecond"></param>
+        /// <param name="tsName"></param>
+        /// <param name="sb"></param>
+        private void AppendM3u8(string m3u8_filepath, double tsRealSecond, string tsName, StringBuilder sb,bool isAppend=true) {
             sb.AppendLine($"#EXTINF:{tsRealSecond},");//extra info，分片TS的信息，如时长，带宽等
             sb.AppendLine($"{tsName}");//文件名
-            using (StreamWriter sw = new StreamWriter(filepath))
+            using (StreamWriter sw = new StreamWriter(m3u8_filepath, isAppend))
             {
                 sw.WriteLine(sb);
             }
@@ -289,7 +350,7 @@ namespace JT1078.Hls.Test
 
             sb.AppendLine($"#EXT-X-TARGETDURATION:{fileMaxSecond}");//每个分片TS的最大的时长  
             sb.AppendLine($"#EXT-X-MEDIA-SEQUENCE:{firstTSSerialno}");//第一个TS分片的序列号  
-            using (StreamWriter sw = new StreamWriter(filepath))
+            using (StreamWriter sw = new StreamWriter(filepath,true))
             {
                 sw.WriteLine(sb);
             }
@@ -302,7 +363,7 @@ namespace JT1078.Hls.Test
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("#EXT-X-ENDLIST"); //m3u8文件结束符 表示视频已经结束 有这个标志同时也说明当前流是一个非直播流
                                              //#EXT-X-PLAYLIST-TYPE:VOD/Live   //VOD表示当前视频流不是一个直播流，而是点播流(也就是视频的全部ts文件已经生成)
-            using (StreamWriter sw = new StreamWriter(filepath))
+            using (StreamWriter sw = new StreamWriter(filepath,true))
             {
                 sw.WriteLine(sb);
             }
