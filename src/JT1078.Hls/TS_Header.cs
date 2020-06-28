@@ -50,6 +50,10 @@ namespace JT1078.Hls
         public byte ContinuityCounter { get; set; } = 0;
         /// <summary>
         /// 自适应域长度，后面的字节数
+        /// 调整字段长度标示，标示此字节后面调整字段的长度，占位8bit；
+        /// 值为0时，表示在TS分组中插入一个调整字节，后面没有调整字段，紧跟着的是有效负载；
+        /// adaptation_field_control == ‘11’时，此值在0 ~182之间，
+        /// adaptation_field_control == ‘10’时，此值为183，若字段没这么长则填充0xFF字段；
         /// </summary>
         public byte AdaptationLength { get; set; }
         /// <summary>
@@ -65,7 +69,7 @@ namespace JT1078.Hls
             //TransportErrorIndicator   PayloadUnitStartIndicator   TransportPriority   PID
             //0 1   0   0000 0000 0000 0
             //writer.WriteUInt16((ushort)((0b_0100_0000_0000_0000 & (PayloadUnitStartIndicator<<14)) | PID));
-            writer.WriteUInt16((ushort)((PayloadUnitStartIndicator<<14) | PID));
+            writer.WriteUInt16((ushort)((TransportErrorIndicator<<15) |(PayloadUnitStartIndicator<<14) | PID));
             writer.WriteByte((byte)((byte)AdaptationFieldControl | ContinuityCounter));
             if(PackageType== PackageType.PAT ||
                PackageType == PackageType.PMT ||

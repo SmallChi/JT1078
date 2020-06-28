@@ -293,10 +293,10 @@ namespace JT1078.Hls
                 int size = FiexdSegmentPESLength - 1 - 1 - nalu.Length;
                 package.Header.PackageType = PackageType.Data_End;
                 if (size < 0)
-                {   
+                {
                     // nalu剩余183字节的时候
                     // 头部4个字节 + 自适应域长度1字节（0）+183 =188
-                    package.Header.AdaptationFieldControl = AdaptationFieldControl.仅含自适应域_无有效负载;
+                    package.Header.AdaptationFieldControl = AdaptationFieldControl.无自适应域_仅含有效负载;
                 }
                 else
                 {

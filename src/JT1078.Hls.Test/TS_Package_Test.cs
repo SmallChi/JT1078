@@ -126,7 +126,7 @@ namespace JT1078.Hls.Test
                 var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_3.ts");
                 File.Delete(filepath);
                 var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_3.txt"));
-
+                fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
                 bool isNeedFirstHeadler = true;
                 TSEncoder tSEncoder = new TSEncoder();
                 foreach (var line in lines)
@@ -269,7 +269,8 @@ namespace JT1078.Hls.Test
             }
         }
 
-        private void CreateTsFile(string ts_filepath, byte[] data) {
+        private void CreateTsFile(string ts_filepath, byte[] data) 
+        {
             using (var fileStream = new FileStream(ts_filepath, FileMode.OpenOrCreate, FileAccess.Write))
             {
                 fileStream.Write(data);
