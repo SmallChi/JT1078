@@ -1,9 +1,13 @@
 ﻿using JT1078.Protocol.Enums;
+using JT1078.Protocol.Extensions;
 using JT1078.Protocol.MessagePack;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
+using System.Text.Json;
 
 namespace JT1078.Protocol
 {
@@ -110,6 +114,82 @@ namespace JT1078.Protocol
             {
                 return jT1078Package;
             }
+        }
+        public static byte[] AnalyzeJsonBuffer(ReadOnlySpan<byte> bytes, JsonWriterOptions options = default, int minBufferSize = 8096)
+        {
+            byte[] buffer = JT1078ArrayPool.Rent(minBufferSize);
+            try
+            {
+                JT1078MessagePackReader jT1078MessagePackReader = new JT1078MessagePackReader(bytes);
+                using (MemoryStream memoryStream = new MemoryStream())
+                using (Utf8JsonWriter writer = new Utf8JsonWriter(memoryStream, options))
+                {
+                    writer.WriteStartObject();
+                    var header = jT1078MessagePackReader.ReadUInt32();
+                    writer.WriteString($"[{header}]头部", header.ReadNumber());
+                    var val1 = jT1078MessagePackReader.ReadByte();
+                    var label1 = new JT1078Label1(val1);
+                    var labelSpan = val1.ReadBinary();
+                    writer.WriteStartObject($"[{labelSpan.ToString()}]object1[{val1.ReadNumber()}]");
+                    writer.WriteNumber($"({labelSpan.Slice(0,2).ToString()})V[固定为2]", label1.V);
+                    writer.WriteNumber($"({labelSpan[2]})P[固定为0]", label1.P);
+                    writer.WriteNumber($"({labelSpan[3]})X[RTP头是否需要扩展位固定为0]", label1.X);
+                    writer.WriteNumber($"({labelSpan.Slice(4).ToString()})CC[固定为1]", label1.CC);
+                    writer.WriteEndObject();
+
+                    var val2 = jT1078MessagePackReader.ReadByte();
+                    var label2 = new JT1078Label2(val2);
+                    var label2Span = val2.ReadBinary();
+                    writer.WriteStartObject($"[{label2Span.ToString()}]object2[{val2.ReadNumber()}]");
+                    writer.WriteNumber($"({label2Span.Slice(0, 4).ToString()})M[确定是否是完整数据帧的边界]", label2.M);
+                    writer.WriteString($"({label2Span.Slice(4).ToString()})PT[负载类型]", label2.PT.ToString());
+                    writer.WriteEndObject();
+
+                    var sn = jT1078MessagePackReader.ReadUInt16();
+                    writer.WriteNumber($"{sn.ReadNumber()}[序列号]", sn);
+                    var sim = jT1078MessagePackReader.ReadBCD(12);
+                    writer.WriteString($"[终端设备SIM卡号]", sim);
+                    var logicChannelNumber = jT1078MessagePackReader.ReadByte();
+                    writer.WriteNumber($"{logicChannelNumber.ReadNumber()}[逻辑通道号]", logicChannelNumber);
+
+                    var val3 = jT1078MessagePackReader.ReadByte();
+                    var label3 = new JT1078Label3(val3);
+                    var label3Span = val3.ReadBinary();
+                    writer.WriteStartObject($"[{label3Span.ToString()}]object3[{val3.ReadNumber()}]");
+                    writer.WriteString($"({label3Span.Slice(0, 4).ToString()})[数据类型]", label3.DataType.ToString());
+                    writer.WriteString($"({label3Span.Slice(4).ToString()})[分包处理标记]", label3.SubpackageType.ToString());
+                    writer.WriteEndObject();
+                    if (label3.DataType != JT1078DataType.透传数据)
+                    {
+                        var timestamp = jT1078MessagePackReader.ReadUInt64();
+                        writer.WriteNumber($"{timestamp.ReadNumber()}[标识此RTP数据包当前帧的相对时间,单位毫秒(ms)]", timestamp);
+                    }
+                    if (label3.DataType != JT1078DataType.透传数据 &&
+                        label3.DataType != JT1078DataType.音频帧)
+                    {
+                        var lastIFrameInterval = jT1078MessagePackReader.ReadUInt16();
+                        writer.WriteNumber($"{lastIFrameInterval.ReadNumber()}[该帧与上一个关键帧之间的时间间隔,单位毫秒(ms)]", lastIFrameInterval);
+                        var lastFrameInterval = jT1078MessagePackReader.ReadUInt16();
+                        writer.WriteNumber($"{lastFrameInterval.ReadNumber()}[该帧与上一个关键帧之间的时间间隔,单位毫秒(ms)]", lastFrameInterval);
+                    }
+                    var dataBodyLength = jT1078MessagePackReader.ReadUInt16();
+                    writer.WriteNumber($"{dataBodyLength.ReadNumber()}[数据体长度]", dataBodyLength);
+                    var bodies = jT1078MessagePackReader.ReadRemainArray().ToArray();
+                    writer.WriteString("[数据体]", string.Join(" ", (bodies).Select(p => p.ToString("X2"))));
+                    writer.WriteEndObject();
+                    writer.Flush();
+                    return memoryStream.ToArray();
+                }
+            }
+            finally
+            {
+                JT1078ArrayPool.Return(buffer);
+            }
+        }
+        public static string Analyze(ReadOnlySpan<byte> bytes,JsonWriterOptions options = default, int minBufferSize = 8096)
+        {
+            string json = Encoding.UTF8.GetString(AnalyzeJsonBuffer(bytes, options, minBufferSize));
+            return json;
         }
     }
 }

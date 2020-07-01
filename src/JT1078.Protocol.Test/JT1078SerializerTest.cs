@@ -241,6 +241,20 @@ namespace JT1078.Protocol.Test
         }
 
         [Fact]
+        public void Json1()
+        {
+            var bytes = "30 31 63 64 81 88 11 35 01 12 34 56 78 10 01 30 00 00 01 6B B3 92 DA 05 00 78 B7 6D FF EF 7D FB A9 9D FE A9 1F 37 77 F3 37 BE EF FB F7 FB FB BE 7D DF B7 FD FB 76 AF DE 77 65 C7 EF E3 FB BE FF DB 4E FF DB B7 63 FF EE EF D8 BE 1D 37 B7 7D E7 7D F3 C6 F7 FD F4 BE 1F F7 B7 55 FF 76 FC FE CE 7B FF B7 7D 3F F5 FF FE 76 6C DF FE 53 DB CF 6D FB BF FD DE B1 EF 3E 77 D3 3F 6E 9A BF BF FF DB F7 FD DB 7F 63 FF 6E EC F8 EE 1F FB FD 7F FB 7D 7C DB".ToHexBytes();
+            string json = JT1078Serializer.Analyze(bytes);
+        }
+
+        [Fact]
+        public void Json2()
+        {
+            var bytes = "30 31 63 64 81 E2 10 88 01 12 34 56 78 10 01 10 00 00 01 6B B3 92 CA 7C 02 80 00 28 00 2E 00 00 00 01 61 E1 A2 BF 00 98 CF C0 EE 1E 17 28 34 07 78 8E 39 A4 03 FD DB D1 D5 46 BF B0 63 01 3F 59 AC 34 C9 7A 02 1A B9 6A 28 A4 2C 08".ToHexBytes();
+            string json = JT1078Serializer.Analyze(bytes);
+        }
+
+        [Fact]
         public void Label1Test1()
         {
             Assert.Equal(0x81, JT1078Package.DefaultLabel1.ToByte());

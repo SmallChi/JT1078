@@ -14,7 +14,7 @@
     <licenseUrl>https://github.com/SmallChi/JT1078/blob/master/LICENSE</licenseUrl>
     <license>https://github.com/SmallChi/JT1078/blob/master/LICENSE</license>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <SignAssembly>false</SignAssembly>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
@@ -22,7 +22,7 @@
 
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
-    <PackageReference Include="System.Memory" Version="4.5.3" />
+    <PackageReference Include="System.Memory" Version="4.5.4" />
   </ItemGroup>
   
   <ItemGroup>
@@ -32,4 +32,7 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="4.7.2" />
+  </ItemGroup>
 </Project>
