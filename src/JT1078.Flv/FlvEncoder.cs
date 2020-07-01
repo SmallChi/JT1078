@@ -259,7 +259,7 @@ namespace JT1078.Flv
             byte[] aacFrameData = null;
             switch (package.Label2.PT)
             {
-                case Jt1078AudioType.ADPCM:
+                case JT1078AVType.ADPCM:
                     ReadOnlySpan<byte> adpcm = package.Bodies;
                     // 海思芯片编码的音频需要移除海思头，可能还有其他的海思头
                     if (adpcm.StartsWith(new byte[] { 0x00, 0x01, 0x52, 0x00 })) adpcm = adpcm.Slice(4);
@@ -269,10 +269,10 @@ namespace JT1078.Flv
                         Index = adpcm[2],
                         Reserved = adpcm[3]
                     })); break;
-                case Jt1078AudioType.G711A:
+                case JT1078AVType.G711A:
                     aacFrameData = faacEncoder.Encode(new G711ACodec().ToPcm(package.Bodies));
                     break;
-                case Jt1078AudioType.AACLC:
+                case JT1078AVType.AACLC:
                     aacFrameData = package.Bodies;
                     break;
             }

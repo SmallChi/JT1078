@@ -19,7 +19,7 @@ namespace JT1078.Hls
         public M3U8FileManage(M3U8Option m3U8Option)
         {
             this.m3U8Option = m3U8Option;
-            AppendM3U8Start(m3U8Option.TsFileMaxSecond, m3U8Option.TsFileCount);
+            //AppendM3U8Start(m3U8Option.TsFileMaxSecond, m3U8Option.TsFileCount);
         }
 
         public void CreateM3U8File(JT1078Package fullpackage,byte[] data)

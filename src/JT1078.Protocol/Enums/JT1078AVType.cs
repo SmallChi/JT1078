@@ -5,10 +5,11 @@ using System.Text;
 namespace JT1078.Protocol.Enums
 {
     /// <summary>
-    /// 音频类型
+    /// 音视频类型
     /// </summary>
-    public enum Jt1078AudioType : byte
+    public enum JT1078AVType : byte
     {
+        保留=0,
         G721 = 1,
         G722 = 2,
         G723 = 3,
@@ -36,6 +37,11 @@ namespace JT1078.Protocol.Enums
         MP3 = 25,
         ADPCM = 26,
         MP4AUDIO = 27,
-        AMR = 28
+        AMR = 28,
+        透传=91,
+        H264=98,
+        H265=99,
+        AVS=100,
+        SVAC=101
     }
 }

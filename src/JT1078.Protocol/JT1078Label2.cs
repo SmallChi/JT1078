@@ -13,7 +13,7 @@ namespace JT1078.Protocol
         public JT1078Label2(byte value)
         {
             M =  (byte)(value >> 7);
-            PT = (Jt1078AudioType)(value & 0x7f);
+            PT = (JT1078AVType)(value & 0x7f);
         }
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace JT1078.Protocol
         /// </summary>
         /// <param name="m">0-1</param>
         /// <param name="pt">0-127</param>
-        public JT1078Label2(byte m, Jt1078AudioType pt)
+        public JT1078Label2(byte m, JT1078AVType pt)
         {
             M = m;
             PT = pt;
@@ -35,7 +35,7 @@ namespace JT1078.Protocol
         public JT1078Label2(byte m,byte pt)
         {
             M = m;
-            PT = (Jt1078AudioType)pt;
+            PT = (JT1078AVType)pt;
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace JT1078.Protocol
         /// PT - 7 - 负载类型
         /// 用于说明RTP报文中有效载荷的类型，如GSM音频、JPEM图像等
         /// </summary>
-        public Jt1078AudioType PT { get; set; }
+        public JT1078AVType PT { get; set; }
 
         public byte ToByte()
         {
