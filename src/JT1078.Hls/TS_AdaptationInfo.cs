@@ -31,7 +31,7 @@ namespace JT1078.Hls
             writer.WriteByte((byte)PCRIncluded);
             if (PCRIncluded == PCRInclude.包含)
             {
-                writer.WriteInt6(ToPCR());
+                writer.WritePCR(Timestamp);
             }
             if (FillSize > 0)
             {
@@ -47,9 +47,9 @@ namespace JT1078.Hls
         ///  }
         /// </summary>
         /// <returns></returns>
-        private long ToPCR()
-        {
-            return (Timestamp / 300 << 15 | 0x7E00);
-        } 
+        //private long ToPCR()
+        //{
+        //    return (Timestamp / 300 << 15 | 0x7E00);
+        //} 
     }
 }

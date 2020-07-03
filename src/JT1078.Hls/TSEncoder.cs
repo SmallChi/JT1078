@@ -20,9 +20,10 @@ using System.Buffers;
 namespace JT1078.Hls
 {
     /// <summary>
-    /// 1.PAT
-    /// 2.PMT
-    /// 3.PES
+    /// 1.SDT
+    /// 2.PAT
+    /// 3.PMT
+    /// 4.PES
     /// </summary>
     public class TSEncoder
     {
@@ -31,8 +32,9 @@ namespace JT1078.Hls
         private const string ServiceProvider = "JTT1078";
         private const string ServiceName = "Koike&TK"; 
         private const int H264DefaultHZ = 90;
-
-
+        private Dictionary<string, byte> VideoCounter;
+        //todo:音频同步
+        //private Dictionary<string, byte> AudioCounter = new Dictionary<string, byte>();
         ArrayPool<byte> arrayPool = ArrayPool<byte>.Create();
         byte[] fileData;
         int fileIndex = 0;
@@ -43,31 +45,37 @@ namespace JT1078.Hls
             this.m3U8FileManage = m3U8FileManage;
             fileData = arrayPool.Rent(2500000);
         }
-        private Dictionary<string, byte> VideoCounter;
+
         /// <summary>
         /// 创建m3u8文件 和 ts文件
         /// </summary>
         /// <param name="jt1078Package"></param>
-        public void CreateM3U8File(JT1078Package jt1078Package) {
+        public void CreateM3U8File(JT1078Package jt1078Package) 
+        {
             CombinedTSData(jt1078Package);
-            if (m3U8FileManage.m3U8Option.AccumulateSeconds >= m3U8FileManage.m3U8Option.TsFileMaxSecond) {
+            if (m3U8FileManage.m3U8Option.AccumulateSeconds >= m3U8FileManage.m3U8Option.TsFileMaxSecond)
+            {
                 m3U8FileManage.CreateM3U8File(jt1078Package, fileData.AsSpan().Slice(0,fileIndex).ToArray());
                 arrayPool.Return(fileData);
                 fileData = arrayPool.Rent(2500000);
                 fileIndex = 0;
             }
         }
+
         /// <summary>
         /// m3u8文件 追加结束标识
         /// </summary>
-        public void AppendM3U8End() {
+        public void AppendM3U8End() 
+        {
             m3U8FileManage.AppendM3U8End();
         }
+
         /// <summary>
-        /// 按 设定的时间（默认为10秒）切分ts文件
+        /// 按设定的时间（默认为10秒）切分ts文件
         /// </summary>
         /// <param name="jt1078Package"></param>
-        private void CombinedTSData(JT1078Package jt1078Package) {
+        private void CombinedTSData(JT1078Package jt1078Package) 
+        {
             if (m3U8FileManage.m3U8Option.TimestampMilliSecond == 0)
             {
                 m3U8FileManage.m3U8Option.TimestampMilliSecond = jt1078Package.Timestamp;
@@ -105,8 +113,6 @@ namespace JT1078.Hls
                 fileIndex = fileIndex + pes.Length;
             }
         }
-
-        //private ConcurrentDictionary<string, byte> AudioCounter = new ConcurrentDictionary<string, byte>();
         public byte[] CreateSDT(JT1078Package jt1078Package, int minBufferSize = 188)
         {
             byte[] buffer = TSArrayPool.Rent(minBufferSize);
@@ -205,7 +211,6 @@ namespace JT1078.Hls
                 TSArrayPool.Return(buffer);
             }
         }
-
         public byte[] CreatePES(JT1078Package jt1078Package, int minBufferSize = 188)
         {
             //将1078一帧的数据拆分成一小段一小段的PES包
@@ -256,7 +261,7 @@ namespace JT1078.Hls
                     package.Header.Adaptation.PCRIncluded = PCRInclude.包含;
                     package.Header.Adaptation.Timestamp = timestamp;
                     package.Payload.DTS = timestamp * H264DefaultHZ;
-                    package.Payload.PTS = package.Payload.DTS + jt1078Package.LastIFrameInterval * H264DefaultHZ;
+                    package.Payload.PTS = timestamp * H264DefaultHZ;
                 }
                 else if(jt1078Package.Label3.DataType == JT1078DataType.视频P帧)
                 {
@@ -266,7 +271,7 @@ namespace JT1078.Hls
                     totalLength += 1;
                     package.Header.Adaptation.PCRIncluded = PCRInclude.不包含;
                     package.Payload.DTS = timestamp * H264DefaultHZ;
-                    package.Payload.PTS = package.Payload.DTS + jt1078Package.LastFrameInterval * H264DefaultHZ;
+                    package.Payload.PTS = timestamp * H264DefaultHZ;
                 }
                 //Flag1 + PTS_DTS_Flag + DTS + PTS
                 //1 + 1 + 5 + 5 = 12

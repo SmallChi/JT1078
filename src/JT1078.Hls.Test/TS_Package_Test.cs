@@ -158,7 +158,7 @@ namespace JT1078.Hls.Test
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex)           
             {
                 Assert.Throws<Exception>(() => { });
             }

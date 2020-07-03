@@ -47,7 +47,6 @@ namespace JT1078.Hls
             sb.AppendLine("#EXTM3U");//开始
             sb.AppendLine("#EXT-X-VERSION:3");//版本号
             sb.AppendLine("#EXT-X-ALLOW-CACHE:NO");//是否允许cache    
-
             sb.AppendLine($"#EXT-X-TARGETDURATION:{fileMaxSecond}");//每个分片TS的最大的时长  
             sb.AppendLine($"#EXT-X-MEDIA-SEQUENCE:{firstTSSerialno}");//第一个TS分片的序列号  
             using (StreamWriter sw = new StreamWriter(m3U8Option.M3U8Filepath, true))

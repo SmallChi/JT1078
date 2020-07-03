@@ -75,6 +75,16 @@ namespace JT1078.Hls.MessagePack
             writer.Free[5] = (byte)(value);
             writer.Advance(6);
         }
+        public void WritePCR(long value)
+        {
+            writer.Free[0] = (byte)(value >> 25);
+            writer.Free[1] = (byte)((value >> 17) & 0xff);
+            writer.Free[2] = (byte)((value >> 9) & 0xff);
+            writer.Free[3] = (byte)((value >> 1) & 0xff);
+            writer.Free[4] = (byte)(((value & 0x1) << 7) | 0x7e);
+            writer.Free[5] = 0x00;
+            writer.Advance(6);
+        }
         public void WriteUInt3(uint value)
         {
             writer.Free[0] = (byte)(value >> 16);
