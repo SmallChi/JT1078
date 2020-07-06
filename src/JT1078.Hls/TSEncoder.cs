@@ -35,84 +35,12 @@ namespace JT1078.Hls
         private Dictionary<string, byte> VideoCounter;
         //todo:音频同步
         //private Dictionary<string, byte> AudioCounter = new Dictionary<string, byte>();
-        ArrayPool<byte> arrayPool = ArrayPool<byte>.Create();
-        byte[] fileData;
-        int fileIndex = 0;
-        private M3U8FileManage m3U8FileManage;
-        public TSEncoder(M3U8FileManage m3U8FileManage)
+
+        public TSEncoder()
         {
             VideoCounter = new Dictionary<string, byte>(StringComparer.OrdinalIgnoreCase);
-            this.m3U8FileManage = m3U8FileManage;
-            fileData = arrayPool.Rent(2500000);
         }
 
-        /// <summary>
-        /// 创建m3u8文件 和 ts文件
-        /// </summary>
-        /// <param name="jt1078Package"></param>
-        public void CreateM3U8File(JT1078Package jt1078Package) 
-        {
-            CombinedTSData(jt1078Package);
-            if (m3U8FileManage.m3U8Option.AccumulateSeconds >= m3U8FileManage.m3U8Option.TsFileMaxSecond)
-            {
-                m3U8FileManage.CreateM3U8File(jt1078Package, fileData.AsSpan().Slice(0,fileIndex).ToArray());
-                arrayPool.Return(fileData);
-                fileData = arrayPool.Rent(2500000);
-                fileIndex = 0;
-            }
-        }
-
-        /// <summary>
-        /// m3u8文件 追加结束标识
-        /// </summary>
-        public void AppendM3U8End() 
-        {
-            m3U8FileManage.AppendM3U8End();
-        }
-
-        /// <summary>
-        /// 按设定的时间（默认为10秒）切分ts文件
-        /// </summary>
-        /// <param name="jt1078Package"></param>
-        private void CombinedTSData(JT1078Package jt1078Package) 
-        {
-            if (m3U8FileManage.m3U8Option.TimestampMilliSecond == 0)
-            {
-                m3U8FileManage.m3U8Option.TimestampMilliSecond = jt1078Package.Timestamp;
-            }
-            else
-            {
-                int duration = (int)(jt1078Package.Timestamp - m3U8FileManage.m3U8Option.TimestampMilliSecond);
-                m3U8FileManage.m3U8Option.TimestampMilliSecond = jt1078Package.Timestamp;
-                m3U8FileManage.m3U8Option.AccumulateSeconds = m3U8FileManage.m3U8Option.AccumulateSeconds + duration / 1000.0;
-            }
-            if (m3U8FileManage.m3U8Option.IsNeedFirstHeadler)
-            {
-                var sdt = CreateSDT(jt1078Package);
-                sdt.CopyTo(fileData, fileIndex);
-                fileIndex = sdt.Length;
-
-                var pat = CreatePAT(jt1078Package);
-                pat.CopyTo(fileData, fileIndex);
-                fileIndex = fileIndex + pat.Length;
-
-                var pmt = CreatePMT(jt1078Package);
-                pmt.CopyTo(fileData, fileIndex);
-                fileIndex = fileIndex + pmt.Length;
-
-                var pes = CreatePES(jt1078Package, 18888);
-                pes.CopyTo(fileData, fileIndex);
-                fileIndex = fileIndex + pes.Length;
-
-                m3U8FileManage.m3U8Option.IsNeedFirstHeadler = false;
-            }
-            else
-            {
-                var pes = CreatePES(jt1078Package, 18888);
-                pes.CopyTo(fileData, fileIndex);
-                fileIndex = fileIndex + pes.Length;
-            }
-        }
         public byte[] CreateSDT(JT1078Package jt1078Package, int minBufferSize = 188)
         {
             byte[] buffer = TSArrayPool.Rent(minBufferSize);

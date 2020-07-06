@@ -81,7 +81,7 @@ namespace JT1078.Hls.Test
                 File.Delete(filepath);
                 var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_1.txt"));
                 fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
-                TSEncoder tSEncoder = new TSEncoder(new M3U8FileManage(new Options.M3U8Option { }));
+                TSEncoder tSEncoder = new TSEncoder();
                 foreach (var line in lines)
                 {
                     var data = line.Split(',');
@@ -128,7 +128,7 @@ namespace JT1078.Hls.Test
                 var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_3.txt"));
                 fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
                 bool isNeedFirstHeadler = true;
-                TSEncoder tSEncoder = new TSEncoder(new M3U8FileManage(new Options.M3U8Option {  }));
+                TSEncoder tSEncoder = new TSEncoder();
                 foreach (var line in lines)
                 {
                     var data = line.Split(',');

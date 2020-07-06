@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Buffers;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using JT1078.Hls.MessagePack;
 using JT1078.Hls.Options;
 using JT1078.Protocol;
 using JT1078.Protocol.Extensions;
@@ -14,12 +16,61 @@ namespace JT1078.Hls
     /// </summary>
     public class M3U8FileManage
     {
+        private TSEncoder tSEncoder;
         public readonly M3U8Option m3U8Option;
+        ArrayPool<byte> arrayPool = ArrayPool<byte>.Create();
+        byte[] fileData;
+        int fileIndex = 0;
 
-        public M3U8FileManage(M3U8Option m3U8Option)
+        ConcurrentDictionary<string, ulong> TsFirst1078PackageDic = new ConcurrentDictionary<string, ulong>();
+
+        public M3U8FileManage(M3U8Option m3U8Option, TSEncoder tSEncoder)
         {
+            this.tSEncoder = tSEncoder;
             this.m3U8Option = m3U8Option;
+            fileData = arrayPool.Rent(2500000);
             //AppendM3U8Start(m3U8Option.TsFileMaxSecond, m3U8Option.TsFileCount);
+        }
+        /// <summary>
+        /// 创建m3u8文件 和 ts文件
+        /// </summary>
+        /// <param name="jt1078Package"></param>
+        public void CreateM3U8File(JT1078Package jt1078Package)
+        {
+            //CombinedTSData(jt1078Package);
+            //if (m3U8FileManage.m3U8Option.AccumulateSeconds >= m3U8FileManage.m3U8Option.TsFileMaxSecond)
+            //{
+            //    m3U8FileManage.CreateM3U8File(jt1078Package, fileData.AsSpan().Slice(0, fileIndex).ToArray());
+            //    arrayPool.Return(fileData);
+            //    fileData = arrayPool.Rent(2500000);
+            //    fileIndex = 0;
+            //}
+        }
+
+
+        private byte[] CreateTsData(JT1078Package jt1078Package, bool isNeedHeader,Span<byte> span) {
+            var buff = TSArrayPool.Rent(jt1078Package.Bodies.Length + 2048);
+            TSMessagePackWriter tSMessagePackWriter = new TSMessagePackWriter(buff);
+            if (TsFirst1078PackageDic.TryGetValue(jt1078Package.SIM, out var firstTimespan))
+            {
+                if ((jt1078Package.Timestamp - firstTimespan) > 10 * 1000)
+                {
+                    //按设定的时间（默认为10秒）切分ts文件
+                }
+                var pes = tSEncoder.CreatePES(jt1078Package, 188);
+                tSMessagePackWriter.WriteArray(pes);
+            }
+            else {
+                var sdt = tSEncoder.CreateSDT(jt1078Package);
+                tSMessagePackWriter.WriteArray(sdt);
+                var pat = tSEncoder.CreatePAT(jt1078Package);
+                tSMessagePackWriter.WriteArray(pat);
+                var pmt = tSEncoder.CreatePMT(jt1078Package);
+                tSMessagePackWriter.WriteArray(pmt);
+                var pes = tSEncoder.CreatePES(jt1078Package, 188);
+                tSMessagePackWriter.WriteArray(pes);
+            }
+            return buff;
         }
 
         public void CreateM3U8File(JT1078Package fullpackage,byte[] data)
