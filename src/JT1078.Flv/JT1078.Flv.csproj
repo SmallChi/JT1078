@@ -14,7 +14,7 @@
     <licenseUrl>https://github.com/SmallChi/JT1078/blob/master/LICENSE</licenseUrl>
     <license>https://github.com/SmallChi/JT1078/blob/master/LICENSE</license>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>1.0.0-preview5</Version>
+    <Version>1.0.0-preview6</Version>
     <SignAssembly>false</SignAssembly>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
