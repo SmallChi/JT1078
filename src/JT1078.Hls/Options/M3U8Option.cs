@@ -18,21 +18,9 @@ namespace JT1078.Hls.Options
         /// </summary>
         public int TsFileMaxSecond { get; set; } = 10;
         /// <summary>
-        ///  生成的ts的文件数
+        /// ts文件个数
         /// </summary>
         public int TsFileCount { get; set; } = 0;
-        /// <summary>
-        /// 1078包的时间戳 毫秒
-        /// </summary>
-        public ulong TimestampMilliSecond { get; set; } = 0;
-        /// <summary>
-        /// 累计时长  如果大于文件时长就存储一个ts文件
-        /// </summary>
-        public double AccumulateSeconds { get; set; } = 0;
-        /// <summary>
-        /// 是否需要头部，每个ts文件都需要头部，重置为true
-        /// </summary>
-        public bool IsNeedFirstHeadler { get; set; } = true;
         /// <summary>
         /// m3u8文件
         /// </summary>
