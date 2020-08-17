@@ -46,7 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Update="Libs\libfaac.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 </Project>
