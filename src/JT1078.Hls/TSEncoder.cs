@@ -187,7 +187,7 @@ namespace JT1078.Hls
                     //1 + 6
                     totalLength += (1 + 6);
                     package.Header.Adaptation.PCRIncluded = PCRInclude.包含;
-                    package.Header.Adaptation.Timestamp = timestamp;
+                    package.Header.Adaptation.Timestamp = timestamp * H264DefaultHZ;
                     package.Payload.DTS = timestamp * H264DefaultHZ;
                     package.Payload.PTS = timestamp * H264DefaultHZ;
                 }
