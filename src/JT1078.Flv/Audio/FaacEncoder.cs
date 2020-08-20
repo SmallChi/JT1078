@@ -65,7 +65,7 @@ namespace JT1078.Flv.Audio
 
 
 
-        const string DLLFile = @"Libs/libfaac.dll";
+        const string DLLFile = @"/nativelibs/x64/libfaac.dll";
 
         [DllImport(DLLFile, EntryPoint = "faacEncGetVersion", CallingConvention = CallingConvention.StdCall)]
         //int FAACAPI faacEncGetVersion(char **faac_id_string, char **faac_copyright_string);
