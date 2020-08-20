@@ -18,13 +18,13 @@ namespace JT1078.Hls.Options
         /// </summary>
         public int TsFileMaxSecond { get; set; } = 10;
         /// <summary>
-        /// ts文件个数
+        /// 当前ts文件序号
         /// </summary>
-        public int TsFileCount { get; set; } = 0;
+        public int TsFileSerialNo { get; set; } = 0;
         /// <summary>
         /// m3u8文件
         /// </summary>
-        public string M3U8Filepath { get; set; }
+        public string M3U8FileName { get; set; }
         /// <summary>
         /// hls文件路径
         /// </summary>

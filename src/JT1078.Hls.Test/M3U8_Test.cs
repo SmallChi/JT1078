@@ -20,9 +20,9 @@ namespace JT1078.Hls.Test
             {
                 var hls_file_directory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "terminalno");
                 if (!File.Exists(hls_file_directory)) Directory.CreateDirectory(hls_file_directory);
-                var m3u8_filepath = Path.Combine(hls_file_directory, "live.m3u8");
+                var m3u8_filename = Path.Combine(hls_file_directory, "live.m3u8");
                 TSEncoder tSEncoder = new TSEncoder();
-                var m3u8Manage = new M3U8FileManage(new Options.M3U8Option { HlsFileDirectory = hls_file_directory, M3U8Filepath = m3u8_filepath }, tSEncoder);
+                var m3u8Manage = new M3U8FileManage(new Options.M3U8Option { HlsFileDirectory = hls_file_directory, M3U8FileName = m3u8_filename }, tSEncoder);
          
                 var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_3.txt"));
                 foreach (var line in lines)
@@ -34,7 +34,6 @@ namespace JT1078.Hls.Test
                     if (fullpackage != null)
                     {
                         m3u8Manage.CreateTsData(fullpackage);
-                        m3u8Manage.CreateM3U8File();
                     }
                 }
             }

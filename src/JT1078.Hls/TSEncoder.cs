@@ -139,7 +139,7 @@ namespace JT1078.Hls
                 TSArrayPool.Return(buffer);
             }
         }
-        public byte[] CreatePES(JT1078Package jt1078Package, int minBufferSize = 188)
+        public byte[] CreatePES(JT1078Package jt1078Package, int minBufferSize = 1024)
         {
             //将1078一帧的数据拆分成一小段一小段的PES包
             byte[] buffer = TSArrayPool.Rent(jt1078Package.Bodies.Length + minBufferSize);
