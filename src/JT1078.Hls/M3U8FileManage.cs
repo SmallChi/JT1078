@@ -20,10 +20,8 @@ namespace JT1078.Hls
     {
         private TSEncoder tSEncoder;
         public readonly M3U8Option m3U8Option;
-        
-        public ConcurrentQueue<TsFileInfo> tsFileInfoQueue = new ConcurrentQueue<TsFileInfo>();
-        public ConcurrentQueue<string> tsDelFileNameQueue = new ConcurrentQueue<string>();
-
+        ConcurrentDictionary<string, TsFileInfo> curTsFileInfoDic = new ConcurrentDictionary<string, TsFileInfo>();//当前文件信息
+        ConcurrentDictionary<string, Queue<TsFileInfo>> tsFileInfoQueueDic = new ConcurrentDictionary<string, Queue<TsFileInfo>>();
         ConcurrentDictionary<string, ulong> TsFirst1078PackageDic = new ConcurrentDictionary<string, ulong>();
 
         public M3U8FileManage(M3U8Option m3U8Option, TSEncoder tSEncoder)
@@ -31,30 +29,41 @@ namespace JT1078.Hls
             this.tSEncoder = tSEncoder;
             this.m3U8Option = m3U8Option;
         }
-
+        /// <summary>
+        /// 生成ts和m3u8文件
+        /// </summary>
+        /// <param name="jt1078Package"></param>
         public void CreateTsData(JT1078Package jt1078Package) {
-            if (!File.Exists(m3U8Option.M3U8FileName)) File.Create(m3U8Option.M3U8FileName);//创建m3u8文件
-            string tsFileDirectory = m3U8Option.HlsFileDirectory;
-            string tsNewFileName = $"{m3U8Option.TsFileSerialNo}.ts";
-            string tsFileName= Path.Combine(tsFileDirectory, tsNewFileName);
+            string key = $"{jt1078Package.SIM}_{jt1078Package.LogicChannelNumber}";
+            string hlsFileDirectory = m3U8Option.HlsFileDirectory;
+            string m3u8FileName = Path.Combine(hlsFileDirectory, m3U8Option.M3U8FileName);
+            if (!File.Exists(m3u8FileName)) File.Create(m3u8FileName);//创建m3u8文件
+
             var buff = TSArrayPool.Rent(jt1078Package.Bodies.Length + 1024);
             TSMessagePackWriter tSMessagePackWriter = new TSMessagePackWriter(buff);
-            if (TsFirst1078PackageDic.TryGetValue($"{jt1078Package.SIM}_{jt1078Package.LogicChannelNumber}" , out var firstTimespan))
+
+            var curTsFileInfo = CreateTsFileInfo(key, jt1078Package);
+            if (!curTsFileInfo.IsCreateTsFile)
             {
                 var pes = tSEncoder.CreatePES(jt1078Package);
                 tSMessagePackWriter.WriteArray(pes);
-                CreateTsFile(tsFileName, tSMessagePackWriter.FlushAndGetArray());
-                if ((jt1078Package.Timestamp - firstTimespan) > 10 * 1000)
+                CreateTsFile(curTsFileInfo.FileName, tSMessagePackWriter.FlushAndGetArray());
+
+                curTsFileInfo.Duration = (jt1078Package.Timestamp - curTsFileInfo.TsFirst1078PackageTimeStamp) / 1000.0;
+                //按设定的时间（默认为10秒）切分ts文件
+                if (curTsFileInfo.Duration > m3U8Option.TsFileMaxSecond)
                 {
-                    //按设定的时间（默认为10秒）切分ts文件
-                    TsFirst1078PackageDic.TryRemove($"{jt1078Package.SIM}_{jt1078Package.LogicChannelNumber}", out var _);
-                    var tsFileInfo = new TsFileInfo { FileName = tsNewFileName, Duration = (jt1078Package.Timestamp - firstTimespan) / 1000.0 };
-                    CreateM3U8File(tsFileInfo);
-                    m3U8Option.TsFileSerialNo++;
+                    var tsFileInfoQueue = ManageTsFileInfo(key, curTsFileInfo);
+                    CreateM3U8File(key, curTsFileInfo, tsFileInfoQueue);
+                    var newTsFileInfo = new TsFileInfo { IsCreateTsFile = true, Duration = 0, TsFileSerialNo = ++curTsFileInfo.TsFileSerialNo };
+                    curTsFileInfoDic.TryUpdate(key, newTsFileInfo, curTsFileInfo);
                 }
             }
             else {
-                if (File.Exists(tsFileName)) File.Delete(tsFileName);
+                curTsFileInfo.IsCreateTsFile = false;
+                curTsFileInfo.TsFirst1078PackageTimeStamp = jt1078Package.Timestamp;
+                curTsFileInfo.FileName = $"{curTsFileInfo.TsFileSerialNo}.ts";
+
                 var sdt = tSEncoder.CreateSDT(jt1078Package);
                 tSMessagePackWriter.WriteArray(sdt);
                 var pat = tSEncoder.CreatePAT(jt1078Package);
@@ -63,49 +72,55 @@ namespace JT1078.Hls
                 tSMessagePackWriter.WriteArray(pmt);
                 var pes = tSEncoder.CreatePES(jt1078Package);
                 tSMessagePackWriter.WriteArray(pes);
-                CreateTsFile(tsFileName, tSMessagePackWriter.FlushAndGetArray());
-                TsFirst1078PackageDic.TryAdd($"{jt1078Package.SIM}_{jt1078Package.LogicChannelNumber}", jt1078Package.Timestamp);
+                CreateTsFile(curTsFileInfo.FileName, tSMessagePackWriter.FlushAndGetArray());
             }
         }
+        /// <summary>
+        /// 维护TS文件信息队列
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="curTsFileInfo"></param>
+        /// <returns></returns>
+        private Queue<TsFileInfo> ManageTsFileInfo(string key, TsFileInfo curTsFileInfo) {
+            if (tsFileInfoQueueDic.TryGetValue(key, out var tsFileInfoQueue))
+            {
+                if (tsFileInfoQueue.Count >= m3U8Option.TsFileCapacity)
+                {
+                    var deleteTsFileInfo = tsFileInfoQueue.Dequeue();
+                    var deleteTsFileName = Path.Combine(m3U8Option.HlsFileDirectory, deleteTsFileInfo.FileName);
+                    if (File.Exists(deleteTsFileName)) File.Delete(deleteTsFileName);
+                }
+                tsFileInfoQueue.Enqueue(curTsFileInfo);
+            }
+            else
+            {
+                tsFileInfoQueue = new Queue<TsFileInfo>(new List<TsFileInfo> { curTsFileInfo });
+                tsFileInfoQueueDic.TryAdd(key, tsFileInfoQueue);
+            }
+            return tsFileInfoQueue;
+        }
 
-        private void CreateM3U8File(TsFileInfo tsFileInfo)
+        /// <summary>
+        /// 创建M3U8文件
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="curTsFileInfo"></param>
+        private void CreateM3U8File(string key,TsFileInfo curTsFileInfo, Queue<TsFileInfo> tsFileInfoQueue)
         {
-            //ecode_slice_header error  以非关键帧开始的报错信息
+            //ecode_slice_header error  以非关键帧开始生成的ts，通过ffplay播放会出现报错信息
             string tsFileSerialNo = string.Empty;
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("#EXTM3U");//开始
             sb.AppendLine("#EXT-X-VERSION:3");//版本号
             sb.AppendLine("#EXT-X-ALLOW-CACHE:NO");//是否允许cache
             sb.AppendLine($"#EXT-X-TARGETDURATION:{m3U8Option.TsFileMaxSecond}");//第一个TS分片的序列号
-            sb.AppendLine($"#EXT-X-MEDIA-SEQUENCE:{(m3U8Option.TsFileSerialNo - m3U8Option.TsFileCapacity > 0 ? (m3U8Option.TsFileSerialNo - m3U8Option.TsFileCapacity) : 0)}"); //默认第一个文件为0
-            Queue<string> fileBody = new Queue<string>();
-            using (FileStream fs = new FileStream(m3U8Option.M3U8FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-            using (StreamReader sr = new StreamReader(fs))
+            sb.AppendLine($"#EXT-X-MEDIA-SEQUENCE:{(curTsFileInfo.TsFileSerialNo - m3U8Option.TsFileCapacity > 0 ? (curTsFileInfo.TsFileSerialNo - m3U8Option.TsFileCapacity+1) : 0)}"); //默认第一个文件为0
+            sb.AppendLine();
+            for (int i = 0; i < tsFileInfoQueue.Count; i++)
             {
-                while (!sr.EndOfStream)
-                {
-                    var text = sr.ReadLine();
-                    if (text.Length == 0) continue;
-                    if (sb.ToString().Contains(text.Split(':')[0])) continue;
-                    fileBody.Enqueue(text);
-                }
-                if (fileBody.Count >= m3U8Option.TsFileCapacity * 2)
-                {
-                    var deleteTsFileName_extraInfo = fileBody.Dequeue();
-                    var deleteTsFileName = fileBody.Dequeue();
-                    tsDelFileNameQueue.Enqueue(deleteTsFileName);
-
-                    fileBody.Enqueue($"#EXTINF:{tsFileInfo.Duration},");
-                    fileBody.Enqueue(tsFileInfo.FileName);
-                }
-                else
-                {
-                    fileBody.Enqueue($"#EXTINF:{tsFileInfo.Duration},");
-                    fileBody.Enqueue(tsFileInfo.FileName);
-                }
-                fileBody.ToList().ForEach(m => {
-                    sb.AppendLine(m);
-                });
+                var tsFileInfo = tsFileInfoQueue.ElementAt(i);
+                sb.AppendLine($"#EXTINF:{tsFileInfo.Duration},");
+                sb.AppendLine(tsFileInfo.FileName);
             }
             using (FileStream fs = new FileStream(m3U8Option.M3U8FileName, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
             using (StreamWriter sw = new StreamWriter(fs))
@@ -115,15 +130,28 @@ namespace JT1078.Hls
         }
 
         /// <summary>
-        /// 创建ts文件
+        /// 创建TS文件信息
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="jt1078Package"></param>
+        /// <returns></returns>
+        private TsFileInfo CreateTsFileInfo(string key,JT1078Package jt1078Package) {
+            if (!curTsFileInfoDic.TryGetValue(key, out var curTsFileInfo))
+            {
+                curTsFileInfo = new TsFileInfo();
+                curTsFileInfoDic.TryAdd(key, curTsFileInfo);
+            }
+            return curTsFileInfo;
+        }
+        /// <summary>
+        /// 创建TS文件
         /// </summary>
         /// <param name="fileName">ts文件路径</param>
         /// <param name="data">文件内容</param>
         private void CreateTsFile(string fileName, byte[] data)
         {
-            var fileDirectory = fileName.Substring(0, fileName.LastIndexOf("\\"));
-            if (!Directory.Exists(fileDirectory)) Directory.CreateDirectory(fileDirectory);
-            using (var fileStream = new FileStream(fileName, FileMode.Append, FileAccess.Write,FileShare.ReadWrite, data.Length))
+            string tsFileName = Path.Combine(m3U8Option.HlsFileDirectory, fileName);
+            using (var fileStream = new FileStream(tsFileName, FileMode.Append, FileAccess.Write))
             {
                 fileStream.Write(data,0,data.Length);
             }
@@ -142,10 +170,28 @@ namespace JT1078.Hls
         //}
     }
     /// <summary>
-    /// ts文件信息
+    /// TS文件信息
     /// </summary>
-    public class TsFileInfo { 
-        public string FileName { get; set; } 
-        public double Duration { get; set; }
+    public class TsFileInfo {
+        /// <summary>
+        /// ts文件名
+        /// </summary>
+        public string FileName { get; set; } = "0.ts";
+        /// <summary>
+        /// 持续时间
+        /// </summary>
+        public double Duration { get; set; } = 0;
+        /// <summary>
+        /// 当前ts文件序号
+        /// </summary>
+        public int TsFileSerialNo { get; set; } = 0;
+        /// <summary>
+        /// 是否创建ts文件
+        /// </summary>
+        public bool IsCreateTsFile { get; set; } = true;
+        /// <summary>
+        /// ts文件第一个jt1078包的时间戳
+        /// </summary>
+        public ulong TsFirst1078PackageTimeStamp { get; set; } = 0;
     }
 }
