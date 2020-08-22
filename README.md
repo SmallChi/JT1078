@@ -4,9 +4,9 @@
 
 1. [设备终端到平台的通信也就是JT808](#808Ext)
 2. [企业平台到政府监管的通信也就是JT809](#809Ext)
-3. [设备终端上传的实时音视频流数据也就是视频服务器](#1078)  
-3.1  [将1078的数据(h264)编码成FLV](#1078flv)    
-3.2  [将1078的数据(h264)编码成HLS(尚未实现)](#1078HLS)  
+3. [设备终端上传的实时音视频流数据也就是视频服务器](#1078)
+3.1  [将1078的数据(h264)编码成FLV](#1078flv)
+3.2  [将1078的数据(h264)编码成HLS](#1078hls)
 
 [![MIT Licence](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/SmallChi/JT1078/blob/master/LICENSE)[![Github Build status](https://github.com/SmallChi/JT1078/workflows/.NET%20Core/badge.svg)]()
 
@@ -16,6 +16,7 @@
 | --------------------- | -------------------------------------------------- | --------------------------------------------------- |
 | Install-Package JT1078 | ![JT1078](https://img.shields.io/nuget/v/JT1078.svg) | ![JT1078](https://img.shields.io/nuget/dt/JT1078.svg) |
 | Install-Package JT1078.Flv | ![JT1078.Flv](https://img.shields.io/nuget/v/JT1078.Flv.svg) | ![JT1078.Flv](https://img.shields.io/nuget/dt/JT1078.Flv.svg) |
+| Install-Package JT1078.Hls | ![JT1078.Hls](https://img.shields.io/nuget/v/JT1078.Hls.svg) | ![JT1078.Hls](https://img.shields.io/nuget/dt/JT1078.Hls.svg) |
 | Install-Package JT808.Protocol.Extensions.JT1078 | ![JT808.Protocol.Extensions.JT1078](https://img.shields.io/nuget/v/JT808.Protocol.Extensions.JT1078.svg) | ![JT808](https://img.shields.io/nuget/dt/JT808.Protocol.Extensions.JT1078.svg) |
 | Install-Package JT809.Protocol.Extensions.JT1078 | ![JT809.Protocol.Extensions.JT1078](https://img.shields.io/nuget/v/JT809.Protocol.Extensions.JT1078.svg) | ![JT809](https://img.shields.io/nuget/dt/JT809.Protocol.Extensions.JT1078.svg) |
 
@@ -168,6 +169,17 @@ Platform=AnyCpu  Server=False  Toolchain=.NET Core 3.1
 |Timestamp|JT1078的Timestamp为FLv的Timestamp|
 |DataType|JT1078的DataType为FLv的FrameType的值（判断是否为关键帧）|
 |LastFrameInterval|JT1078的LastFrameInterval为FLv（B/P帧）的CompositionTime值|
+
+## <span id="1078hls">基于JT1078的Hls视频编码器</span>
+
+### 前提条件
+
+1. 掌握JT078解码；
+2. 了解H264解码；
+3. 掌握TS编码；
+4. 掌握Hls编码；
+
+> 音频暂未实现
 
 ### 使用BenchmarkDotNet性能测试报告（只是玩玩，不能当真）
 

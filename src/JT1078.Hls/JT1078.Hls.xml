@@ -1,0 +1,727 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>JT1078.Hls</name>
+    </assembly>
+    <members>
+        <member name="T:JT1078.Hls.TSBufferWriter">
+            <summary>
+            <see cref="!:System.Buffers.Writer"/>
+            </summary>
+        </member>
+        <member name="T:JT1078.Hls.Descriptors.ISO_639_Language_Descriptor">
+            <summary>
+            2.6.18 ISO 639 language descripto 
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.Descriptors.ISO_639_Language_Descriptor.ISO_639_Language_Info.ISO_639_Language_Code">
+            <summary>
+            24bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.Descriptors.ISO_639_Language_Descriptor.ISO_639_Language_Info.Audio_Type">
+            <summary>
+            8bit
+            </summary>
+        </member>
+        <member name="T:JT1078.Hls.Descriptors.TS_SDT_Service_Descriptor">
+            <summary>
+            业务描述服务描述
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.Descriptors.TS_SDT_Service_Descriptor.Tag">
+            <summary>
+            业务描述符
+            8bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.Descriptors.TS_SDT_Service_Descriptor.Length">
+            <summary>
+            8bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.Descriptors.TS_SDT_Service_Descriptor.ServiceType">
+            <summary>
+            
+            8bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.Descriptors.TS_SDT_Service_Descriptor.ServiceProviderLength">
+            <summary>
+            
+            8bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.Descriptors.TS_SDT_Service_Descriptor.ServiceProvider">
+            <summary>
+            
+            ServiceProviderLength
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.Descriptors.TS_SDT_Service_Descriptor.ServiceNameLenth">
+            <summary>
+            
+            8bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.Descriptors.TS_SDT_Service_Descriptor.ServiceName">
+            <summary>
+            
+            ServiceNameLenth
+            </summary>
+        </member>
+        <member name="T:JT1078.Hls.Enums.PCRInclude">
+            <summary>
+            取0x50表示包含PCR或0x40表示不包含PCR
+            注意:关键帧需要加pcr
+            </summary>
+        </member>
+        <member name="T:JT1078.Hls.Enums.PTS_DTS_Flags">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:JT1078.Hls.Enums.TS_SDT_Service_Descriptor_ServiceType">
+            <summary>
+            服务描述类型
+            </summary>
+        </member>
+        <member name="T:JT1078.Hls.Enums.TS_SDT_Service_RunningStatus">
+            <summary>
+            运行状态
+            </summary>
+        </member>
+        <member name="T:JT1078.Hls.M3U8FileManage">
+            <summary>
+            m3u8文件管理
+            </summary>
+        </member>
+        <member name="M:JT1078.Hls.M3U8FileManage.CreateTsData(JT1078.Protocol.JT1078Package)">
+            <summary>
+            生成ts和m3u8文件
+            </summary>
+            <param name="jt1078Package"></param>
+        </member>
+        <member name="M:JT1078.Hls.M3U8FileManage.ManageTsFileInfo(System.String,JT1078.Hls.M3U8FileManage.TsFileInfo)">
+            <summary>
+            维护TS文件信息队列
+            </summary>
+            <param name="key"></param>
+            <param name="curTsFileInfo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:JT1078.Hls.M3U8FileManage.CreateM3U8File(JT1078.Hls.M3U8FileManage.TsFileInfo,System.Collections.Generic.Queue{JT1078.Hls.M3U8FileManage.TsFileInfo})">
+            <summary>
+            创建M3U8文件
+            </summary>
+            <param name="curTsFileInfo"></param>
+        </member>
+        <member name="M:JT1078.Hls.M3U8FileManage.CreateTsFileInfo(System.String)">
+            <summary>
+            创建TS文件信息
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:JT1078.Hls.M3U8FileManage.CreateTsFile(System.String,System.Byte[])">
+            <summary>
+            创建TS文件
+            </summary>
+            <param name="fileName">ts文件路径</param>
+            <param name="data">文件内容</param>
+        </member>
+        <member name="M:JT1078.Hls.M3U8FileManage.Clear(System.String,System.Int32)">
+            <summary>
+            停止观看直播时清零数据
+            </summary>
+            <param name="sim"></param>
+            <param name="channelNo"></param>
+        </member>
+        <member name="T:JT1078.Hls.M3U8FileManage.TsFileInfo">
+            <summary>
+            TS文件信息
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.M3U8FileManage.TsFileInfo.FileName">
+            <summary>
+            ts文件名
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.M3U8FileManage.TsFileInfo.Duration">
+            <summary>
+            持续时间
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.M3U8FileManage.TsFileInfo.TsFileSerialNo">
+            <summary>
+            当前ts文件序号
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.M3U8FileManage.TsFileInfo.IsCreateTsFile">
+            <summary>
+            是否创建ts文件
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.M3U8FileManage.TsFileInfo.TsFirst1078PackageTimeStamp">
+            <summary>
+            ts文件第一个jt1078包的时间戳
+            </summary>
+        </member>
+        <member name="T:JT1078.Hls.Options.M3U8Option">
+            <summary>
+            m3u8配置文件
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.Options.M3U8Option.TsFileCapacity">
+            <summary>
+            m3u8文件中默认包含的ts文件数
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.Options.M3U8Option.TsFileMaxSecond">
+            <summary>
+            每个ts文件的最大时长
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.Options.M3U8Option.M3U8FileName">
+            <summary>
+            m3u8文件
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.Options.M3U8Option.HlsFileDirectory">
+            <summary>
+            hls文件路径（包括m3u8路径，ts路径）
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.PES_Package.PESStartCode">
+            <summary>
+            开始码，固定为0x000001
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.PES_Package.StreamId">
+            <summary>
+            音频取值（0xc0-0xdf），通常为0xc0
+            视频取值（0xe0-0xef），通常为0xe0
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.PES_Package.PESPacketLength">
+            <summary>
+            后面pes数据的长度，0表示长度不限制，只有视频数据长度会超过0xffff
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.PES_Package.Flag1">
+            <summary>
+            通常取值0x80，表示数据不加密、无优先级、备份的数据
+            ISOIEC13818-1 120页 Table E-1 -- PES packet header example
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.PES_Package.PTS_DTS_Flag">
+            <summary>
+            取值0x80表示只含有pts，取值0xc0表示含有pts和dts
+            ISOIEC13818-1 120页 Table E-1 -- PES packet header example
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.PES_Package.PESDataLength">
+            <summary>
+            根据PTS_DTS_Flag来判断后续长度
+            后面数据的长度，取值5或10
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.PES_Package.PTS">
+            <summary>
+            5B 
+            33bit值
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.PES_Package.DTS">
+            <summary>
+            5B 
+            33bit值
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.PES_Package.Payload">
+            <summary>
+            音视频数据
+            </summary>
+        </member>
+        <member name="F:JT1078.Hls.TSConstants.FiexdPackageLength">
+            <summary>
+            固定包长度
+            </summary>
+        </member>
+        <member name="F:JT1078.Hls.TSConstants.FiexdESPackageHeaderLength">
+            <summary>
+            固定ES包头的长度
+            </summary>
+        </member>
+        <member name="T:JT1078.Hls.TSEncoder">
+            <summary>
+            1.SDT
+            2.PAT
+            3.PMT
+            4.PES
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_AdaptationInfo.PCRIncluded">
+            <summary>
+            取0x50表示包含PCR或0x40表示不包含PCR
+            1B
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_AdaptationInfo.Timestamp">
+            <summary>
+            JT1078时间戳
+            第一包的数据、关键帧
+            Program Clock Reference,节目时钟参考,用于恢复出与编码端一致的系统时序时钟STC（System Time Clock）
+            5B
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_AdaptationInfo.FillSize">
+            <summary>
+            填充字节大小
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_Header.SyncByte">
+            <summary>
+            同步字节，固定为0x47
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_Header.TransportErrorIndicator">
+            <summary>
+            传输错误指示符，表明在ts头的adapt域后由一个无用字节，通常都为0，这个字节算在adapt域长度内
+            1bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_Header.PayloadUnitStartIndicator">
+            <summary>
+            负载单元起始标示符，一个完整的数据包开始时标记为1
+            1bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_Header.TransportPriority">
+            <summary>
+            传输优先级，0为低优先级，1为高优先级，通常取0
+            1bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_Header.PID">
+            <summary>
+            pid值
+            13bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_Header.TransportScramblingControl">
+            <summary>
+            传输加扰控制
+            2bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_Header.AdaptationFieldControl">
+            <summary>
+            是否包含自适应区，‘00’保留；‘01’为无自适应域，仅含有效负载；‘10’为仅含自适应域，无有效负载；‘11’为同时带有自适应域和有效负载。
+            2bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_Header.ContinuityCounter">
+            <summary>
+            递增计数器，从0-f，起始值不一定取0，但必须是连续的
+            4bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_Header.AdaptationLength">
+            <summary>
+            自适应域长度，后面的字节数
+            调整字段长度标示，标示此字节后面调整字段的长度，占位8bit；
+            值为0时，表示在TS分组中插入一个调整字节，后面没有调整字段，紧跟着的是有效负载；
+            adaptation_field_control == ‘11’时，此值在0 ~182之间，
+            adaptation_field_control == ‘10’时，此值为183，若字段没这么长则填充0xFF字段；
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_Header.Adaptation">
+            <summary>
+            附加字段
+            </summary>
+        </member>
+        <member name="T:JT1078.Hls.TS_PAT_Package">
+            <summary>
+            格式节目关联表
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PAT_Package.TableId">
+            <summary>
+            PAT表固定为0x00
+            8bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PAT_Package.SectionSyntaxIndicator">
+            <summary>
+            固定为二进制1
+            1bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PAT_Package.Zero">
+            <summary>
+            固定为二进制0
+            1bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PAT_Package.Reserved1">
+            <summary>
+            固定为二进制3
+            2bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PAT_Package.SectionLength">
+            <summary>
+            后面数据的长度
+            12bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PAT_Package.TransportStreamId">
+            <summary>
+            传输流ID
+            16bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PAT_Package.Reserved2">
+            <summary>
+            固定为二进制3
+            2bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PAT_Package.VersionNumber">
+            <summary>
+            版本号，固定为二进制00000，如果PAT有变化则版本号加1
+            5bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PAT_Package.CurrentNextIndicator">
+            <summary>
+            固定为二进制1，表示这个PAT表可以用，如果为0则要等待下一个PAT表
+            1bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PAT_Package.SectionNumber">
+            <summary>
+            固定为0x00
+            bit8
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PAT_Package.LastSectionNumber">
+            <summary>
+            固定为0x00
+            bit8
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PAT_Package.CRC32">
+            <summary>
+            前面数据的CRC32校验码
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PAT_Program.ProgramNumber">
+            <summary>
+            节目号为0x0000时表示这是NIT，节目号为0x0001时,表示这是PMT
+            16bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PAT_Program.Reserved1">
+            <summary>
+            固定为二进制111(7)
+            0b_1110_0000_0000_0000
+            3bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PAT_Program.PID">
+            <summary>
+            节目号对应内容的PID值
+            13bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PMT_Component.StreamType">
+            <summary>
+            流类型，标志是Video还是Audio还是其他数据，h.264编码对应0x1b，aac编码对应0x0f，mp3编码对应0x03
+            8bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PMT_Component.Reserved1">
+            <summary>
+            固定为二进制111(7)
+            0b_1110_0000_0000_0000
+            3bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PMT_Component.ElementaryPID">
+            <summary>
+            与StreamType对应的PID
+            13bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PMT_Component.Reserved2">
+            <summary>
+            固定为二进制1111(15)
+            0b_1111_0000_0000_0000
+            4bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PMT_Component.ESInfoLength">
+            <summary>
+            描述信息，指定为0x000表示没有
+            12bit
+            </summary>
+        </member>
+        <member name="T:JT1078.Hls.TS_PMT_Package">
+            <summary>
+            格式节目映射表
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PMT_Package.TableId">
+            <summary>
+            PMT表取值随意
+            8bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PMT_Package.SectionSyntaxIndicator">
+            <summary>
+            固定为二进制1
+            1bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PMT_Package.Zero">
+            <summary>
+            固定为二进制0
+            1bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PMT_Package.Reserved1">
+            <summary>
+            固定为二进制3
+            2bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PMT_Package.SectionLength">
+            <summary>
+            后面数据的长度
+            12bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PMT_Package.ProgramNumber">
+            <summary>
+            频道号码,表示当前的PMT关联到的频道,取值0x0001
+            16bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PMT_Package.Reserved2">
+            <summary>
+            固定为二进制3
+            2bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PMT_Package.VersionNumber">
+            <summary>
+            版本号，固定为二进制00000，如果PAT有变化则版本号加1
+            5bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PMT_Package.CurrentNextIndicator">
+            <summary>
+            固定为二进制1，表示这个PAT表可以用，如果为0则要等待下一个PAT表
+            1bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PMT_Package.SectionNumber">
+            <summary>
+            固定为0x00
+            bit8
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PMT_Package.LastSectionNumber">
+            <summary>
+            固定为0x00
+            bit8
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PMT_Package.Reserved3">
+            <summary>
+            固定为二进制111(7)
+            2bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PMT_Package.PCR_PID">
+            <summary>
+            PCR(节目参考时钟)所在TS分组的PID，指定为视频PID
+            13bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PMT_Package.Reserved4">
+            <summary>
+            固定为二进制1111(F)
+            4bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PMT_Package.ProgramInfoLength">
+            <summary>
+            节目描述信息,指定为0x000表示没有
+            12bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_PMT_Package.CRC32">
+            <summary>
+            前面数据的CRC32校验码
+            </summary>
+        </member>
+        <member name="T:JT1078.Hls.TS_SDT_Package">
+            <summary>
+            业务描述表
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_SDT_Package.TableId">
+            <summary>
+            表标识符
+            可以是0x42,表示描述的是当前流的信息,也可以是0x46,表示是其他流的信息
+            8bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_SDT_Package.SectionSyntaxIndicator">
+            <summary>
+            段语法指示符
+            1bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_SDT_Package.ReservedFutureUse1">
+            <summary>
+            保留未来使用
+            1bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_SDT_Package.Reserved1">
+            <summary>
+            保留位,防止控制字冲突,一般是''0'',也有可能是''1''
+            2bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_SDT_Package.SectionLength">
+            <summary>
+            段长度 从transport_stream_id开始,到CRC_32结束(包含)
+            12bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_SDT_Package.TransportStreamId">
+            <summary>
+            传输流标识符
+            同 PAT表中的 TransportStreamId 和PMT表中 ProgramNumber
+            16bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_SDT_Package.Reserved2">
+            <summary>
+            保留位
+            2bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_SDT_Package.VersionNumber">
+            <summary>
+            版本号
+            标识子表的版本号。当子表包含的信息发生变化时， version_number 加 1。当值增至 31 时，复位为 0。
+            当 current_next_indicator 置“1”时，则 version_number 为当前使用的子表的版本号。
+            当 current_next_indicator 置“0”时，则 version_number 为下一个使用的子表的版本号。
+            5bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_SDT_Package.CurrentNextIndicator">
+            <summary>
+            当前后续指示符
+            当被置“1”时，表示当前子表  正被使用。
+            当其置“0”时，表示所传子表尚未被使用，它是下一个将被使用的子表。
+            1bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_SDT_Package.SectionNumber">
+            <summary>
+            段号 
+            子表中的第一个段的 section_number 标 为 “ 0x00 ”。
+            每增加一个具有相同的 table_id 、 transport_stream_id 和original_network_id 的段，section_number 就加 1。
+            bit8
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_SDT_Package.LastSectionNumber">
+            <summary>
+            最后段号
+            表示所属的子表的最后一个段（即段号最大的段）的段号。
+            bit8
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_SDT_Package.OriginalNetworkId">
+            <summary>
+            原始网络标识符
+            原始传输系统的 network_id
+            bit16
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_SDT_Package.ReservedFutureUse2">
+            <summary>
+            保留未来使用位
+            bit8
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_SDT_Package.CRC32">
+            <summary>
+            前面数据的CRC32校验码
+            </summary>
+        </member>
+        <member name="T:JT1078.Hls.TS_SDT_Service">
+            <summary>
+            业务描述服务
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_SDT_Service.ServiceId">
+            <summary>
+            业务标识符
+            用于在 TS 流中识别不同的业务。service_id 与program_map_section 中的 program_number 取同一值
+            16bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_SDT_Service.ReservedFutureUse">
+            <summary>
+            保留将来使用
+            6bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_SDT_Service.EITScheduleFlag">
+            <summary>
+            EIT 时间表标志
+            置“1”时，表示业务的 EIT 时间表信息存在于当前 TS 中（一个 EIT 时间表子表两次出现的最大时间间隔信息见 ETR 211）。
+            置“0”时，表示业务的 EIT 时间表信息不在当前 TS 中
+            1bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_SDT_Service.EITPresentFollowingFlag">
+            <summary>
+            EIT 当前后续标志
+            置“1”时，表示业务的 EIT  当前后续信息存在于当前 TS 中（一个 EIT 当前后续子表两次出现的最大时间间隔信息见ETR 211）
+            置“0”时，表示业务的 EIT 当前后续信息不在当前 TS 中。
+            1bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_SDT_Service.RunningStatus">
+            <summary>
+            运行状态
+            对于一个 NVOD 业务，running_status 的值都置“0”
+            3bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_SDT_Service.FreeCAMode">
+            <summary>
+            自由条件接收模式
+            置“0”时，表示业务的所有组件都未被加扰
+            置“1”时，表示一路或多路码流的接收由 CA 系统控制。
+            1bit
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.TS_SDT_Service.DescriptorsLoopLength">
+            <summary>
+            描述符循环长度
+            指出从本字段的下一个字节开始的描述符的总字节长度。
+            12bit
+            </summary>
+        </member>
+    </members>
+</doc>
