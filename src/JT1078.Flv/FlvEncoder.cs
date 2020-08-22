@@ -41,7 +41,7 @@ namespace JT1078.Flv
         readonly H264Decoder h264Decoder = new H264Decoder();
         public FlvEncoder(int sampleRate = 8000, int channels = 1, int sampleBit = 16, bool adts = false)
         {
-            //faacEncoder = new FaacEncoder(sampleRate, channels, sampleBit, adts);
+            faacEncoder = new FaacEncoder(sampleRate, channels, sampleBit, adts);
         }
 
         /// <summary>
