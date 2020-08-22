@@ -45,14 +45,11 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.7" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="nativelibs\x64\libfaac.dll">
-      <PackagePath>/nativelibs/x64/libfaac.dll</PackagePath>
-      <Pack>true</Pack>
- 
-    </Content>
-    <Content Include="nativelibs\x86\libfaac.dll">
-      <Pack>true</Pack>
-      <PackagePath>/nativelibs/x86/libfaac.dll</PackagePath>
-    </Content>
+    <None Update="nativelibs\x64\libfaac.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="nativelibs\x86\libfaac.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

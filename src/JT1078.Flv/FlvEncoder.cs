@@ -37,11 +37,18 @@ namespace JT1078.Flv
     /// </summary>
     public class FlvEncoder : IDisposable
     {
-        readonly FaacEncoder faacEncoder;
+        readonly IFaacEncoder faacEncoder;
         readonly H264Decoder h264Decoder = new H264Decoder();
         public FlvEncoder(int sampleRate = 8000, int channels = 1, int sampleBit = 16, bool adts = false)
         {
-            faacEncoder = new FaacEncoder(sampleRate, channels, sampleBit, adts);
+            try
+            {
+                faacEncoder = new FaacEncoder_x86(sampleRate, channels, sampleBit, adts);
+            }
+            catch
+            {
+                faacEncoder = new FaacEncoder_x64(sampleRate, channels, sampleBit, adts);
+            }
         }
 
         /// <summary>

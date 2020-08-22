@@ -28,7 +28,7 @@ namespace JT1078.Flv.Test.Audio
         {
             ReadOnlySpan<byte> fileData = File.ReadAllBytes(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"Audio/Files/testpacket.pcm"));
             //注意 这里为了可以判断音频是否可用，因此使用adts，当网络传输的时候不应该使用adts
-            var faac = new FaacEncoder(8000, 1, 16, true);
+            var faac = new FaacEncoder_x64(8000, 1, 16, true);
             var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Audio\Files\testpacket.aac");
             if (File.Exists(path)) File.Delete(path);
             output.WriteLine(path);
