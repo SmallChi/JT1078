@@ -36,7 +36,7 @@ namespace JT1078.Hls
         {         
             string key = jt1078Package.GetKey();
             string hlsFileDirectory = m3U8Option.HlsFileDirectory;
-            string m3u8FileName = Path.Combine(hlsFileDirectory, m3U8Option.M3U8FileName);
+            string m3u8FileName = Path.Combine(hlsFileDirectory, key, m3U8Option.M3U8FileName);
             if (!File.Exists(m3u8FileName)) File.Create(m3u8FileName);//创建m3u8文件
             var buff = TSArrayPool.Rent(jt1078Package.Bodies.Length + 1024);
             TSMessagePackWriter tSMessagePackWriter = new TSMessagePackWriter(buff);
@@ -47,7 +47,7 @@ namespace JT1078.Hls
                 {
                     var pes = tSEncoder.CreatePES(jt1078Package);
                     tSMessagePackWriter.WriteArray(pes);
-                    CreateTsFile(curTsFileInfo.FileName, tSMessagePackWriter.FlushAndGetArray());
+                    CreateTsFile(curTsFileInfo.FileName,key, tSMessagePackWriter.FlushAndGetArray());
                     curTsFileInfo.Duration = (jt1078Package.Timestamp - curTsFileInfo.TsFirst1078PackageTimeStamp) / 1000.0;
                     //按设定的时间（默认为10秒）切分ts文件
                     if (curTsFileInfo.Duration > m3U8Option.TsFileMaxSecond)
@@ -71,7 +71,7 @@ namespace JT1078.Hls
                     tSMessagePackWriter.WriteArray(pmt);
                     var pes = tSEncoder.CreatePES(jt1078Package);
                     tSMessagePackWriter.WriteArray(pes);
-                    CreateTsFile(curTsFileInfo.FileName, tSMessagePackWriter.FlushAndGetArray());
+                    CreateTsFile(curTsFileInfo.FileName,key, tSMessagePackWriter.FlushAndGetArray());
                 }
             }
             finally
@@ -108,7 +108,8 @@ namespace JT1078.Hls
         /// <summary>
         /// 创建M3U8文件
         /// </summary>
-        /// <param name="curTsFileInfo"></param>
+        /// <param name="curTsFileInfo">当前ts文件信息</param>
+        /// <param name="tsFileInfoQueue">ts文件信息队列</param>
         private void CreateM3U8File(TsFileInfo curTsFileInfo, Queue<TsFileInfo> tsFileInfoQueue)
         {
             //ecode_slice_header error  以非关键帧开始生成的ts，通过ffplay播放会出现报错信息
@@ -150,10 +151,11 @@ namespace JT1078.Hls
         /// 创建TS文件
         /// </summary>
         /// <param name="fileName">ts文件路径</param>
+        /// <param name="key">终端号_通道号（用作目录）</param>
         /// <param name="data">文件内容</param>
-        private void CreateTsFile(string fileName, byte[] data)
+        private void CreateTsFile(string fileName,string key, byte[] data)
         {
-            string tsFileName = Path.Combine(m3U8Option.HlsFileDirectory, fileName);
+            string tsFileName = Path.Combine(m3U8Option.HlsFileDirectory, key, fileName);
             using (var fileStream = new FileStream(tsFileName, FileMode.Append, FileAccess.Write))
             {
                 fileStream.Write(data,0,data.Length);
