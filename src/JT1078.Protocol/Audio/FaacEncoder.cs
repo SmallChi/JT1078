@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using System.Runtime.InteropServices;
-using JT1078.Flv.Extensions;
 
-namespace JT1078.Flv.Audio
+namespace JT1078.Protocol.Audio
 {
     public interface IFaacEncoder:IDisposable
     {

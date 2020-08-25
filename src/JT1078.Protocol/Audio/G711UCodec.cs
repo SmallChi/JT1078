@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace JT1078.Flv.Audio
+namespace JT1078.Protocol.Audio
 {
-    public class G711UCodec
+    public class G711UCodec: IAudioCodec
     {
         /* 16384 entries per table (16 bit) */
         readonly byte[] linearToUlawTable = new byte[65536];
-
         /* 16384 entries per table (8 bit) */
         readonly short[] ulawToLinearTable = new short[256];
         readonly int SIGN_BIT = 0x80;
@@ -90,23 +89,26 @@ namespace JT1078.Flv.Audio
             return pcmSamples;
         }
 
-        private byte[] Pcm16ToUlaw(byte[] pcmSamples)
+        //private byte[] Pcm16ToUlaw(byte[] pcmSamples)
+        //{
+        //    short[] dst = new short[pcmSamples.Length / 2];
+        //    byte[] ulawSamples = new byte[pcmSamples.Length / 2];
+        //    for (int i = 0, k = 0; i < pcmSamples.Length;)
+        //    {
+        //        dst[k++] = (short)((pcmSamples[i++] & 0xff) | ((pcmSamples[i++] & 0xff) << 8));
+        //    }
+        //    for (int i = 0, k = 0; i < dst.Length; i++)
+        //    {
+        //        ulawSamples[k++] = Linear2ulaw(dst[i]);
+        //    }
+        //    return ulawSamples;
+        //}
+
+        //public byte[] ToG711(byte[] data) => Pcm16ToUlaw(data);
+
+        public byte[] ToPcm(byte[] audio, IAudioAttachData audioAttachData)
         {
-            short[] dst = new short[pcmSamples.Length / 2];
-            byte[] ulawSamples = new byte[pcmSamples.Length / 2];
-            for (int i = 0, k = 0; i < pcmSamples.Length;)
-            {
-                dst[k++] = (short)((pcmSamples[i++] & 0xff) | ((pcmSamples[i++] & 0xff) << 8));
-            }
-            for (int i = 0, k = 0; i < dst.Length; i++)
-            {
-                ulawSamples[k++] = Linear2ulaw(dst[i]);
-            }
-            return ulawSamples;
+            return UlawToPcm16(audio);
         }
-
-        public byte[] ToPcm(byte[] data) => UlawToPcm16(data);
-
-        public byte[] ToG711(byte[] data) => Pcm16ToUlaw(data);
     }
 }

@@ -4,53 +4,6 @@
         <name>JT1078.Flv</name>
     </assembly>
     <members>
-        <member name="P:JT1078.Flv.Audio.State.Valprev">
-            <summary>
-            上一个采样数据，当index为0是该值应该为未压缩的原数据
-            </summary>
-        </member>
-        <member name="P:JT1078.Flv.Audio.State.Reserved">
-            <summary>
-            保留数据（未使用）
-            </summary>
-        </member>
-        <member name="P:JT1078.Flv.Audio.State.Index">
-            <summary>
-            上一个block最后一个index，第一个block的index=0
-            </summary>
-        </member>
-        <member name="M:JT1078.Flv.Audio.AdpcmCodec.ToPcm(System.Byte[],JT1078.Flv.Audio.State)">
-            <summary>
-            将adpcm转为pcm
-            </summary>
-            <see cref="!:https://github.com/ctuning/ctuning-programs/blob/master/program/cbench-telecom-adpcm-d/adpcm.c"/>
-            <param name="data"></param>
-            <returns></returns>
-        </member>
-        <member name="M:JT1078.Flv.Audio.AdpcmDecoderExtension.ToWav(System.Byte[],System.UInt32,System.Byte)">
-            <summary>
-            添加wav头
-            仅用于测试pcm是否转成成功，因此没考虑性能，因为播放器可播——#
-            </summary>
-            <param name="input">pcm数据</param>
-            <param name="frequency">采样率</param>
-            <param name="bitDepth">位深</param>
-            <returns></returns>
-        </member>
-        <member name="M:JT1078.Flv.Audio.G711ACodec.ToPcm(System.Byte[])">
-            <summary>
-            转至PCM
-            </summary>
-            <param name="g711data"></param>
-            <returns></returns>
-        </member>
-        <member name="M:JT1078.Flv.Audio.G711ACodec.ToG711(System.Byte[])">
-            <summary>
-            转至G711
-            </summary>
-            <param name="pcmdata"></param>
-            <returns></returns>
-        </member>
         <member name="T:JT1078.Flv.FlvBufferWriter">
             <summary>
             <see cref="!:System.Buffers.Writer"/>
@@ -210,7 +163,7 @@
             Flv编码器
             一个客户端对应一个实例
             <para>
-            当实例不适用时，尽量手动调用下<see cref="M:JT1078.Flv.FlvEncoder.Dispose"/>
+            当实例不适用时，尽量手动调用下<see cref="!:Dispose"/>
             </para>
             
             手动编码

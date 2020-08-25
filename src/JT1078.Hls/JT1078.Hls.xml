@@ -114,7 +114,8 @@
             <summary>
             创建M3U8文件
             </summary>
-            <param name="curTsFileInfo"></param>
+            <param name="curTsFileInfo">当前ts文件信息</param>
+            <param name="tsFileInfoQueue">ts文件信息队列</param>
         </member>
         <member name="M:JT1078.Hls.M3U8FileManage.CreateTsFileInfo(System.String)">
             <summary>
@@ -123,11 +124,12 @@
             <param name="key"></param>
             <returns></returns>
         </member>
-        <member name="M:JT1078.Hls.M3U8FileManage.CreateTsFile(System.String,System.Byte[])">
+        <member name="M:JT1078.Hls.M3U8FileManage.CreateTsFile(System.String,System.String,System.Byte[])">
             <summary>
             创建TS文件
             </summary>
             <param name="fileName">ts文件路径</param>
+            <param name="key">终端号_通道号（用作目录）</param>
             <param name="data">文件内容</param>
         </member>
         <member name="M:JT1078.Hls.M3U8FileManage.Clear(System.String,System.Int32)">

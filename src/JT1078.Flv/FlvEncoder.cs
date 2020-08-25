@@ -4,12 +4,12 @@ using JT1078.Flv.Metadata;
 using JT1078.Protocol.Enums;
 using JT1078.Protocol.H264;
 using JT1078.Protocol.MessagePack;
-using JT1078.Flv.Audio;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using JT1078.Protocol;
+using JT1078.Protocol.Audio;
 
 [assembly: InternalsVisibleTo("JT1078.Flv.Test")]
 namespace JT1078.Flv
@@ -35,20 +35,15 @@ namespace JT1078.Flv
     /// 3、<see cref="EncoderVideoTag"/>第二个参数传true
     /// 4、<see cref="EncoderAudioTag"/>第二个参数传true
     /// </summary>
-    public class FlvEncoder : IDisposable
+    public class FlvEncoder
     {
-        readonly IFaacEncoder faacEncoder;
-        readonly H264Decoder h264Decoder = new H264Decoder();
-        public FlvEncoder(int sampleRate = 8000, int channels = 1, int sampleBit = 16, bool adts = false)
+        readonly H264Decoder h264Decoder;
+        readonly AudioCodecFactory audioCodecFactory;
+        //public FlvEncoder(int sampleRate = 8000, int channels = 1, int sampleBit = 16, bool adts = false)
+        public FlvEncoder()
         {
-            try
-            {
-                faacEncoder = new FaacEncoder_x86(sampleRate, channels, sampleBit, adts);
-            }
-            catch
-            {
-                faacEncoder = new FaacEncoder_x64(sampleRate, channels, sampleBit, adts);
-            }
+            audioCodecFactory = new AudioCodecFactory();
+            h264Decoder = new H264Decoder();
         }
 
         /// <summary>
@@ -255,6 +250,7 @@ namespace JT1078.Flv
         /// <param name="package"></param>
         /// <param name="needAacHeader">是否需要首帧音频</param>
         /// <returns></returns>
+        [Obsolete("音频暂时去掉")]
         public byte[] EncoderAudioTag(JT1078Package package, bool needAacHeader = false)
         {
             if (package.Label3.DataType != JT1078DataType.音频帧) throw new Exception("Incorrect parameter, package must be audio frame");
@@ -263,26 +259,7 @@ namespace JT1078.Flv
             {
                 flvMessagePackWriter.WriteArray(EncoderFirstAudioTag(package.Timestamp));
             }
-            byte[] aacFrameData = null;
-            switch (package.Label2.PT)
-            {
-                case JT1078AVType.ADPCM:
-                    ReadOnlySpan<byte> adpcm = package.Bodies;
-                    // 海思芯片编码的音频需要移除海思头，可能还有其他的海思头
-                    if (adpcm.StartsWith(new byte[] { 0x00, 0x01, 0x52, 0x00 })) adpcm = adpcm.Slice(4);
-                    aacFrameData = faacEncoder.Encode(new AdpcmCodec().ToPcm(adpcm.Slice(4).ToArray(), new State()
-                    {
-                        Valprev = (short)((adpcm[1] << 8) | adpcm[0]),
-                        Index = adpcm[2],
-                        Reserved = adpcm[3]
-                    })); break;
-                case JT1078AVType.G711A:
-                    aacFrameData = faacEncoder.Encode(new G711ACodec().ToPcm(package.Bodies));
-                    break;
-                case JT1078AVType.AACLC:
-                    aacFrameData = package.Bodies;
-                    break;
-            }
+            byte[] aacFrameData = audioCodecFactory.Encode(package.Label2.PT, package.Bodies);
             if (aacFrameData != null && aacFrameData.Any())//编码成功，此时为一帧aac音频数据
             {
                 // Data Tag Frame
@@ -371,11 +348,6 @@ namespace JT1078.Flv
             {
                 FlvArrayPool.Return(buffer);
             }
-        }
-
-        public void Dispose()
-        {
-            faacEncoder.Dispose();
         }
     }
 }

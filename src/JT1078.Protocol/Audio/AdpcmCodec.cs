@@ -2,26 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace JT1078.Flv.Audio
+namespace JT1078.Protocol.Audio
 {
-    public class State
-    {
-        /// <summary>
-        /// 上一个采样数据，当index为0是该值应该为未压缩的原数据
-        /// </summary>
-        public short Valprev { get; set; }
-
-        /// <summary>
-        /// 保留数据（未使用）
-        /// </summary>
-        public byte Reserved { get; set; }
-
-        /// <summary>
-        /// 上一个block最后一个index，第一个block的index=0
-        /// </summary>
-        public byte Index { get; set; }
-    }
-    public class AdpcmCodec
+    public class AdpcmCodec: IAudioCodec
     {
         static readonly int[] indexTable = {
             -1, -1, -1, -1, 2, 4, 6, 8,
@@ -39,119 +22,122 @@ namespace JT1078.Flv.Audio
             5894, 6484, 7132, 7845, 8630, 9493, 10442, 11487, 12635, 13899,
             15289, 16818, 18500, 20350, 22385, 24623, 27086, 29794, 32767
         };
-        public static byte[] ToAdpcm(short[] indata, State state)
-        {
-            int val;            /* Current input sample value */
-            int sign;           /* Current adpcm sign bit */
-            int delta;          /* Current adpcm output value */
-            int diff;           /* Difference between val and valprev */
-            int step;           /* Stepsize */
-            int valpred;        /* Predicted output value */
-            int vpdiff;         /* Current change to valpred */
-            int index;          /* Current step change index */
-            int outputbuffer = 0;       /* place to keep previous 4-bit value */
-            int bufferstep;     /* toggle between outputbuffer/output */
 
-            List<byte> outp = new List<byte>();
-            short[] inp = indata;
-            var len = indata.Length;
-            valpred = state.Valprev;
-            index = state.Index;
-            step = stepsizeTable[index];
+        //public static byte[] ToAdpcm(short[] indata, AdpcmState state)
+        //{
+        //    int val;            /* Current input sample value */
+        //    int sign;           /* Current adpcm sign bit */
+        //    int delta;          /* Current adpcm output value */
+        //    int diff;           /* Difference between val and valprev */
+        //    int step;           /* Stepsize */
+        //    int valpred;        /* Predicted output value */
+        //    int vpdiff;         /* Current change to valpred */
+        //    int index;          /* Current step change index */
+        //    int outputbuffer = 0;       /* place to keep previous 4-bit value */
+        //    int bufferstep;     /* toggle between outputbuffer/output */
 
-            bufferstep = 1;
+        //    List<byte> outp = new List<byte>();
+        //    short[] inp = indata;
+        //    var len = indata.Length;
+        //    valpred = state.Valprev;
+        //    index = state.Index;
+        //    step = stepsizeTable[index];
 
-            int k = 0;
-            for (int i = 0; len > 0; len--, i++)
-            {
-                val = inp[i];
+        //    bufferstep = 1;
 
-                /* Step 1 - compute difference with previous value */
-                diff = val - valpred;
-                sign = (diff < 0) ? 8 : 0;
-                if (sign != 0) diff = (-diff);
+        //    int k = 0;
+        //    for (int i = 0; len > 0; len--, i++)
+        //    {
+        //        val = inp[i];
 
-                /* Step 2 - Divide and clamp */
-                /* Note:
-                ** This code *approximately* computes:
-                **    delta = diff*4/step;
-                **    vpdiff = (delta+0.5)*step/4;
-                ** but in shift step bits are dropped. The net result of this is
-                ** that even if you have fast mul/div hardware you cannot put it to
-                ** good use since the fixup would be too expensive.
-                */
-                delta = 0;
-                vpdiff = (step >> 3);
+        //        /* Step 1 - compute difference with previous value */
+        //        diff = val - valpred;
+        //        sign = (diff < 0) ? 8 : 0;
+        //        if (sign != 0) diff = (-diff);
 
-                if (diff >= step)
-                {
-                    delta = 4;
-                    diff -= step;
-                    vpdiff += step;
-                }
-                step >>= 1;
-                if (diff >= step)
-                {
-                    delta |= 2;
-                    diff -= step;
-                    vpdiff += step;
-                }
-                step >>= 1;
-                if (diff >= step)
-                {
-                    delta |= 1;
-                    vpdiff += step;
-                }
+        //        /* Step 2 - Divide and clamp */
+        //        /* Note:
+        //        ** This code *approximately* computes:
+        //        **    delta = diff*4/step;
+        //        **    vpdiff = (delta+0.5)*step/4;
+        //        ** but in shift step bits are dropped. The net result of this is
+        //        ** that even if you have fast mul/div hardware you cannot put it to
+        //        ** good use since the fixup would be too expensive.
+        //        */
+        //        delta = 0;
+        //        vpdiff = (step >> 3);
 
-                /* Step 3 - Update previous value */
-                if (sign != 0)
-                    valpred -= vpdiff;
-                else
-                    valpred += vpdiff;
+        //        if (diff >= step)
+        //        {
+        //            delta = 4;
+        //            diff -= step;
+        //            vpdiff += step;
+        //        }
+        //        step >>= 1;
+        //        if (diff >= step)
+        //        {
+        //            delta |= 2;
+        //            diff -= step;
+        //            vpdiff += step;
+        //        }
+        //        step >>= 1;
+        //        if (diff >= step)
+        //        {
+        //            delta |= 1;
+        //            vpdiff += step;
+        //        }
 
-                /* Step 4 - Clamp previous value to 16 bits */
-                if (valpred > 32767)
-                    valpred = 32767;
-                else if (valpred < -32768)
-                    valpred = -32768;
+        //        /* Step 3 - Update previous value */
+        //        if (sign != 0)
+        //            valpred -= vpdiff;
+        //        else
+        //            valpred += vpdiff;
 
-                /* Step 5 - Assemble value, update index and step values */
-                delta |= sign;
+        //        /* Step 4 - Clamp previous value to 16 bits */
+        //        if (valpred > 32767)
+        //            valpred = 32767;
+        //        else if (valpred < -32768)
+        //            valpred = -32768;
 
-                index += indexTable[delta];
-                if (index < 0) index = 0;
-                if (index > 88) index = 88;
-                step = stepsizeTable[index];
+        //        /* Step 5 - Assemble value, update index and step values */
+        //        delta |= sign;
 
-                /* Step 6 - Output value */
-                if (bufferstep != 0)
-                {
-                    outputbuffer = (delta << 4) & 0xf0;
-                }
-                else
-                {
-                    outp.Add((byte)((delta & 0x0f) | outputbuffer));
-                }
-                bufferstep = bufferstep == 0 ? 1 : 0;
-            }
+        //        index += indexTable[delta];
+        //        if (index < 0) index = 0;
+        //        if (index > 88) index = 88;
+        //        step = stepsizeTable[index];
 
-            /* Output last step, if needed */
-            if (bufferstep == 0)
-                outp.Add((byte)outputbuffer);
+        //        /* Step 6 - Output value */
+        //        if (bufferstep != 0)
+        //        {
+        //            outputbuffer = (delta << 4) & 0xf0;
+        //        }
+        //        else
+        //        {
+        //            outp.Add((byte)((delta & 0x0f) | outputbuffer));
+        //        }
+        //        bufferstep = bufferstep == 0 ? 1 : 0;
+        //    }
 
-            state.Valprev = (short)valpred;
-            state.Index = (byte)index;
-            return outp.ToArray();
-        }
+        //    /* Output last step, if needed */
+        //    if (bufferstep == 0)
+        //        outp.Add((byte)outputbuffer);
+
+        //    state.Valprev = (short)valpred;
+        //    state.Index = (byte)index;
+        //    return outp.ToArray();
+        //}
 
         /// <summary>
         /// 将adpcm转为pcm
         /// </summary>
         /// <see cref="https://github.com/ctuning/ctuning-programs/blob/master/program/cbench-telecom-adpcm-d/adpcm.c"/>
-        /// <param name="data"></param>
+        /// <param name="audio"></param>
+        /// <param name="audioAttachData"></param>
         /// <returns></returns>
-        public byte[] ToPcm(byte[] data, State state)
+        public byte[] ToPcm(byte[] audio, IAudioAttachData audioAttachData)
         {
+            AdpcmState state = (AdpcmState)audioAttachData;
             // signed char *inp;		/* Input buffer pointer */
             // short *outp;		/* output buffer pointer */
             int sign;           /* Current adpcm sign bit */
@@ -166,7 +152,7 @@ namespace JT1078.Flv.Audio
             step = stepsizeTable[index];
 
             var outdata = new List<byte>();
-            var len = data.Length * 2;
+            var len = audio.Length * 2;
             for (int i = 0; len > 0; len--)
             {
                 /* Step 1 - get the delta value */
@@ -176,7 +162,7 @@ namespace JT1078.Flv.Audio
                 }
                 else
                 {
-                    inputbuffer = data[i++];
+                    inputbuffer = audio[i++];
                     delta = (inputbuffer >> 4) & 0xf;
                 }
                 bufferstep = !bufferstep;
@@ -222,7 +208,23 @@ namespace JT1078.Flv.Audio
             return outdata.ToArray();
         }
     }
+    public class AdpcmState : IAudioAttachData
+    {
+        /// <summary>
+        /// 上一个采样数据，当index为0是该值应该为未压缩的原数据
+        /// </summary>
+        public short Valprev { get; set; }
 
+        /// <summary>
+        /// 保留数据（未使用）
+        /// </summary>
+        public byte Reserved { get; set; }
+
+        /// <summary>
+        /// 上一个block最后一个index，第一个block的index=0
+        /// </summary>
+        public byte Index { get; set; }
+    }
     public static class AdpcmDecoderExtension
     {
         /// <summary>
