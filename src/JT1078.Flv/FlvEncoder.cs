@@ -202,7 +202,7 @@ namespace JT1078.Flv
         public byte[] EncoderVideoTag(JT1078Package package, bool needVideoHeader = false)
         {
             if (package.Label3.DataType == JT1078DataType.音频帧) return default;
-            byte[] buffer = FlvArrayPool.Rent(package.Bodies.Length);
+            byte[] buffer = FlvArrayPool.Rent(package.Bodies.Length*2);
             FlvMessagePackWriter flvMessagePackWriter = new FlvMessagePackWriter(buffer);
             var nalus = h264Decoder.ParseNALU(package);
             if (nalus != null && nalus.Count > 0)
@@ -274,7 +274,7 @@ namespace JT1078.Flv
         /// <returns></returns>
         public byte[] EncoderOtherVideoTag(H264NALU nALU)
         {
-            byte[] buffer = FlvArrayPool.Rent(nALU.RawData.Length);
+            byte[] buffer = FlvArrayPool.Rent(nALU.RawData.Length*2);
             try
             {
                 FlvMessagePackWriter flvMessagePackWriter = new FlvMessagePackWriter(buffer);
