@@ -71,10 +71,31 @@ namespace JT808.Protocol.Extensions.JT1078.Test
             Assert.Equal("7E910100110123456798100001093132372E302E302E31076000000101014C7E", hex);
             //7E910100110123456798100001093132372E302E302E31076000000101014C7E
         }
+
         [Fact]
         public void Test4()
         {
             var jT808_0X9101 = JT808Serializer.Analyze<JT808_0x9101>("093132372E302E302E3107600000010101".ToHexBytes());
+        }
+
+        [Fact]
+        public void Test5()
+        {
+            JT808Package jT808Package = new JT808Package();
+            JT808Header header = new JT808Header();
+            header.MsgId = 0x9101;
+            header.MsgNum = 1;
+            header.TerminalPhoneNo = "";
+            jT808Package.Header = header;
+            JT808_0x9101 jT808_0X9101 = new JT808_0x9101();
+            jT808_0X9101.ServerIPAddress = "";
+            jT808_0X9101.ServerVideoChannelTcpPort = 1078;
+            jT808_0X9101.ServerVideoChannelUdpPort = 0;
+            jT808_0X9101.LogicalChannelNo = 3;
+            jT808_0X9101.DataType = 1;
+            jT808_0X9101.StreamType = 1;
+            jT808Package.Bodies = jT808_0X9101;
+            var hex = JT808Serializer.Serialize(jT808Package).ToHexString();
         }
     }
 }
