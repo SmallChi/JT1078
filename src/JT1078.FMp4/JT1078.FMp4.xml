@@ -1,0 +1,367 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>JT1078.FMp4</name>
+    </assembly>
+    <members>
+        <member name="T:JT1078.FMp4.AVCDecoderConfigurationRecord">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.ChunkLargeOffsetBox.ChunkOffset">
+            <summary>
+            length:EntryCount
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.ChunkOffsetBox.ChunkOffset">
+            <summary>
+            length:EntryCount
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.CompactSampleSizeBox.FieldSize">
+            <summary>
+            4, 8 or 16
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.CompactSampleSizeBox.EntrySize">
+            <summary>
+            length:SampleCount
+            DepOn:field_size=>DataType
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.CompositionOffsetBox.CompositionOffsetInfo.SignedSampleOffset">
+            <summary>
+            version == 1
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.CopyrightBox.Pad">
+            <summary>
+            16-1
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.CopyrightBox.Language">
+            <summary>
+            16-15
+            ISO-639-2/T language code
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.DataReferenceBox.DataEntryBoxes">
+            <summary>
+            length:EntryCount
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.DegradationPriorityBox.Priorities">
+            <summary>
+            sample_count is taken from the sample_count in the Sample Size Box ('stsz').
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.FDItemInformationBox.PartitionEntries">
+            <summary>
+            length:EntryCount
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.FDSessionGroupBox.FDSessionGroupInfo.GroupIDs">
+            <summary>
+            length:EntryCount
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.FDSessionGroupBox.FDSessionGroupInfo.HintTrackId">
+            <summary>
+            length:NumChannelsInSessionGroup
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.FilePartitionBox.SchemeSpecificInfo">
+            <summary>
+            以null结尾
+            </summary>
+        </member>
+        <member name="T:JT1078.FMp4.FileTypeBox">
+            <summary>
+            ftyp 盒子相当于就是该 mp4 的纲领性说明。即，告诉解码器它的基本解码版本，兼容格式。简而言之，就是用来告诉客户端，该 MP4 的使用的解码标准。通常，ftyp 都是放在 MP4 的开头。
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.FileTypeBox.MajorBrand">
+             <summary>
+            因为兼容性一般可以分为推荐兼容性和默认兼容性。这里 major_brand 就相当于是推荐兼容性。通常，在 Web 中解码，一般而言都是使用 isom 这个万金油即可。如果是需要特定的格式，可以自行定义。
+             4位
+             </summary>
+        </member>
+        <member name="P:JT1078.FMp4.FileTypeBox.MinorVersion">
+            <summary>
+            最低兼容版本
+            4位
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.FileTypeBox.CompatibleBrands">
+            <summary>
+            和MajorBrand类似，通常是针对 MP4 中包含的额外格式，比如，AVC，AAC 等相当于的音视频解码格式。
+            4位*n
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.FreeSpaceBox.FillValue">
+            <summary>
+            填充值
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.FreeSpaceBox.FillCount">
+            <summary>
+            填充数量
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.ItemLocationBox.OffsetSize">
+            <summary>
+            0, 4, 8
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.ItemLocationBox.LengthSize">
+            <summary>
+            0, 4, 8
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.ItemLocationBox.BaseOffsetSize">
+            <summary>
+            0, 4, 8
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.ItemLocationBox.IndexSize">
+            <summary>
+            version == 1
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.ItemLocationBox.ItemLocation.Reserved">
+            <summary>
+            if (version == 1) 16-12
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.ItemLocationBox.ItemLocation.ConstructionMethod">
+            <summary>
+            if (version == 1) 16-4
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "P:JT1078.FMp4.ItemLocationBox.ItemLocation.ItemLocationExtentInfo.ExtentIndex" -->
+        <member name="P:JT1078.FMp4.LevelAssignmentBox.LevelAssignmentInfo.PaddingFlag">
+            <summary>
+            1byte 8-1
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.LevelAssignmentBox.LevelAssignmentInfo.AssignmentType">
+            <summary>
+            1byte 8-7
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.LevelAssignmentBox.LevelAssignmentInfo.GroupingType">
+            <summary>
+            AssignmentType == 0 || assignment_type == 1
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.LevelAssignmentBox.LevelAssignmentInfo.GroupingTypeParameter">
+            <summary>
+            assignment_type == 1
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.LevelAssignmentBox.LevelAssignmentInfo.SubTrackId">
+            <summary>
+            assignment_type == 4
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.MediaHeaderBox.Language">
+            <summary>
+            ISO-639-2/T language code
+            und-undetermined
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.ProducerReferenceTimeBox.MediaTime">
+            <summary>
+            if (version==0)
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "P:JT1078.FMp4.SampleAuxiliaryInformationOffsetsBox.AuxInfoType" -->
+        <!-- Badly formed XML comment ignored for member "P:JT1078.FMp4.SampleAuxiliaryInformationOffsetsBox.AuxInfoTypeParameter" -->
+        <member name="P:JT1078.FMp4.SampleAuxiliaryInformationOffsetsBox.Offset">
+            <summary>
+            length:entry_count
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SampleAuxiliaryInformationOffsetsBox.OffsetLarge">
+            <summary>
+            length:entry_count
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "P:JT1078.FMp4.SampleAuxiliaryInformationSizesBox.AuxInfoType" -->
+        <!-- Badly formed XML comment ignored for member "P:JT1078.FMp4.SampleAuxiliaryInformationSizesBox.AuxInfoTypeParameter" -->
+        <member name="P:JT1078.FMp4.SampleAuxiliaryInformationSizesBox.SampleInfoSize">
+            <summary>
+            default_sample_info_size==0
+             length:sample_count
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SampleDependencyTypeBox.SampleDependencyTypes">
+            <summary>
+            is taken from the sample_count in the Sample Size Box ('stsz') or Compact Sample Size Box(‘stz2’).
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SampleGroupDescriptionBox.DefaultLength">
+            <summary>
+            if (version==1)
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SampleSizeBox.EntrySize">
+            <summary>
+             if (sample_size==0)
+             length:sample_count
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SampleToGroupBox.GroupingTypeParameter">
+            <summary>
+            version == 1
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "P:JT1078.FMp4.SchemeTypeBox.SchemeUri" -->
+        <member name="P:JT1078.FMp4.SegmentIndexBox.EarliestPresentationTimeLarge">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SegmentIndexBox.EarliestPresentationTime">
+            <summary>
+            if(version==0)
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SegmentIndexBox.FirstOffset">
+            <summary>
+            if (version==0)
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SegmentIndexBox.SegmentIndex.ReferenceType">
+            <summary>
+            4byte 32 - 1
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SegmentIndexBox.SegmentIndex.ReferencedSize">
+            <summary>
+            4byte 32 - 31
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SegmentIndexBox.SegmentIndex.StartsWithSAP">
+            <summary>
+            4byte 32 - 1
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SegmentIndexBox.SegmentIndex.SAPType">
+            <summary>
+            4byte 32 - 3
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SegmentIndexBox.SegmentIndex.SAPDeltaTime">
+            <summary>
+            4byte 32 - 28
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.StereoVideoBox.Reserved">
+             <summary>
+            4btye 32 - 30
+             </summary>
+        </member>
+        <member name="P:JT1078.FMp4.StereoVideoBox.SingleViewAllowed">
+             <summary>
+            4btye 32 - 2
+             </summary>
+        </member>
+        <member name="P:JT1078.FMp4.StereoVideoBox.StereoIndicationType">
+            <summary>
+            length:Length
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SubSampleInformationBox.SubSampleInformation.InnerSubSampleInformation.SubsampleSizeLarge">
+            <summary>
+            version == 1
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SubsegmentIndexBox.SubsegmentIndexInfos">
+            <summary>
+            length:SubSegmentCount
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SubsegmentIndexBox.SubsegmentIndexInfo.SubsegmentRangeInfos">
+            <summary>
+            length:RangesCount
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SubsegmentIndexBox.SubsegmentIndexInfo.SubsegmentRangeInfo.Level">
+            <summary>
+            32 - 8
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SubsegmentIndexBox.SubsegmentIndexInfo.SubsegmentRangeInfo.RangeSize">
+            <summary>
+             32 - 4
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SubTrackSampleGroupBox.GroupDescriptionIndex">
+            <summary>
+            length:ItemCount
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.TrackFragmentRandomAccessBox.Reserved">
+            <summary>
+            4byte 32-26
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.TrackFragmentRandomAccessBox.LengthSizeOfTrafNum">
+            <summary>
+            4byte 32-28
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.TrackFragmentRandomAccessBox.LengthSizeOfTrunNum">
+            <summary>
+            4byte 32-30
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.TrackFragmentRandomAccessBox.LengthSizeOfSampleNum">
+            <summary>
+            4byte 32-32
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.TrackRunBox.DataOffset">
+            <summary>
+            可选的
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.TrackRunBox.TrackRunInfos">
+            <summary>
+            length:SampleCount
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.TrackRunBox.TrackRunInfo.SampleCompositionTimeOffset">
+            <summary>
+            version == 0
+            </summary>
+        </member>
+        <member name="T:JT1078.FMp4.Buffers.FMp4BufferWriter">
+            <summary>
+            <see cref="!:System.Buffers.Writer"/>
+            </summary>
+        </member>
+        <member name="F:JT1078.FMp4.FMp4Constants.DateLimitYear">
+            <summary>
+            日期限制于2000年
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.MessagePack.FMp4MessagePackReader.ReadIso639">
+            <summary>
+            
+            <see cref="!:https://github.com/sannies/JT1078.FMp4/blob/master/isoparser/src/main/java/org/JT1078.FMp4/tools/IsoTypeReader.java"/>
+            </summary>
+            <param name="language"></param>
+        </member>
+        <member name="M:JT1078.FMp4.MessagePack.FMp4MessagePackWriter.WriteIso639(System.String)">
+            <summary>
+            ref
+            <see cref="!:https://github.com/sannies/JT1078.FMp4/blob/master/isoparser/src/main/java/org/JT1078.FMp4/tools/IsoTypeWriter.java"/>
+            </summary>
+            <param name="language"></param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "P:JT1078.FMp4.Samples.AudioSampleEntry.Samplerate" -->
+    </members>
+</doc>

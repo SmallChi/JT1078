@@ -50,7 +50,7 @@ namespace JT1078.Flv.Metadata
             }
         }
 
-        #region Just for non-spec-conform encoders ref:org.mp4parser.boxes.iso14496.part15.AvcDecoderConfigurationRecord
+        #region Just for non-spec-conform encoders ref:org.JT1078.FMp4.boxes.iso14496.part15.AvcDecoderConfigurationRecord
         public const int LengthSizeMinusOnePaddingBits = 63;
         public const int NumberOfSequenceParameterSetsPaddingBits = 7;
         public const int ChromaFormatPaddingBits = 31;

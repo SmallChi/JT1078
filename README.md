@@ -6,7 +6,8 @@
 2. [企业平台到政府监管的通信也就是JT809](#809Ext)
 3. [设备终端上传的实时音视频流数据也就是视频服务器](#1078)  
 3.1  [将1078的数据(h264)编码成FLV](#1078flv)  
-3.2  [将1078的数据(h264)编码成HLS](#1078hls)
+3.2  [将1078的数据(h264)编码成HLS](#1078hls)  
+3.3  [将1078的数据(h264)编码成FMp4](#1078fmp4)  
 
 [![MIT Licence](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/SmallChi/JT1078/blob/master/LICENSE)[![Github Build status](https://github.com/SmallChi/JT1078/workflows/.NET%20Core/badge.svg)]()
 

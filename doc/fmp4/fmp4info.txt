@@ -1,0 +1,19 @@
+ref https://stackoverflow.com/questions/53992918/about-fmp4-encoding-how-to-fill-the-mdat-box-wit-h264-frame?r=SearchResults
+
+H.264 can be in different stream formats. One is called "Annex B" the other one is MP4. In "Annex B" your NAL units are prefix with start codes 00 00 00 01 or 00 00 01. In MP4 your NAL units are prefixed with the size in bytes.
+
+I assume your encoder emits "Annex B".
+
+    Remove the start code (00) 00 00 01
+
+    Prefix your NAL units with the size (typically 4 bytes)
+
+    Filter out AUD/SPS/PPS NAL units from your stream
+
+    Write you converted NAL units into the MDAT box
+
+    Create an AVC Configuration Box ('avcC') based on your SPS, PPS and the length size
+
+    Store your avcC box in moov->trak->mdia->minf->stbl->avc1->avcC
+
+    While you are writing your samples into mdat - keep track of sizes, offsets and frame types to create the correct stts, stss, stsc, stsz and stco boxes.
