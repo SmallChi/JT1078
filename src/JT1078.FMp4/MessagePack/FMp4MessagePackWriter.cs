@@ -43,6 +43,14 @@ namespace JT1078.FMp4.MessagePack
             BinaryPrimitives.WriteUInt32BigEndian(writer.Free, value);
             writer.Advance(4);
         }
+
+        public void WriteASCII(string value)
+        {
+            var data = Encoding.ASCII.GetBytes(value);
+            data.CopyTo(writer.Free);
+            writer.Advance(data.Length);
+        }
+
         public void WriteArray(ReadOnlySpan<byte> src)
         {
             src.CopyTo(writer.Free);
@@ -55,6 +63,24 @@ namespace JT1078.FMp4.MessagePack
             tmp.CopyTo(writer.Free);
             writer.Advance(count);
         }
+
+        public void WriteUInt16Return(ushort value, int position)
+        {
+            BinaryPrimitives.WriteUInt16BigEndian(writer.Written.Slice(position, 2), value);
+        }
+        public void WriteInt32Return(int value, int position)
+        {
+            BinaryPrimitives.WriteInt32BigEndian(writer.Written.Slice(position, 4), value);
+        }
+        public void WriteUInt32Return(uint value, int position)
+        {
+            BinaryPrimitives.WriteUInt32BigEndian(writer.Written.Slice(position, 4), value);
+        }
+        public void WriteByteReturn(byte value, int position)
+        {
+            writer.Written[position] = value;
+        }
+
         public int GetCurrentPosition()
         {
             return writer.WrittenCount;

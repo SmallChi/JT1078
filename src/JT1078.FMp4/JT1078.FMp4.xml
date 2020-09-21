@@ -348,6 +348,16 @@
             日期限制于2000年
             </summary>
         </member>
+        <member name="P:JT1078.FMp4.FullBox.Version">
+            <summary>
+            unsigned int(8)
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.FullBox.Flags">
+            <summary>
+            bit(24)
+            </summary>
+        </member>
         <member name="M:JT1078.FMp4.MessagePack.FMp4MessagePackReader.ReadIso639">
             <summary>
             
@@ -361,6 +371,23 @@
             <see cref="!:https://github.com/sannies/JT1078.FMp4/blob/master/isoparser/src/main/java/org/JT1078.FMp4/tools/IsoTypeWriter.java"/>
             </summary>
             <param name="language"></param>
+        </member>
+        <member name="P:JT1078.FMp4.Mp4Box.Size">
+            <summary>
+            盒子大小
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.Mp4Box.BoxType">
+            <summary>
+            盒子类型
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.Mp4Box.ToBuffer(JT1078.FMp4.MessagePack.FMp4MessagePackWriter@,System.Int32@)">
+            <summary>
+            
+            </summary>
+            <param name="writer"></param>
+            <param name="sizePosition"></param>
         </member>
         <!-- Badly formed XML comment ignored for member "P:JT1078.FMp4.Samples.AudioSampleEntry.Samplerate" -->
     </members>

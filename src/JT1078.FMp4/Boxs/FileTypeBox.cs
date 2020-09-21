@@ -1,4 +1,6 @@
-﻿using System;
+﻿using JT1078.FMp4.Interfaces;
+using JT1078.FMp4.MessagePack;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
@@ -8,7 +10,7 @@ namespace JT1078.FMp4
     /// <summary>
     /// ftyp 盒子相当于就是该 mp4 的纲领性说明。即，告诉解码器它的基本解码版本，兼容格式。简而言之，就是用来告诉客户端，该 MP4 的使用的解码标准。通常，ftyp 都是放在 MP4 的开头。
     /// </summary>
-    public class FileTypeBox : Mp4Box
+    public class FileTypeBox : Mp4Box, IFMp4MessagePackFormatter
     {
         public FileTypeBox() : base("ftyp")
         {
@@ -22,11 +24,26 @@ namespace JT1078.FMp4
         /// 最低兼容版本
         /// 4位
         /// </summary>
-        public uint MinorVersion { get; set; }
+        public string MinorVersion { get; set; } = "\0\0\0\0";
         /// <summary>
         /// 和MajorBrand类似，通常是针对 MP4 中包含的额外格式，比如，AVC，AAC 等相当于的音视频解码格式。
         /// 4位*n
         /// </summary>
-        public List<string> CompatibleBrands { get; set; }
+        public List<string> CompatibleBrands { get; set; } = new List<string>();
+
+        public void ToBuffer(ref FMp4MessagePackWriter writer)
+        {
+            ToBuffer(ref writer,out int sizePosition);
+            writer.WriteASCII(MajorBrand);
+            writer.WriteASCII(MinorVersion);
+            if(CompatibleBrands!=null && CompatibleBrands.Count > 0)
+            {
+                foreach(var item in CompatibleBrands)
+                {
+                    writer.WriteASCII(item);
+                }
+            }
+            writer.WriteUInt32Return((uint)(writer.GetCurrentPosition()- sizePosition), sizePosition);
+        }
     }
 }
