@@ -168,6 +168,7 @@
         <member name="P:JT1078.FMp4.MediaHeaderBox.Language">
             <summary>
             ISO-639-2/T language code
+            ref:doc\fmp4\ISO Language Codes.txt
             und-undetermined
             </summary>
         </member>
@@ -358,6 +359,12 @@
             bit(24)
             </summary>
         </member>
+        <member name="M:JT1078.FMp4.FullBox.WriterToBuffer(JT1078.FMp4.MessagePack.FMp4MessagePackWriter@)">
+            <summary>
+            
+            </summary>
+            <param name="writer"></param>
+        </member>
         <member name="M:JT1078.FMp4.MessagePack.FMp4MessagePackReader.ReadIso639">
             <summary>
             
@@ -368,7 +375,6 @@
         <member name="M:JT1078.FMp4.MessagePack.FMp4MessagePackWriter.WriteIso639(System.String)">
             <summary>
             ref
-            <see cref="!:https://github.com/sannies/JT1078.FMp4/blob/master/isoparser/src/main/java/org/JT1078.FMp4/tools/IsoTypeWriter.java"/>
             </summary>
             <param name="language"></param>
         </member>
@@ -382,12 +388,17 @@
             盒子类型
             </summary>
         </member>
-        <member name="M:JT1078.FMp4.Mp4Box.ToBuffer(JT1078.FMp4.MessagePack.FMp4MessagePackWriter@,System.Int32@)">
+        <member name="M:JT1078.FMp4.Mp4Box.Start(JT1078.FMp4.MessagePack.FMp4MessagePackWriter@)">
             <summary>
             
             </summary>
             <param name="writer"></param>
-            <param name="sizePosition"></param>
+        </member>
+        <member name="M:JT1078.FMp4.Mp4Box.End(JT1078.FMp4.MessagePack.FMp4MessagePackWriter@)">
+            <summary>
+            
+            </summary>
+            <param name="writer"></param>
         </member>
         <!-- Badly formed XML comment ignored for member "P:JT1078.FMp4.Samples.AudioSampleEntry.Samplerate" -->
     </members>

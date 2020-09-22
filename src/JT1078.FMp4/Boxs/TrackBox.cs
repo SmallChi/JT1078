@@ -10,8 +10,8 @@ namespace JT1078.FMp4
         {
         }
          public TrackHeaderBox TrackHeaderBox { get; set; }
-         public TrackReferenceBox TrackReferenceBox { get; set; }
-         public EditBox EditBox { get; set; }
-         public MediaBox MediaBox { get; set; }
+        //不是必须的    public TrackReferenceBox TrackReferenceBox { get; set; } 
+        //不是必须的    public EditBox EditBox { get; set; }
+        public MediaBox MediaBox { get; set; }
     }
 }

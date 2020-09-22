@@ -28,6 +28,11 @@ namespace JT1078.FMp4.MessagePack
             BinaryPrimitives.WriteUInt16BigEndian(writer.Free, value);
             writer.Advance(2);
         }
+        public void WriteInt16(short value)
+        {
+            BinaryPrimitives.WriteInt16BigEndian(writer.Free, value);
+            writer.Advance(2);
+        }
         public void WriteInt32(int value)
         {
             BinaryPrimitives.WriteInt32BigEndian(writer.Free, value);
@@ -42,6 +47,15 @@ namespace JT1078.FMp4.MessagePack
         {
             BinaryPrimitives.WriteUInt32BigEndian(writer.Free, value);
             writer.Advance(4);
+        }
+
+        public void WriteUInt24(uint value)
+        {
+            var span = writer.Free;
+            span[0] = (byte)(value >> 16);
+            span[1] = (byte)(value >> 8);
+            span[2] = (byte)value;
+            writer.Advance(3);
         }
 
         public void WriteASCII(string value)
@@ -88,7 +102,6 @@ namespace JT1078.FMp4.MessagePack
 
         /// <summary>
         /// ref
-        /// <see cref="https://github.com/sannies/JT1078.FMp4/blob/master/isoparser/src/main/java/org/JT1078.FMp4/tools/IsoTypeWriter.java"/>
         /// </summary>
         /// <param name="language"></param>
         public void  WriteIso639(string language)

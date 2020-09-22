@@ -1,4 +1,6 @@
-﻿using System;
+﻿using JT1078.FMp4.Interfaces;
+using JT1078.FMp4.MessagePack;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -19,5 +21,14 @@ namespace JT1078.FMp4
         /// bit(24)
         /// </summary>
         public uint Flags { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="writer"></param>
+        protected void WriterToBuffer(ref FMp4MessagePackWriter writer)
+        {
+            writer.WriteByte(Version);
+            writer.WriteUInt24(Flags);
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using JT1078.FMp4.MessagePack;
+﻿using JT1078.FMp4.Interfaces;
+using JT1078.FMp4.MessagePack;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,7 +10,7 @@ namespace JT1078.FMp4
     {
         //public const string UUID = "uuid";
 
-        public const int FixedSizeLength = 4;
+        const int FixedSizeLength = 4;
 
         public Mp4Box(string boxType)
         {
@@ -49,15 +50,25 @@ namespace JT1078.FMp4
         ///// </summary>
         //public string UserType { get; set; }
 
+        private int sizePosition;
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="writer"></param>
-        /// <param name="sizePosition"></param>
-        public void ToBuffer(ref FMp4MessagePackWriter writer, out int sizePosition)
+        public void Start(ref FMp4MessagePackWriter writer)
         {
             writer.Skip(FixedSizeLength, out sizePosition);
             writer.WriteASCII(BoxType);
+        }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="writer"></param>
+        public void End(ref FMp4MessagePackWriter writer)
+        {
+            writer.WriteUInt32Return((uint)(writer.GetCurrentPosition() - sizePosition), sizePosition);
         }
     }
 }

@@ -33,7 +33,7 @@ namespace JT1078.FMp4
 
         public void ToBuffer(ref FMp4MessagePackWriter writer)
         {
-            ToBuffer(ref writer,out int sizePosition);
+            Start(ref writer);
             writer.WriteASCII(MajorBrand);
             writer.WriteASCII(MinorVersion);
             if(CompatibleBrands!=null && CompatibleBrands.Count > 0)
@@ -43,7 +43,7 @@ namespace JT1078.FMp4
                     writer.WriteASCII(item);
                 }
             }
-            writer.WriteUInt32Return((uint)(writer.GetCurrentPosition()- sizePosition), sizePosition);
+            End(ref writer);
         }
     }
 }
