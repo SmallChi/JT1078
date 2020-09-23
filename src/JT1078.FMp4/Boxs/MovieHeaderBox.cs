@@ -6,8 +6,16 @@ using System.Text;
 
 namespace JT1078.FMp4
 {
+    /// <summary>
+    /// mvhd
+    /// </summary>
     public class MovieHeaderBox : FullBox, IFMp4MessagePackFormatter
     {
+        /// <summary>
+        /// mvhd
+        /// </summary>
+        /// <param name="version"></param>
+        /// <param name="flags"></param>
         public MovieHeaderBox(byte version, uint flags=0) : base("mvhd", version, flags)
         {
         }
@@ -25,7 +33,7 @@ namespace JT1078.FMp4
         public void ToBuffer(ref FMp4MessagePackWriter writer)
         {
             Start(ref writer);
-            WriterToBuffer(ref writer);
+            WriterFullBoxToBuffer(ref writer);
             if (Version == 1)
             {
                 writer.WriteUInt64(CreationTime);

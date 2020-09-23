@@ -25,7 +25,7 @@ namespace JT1078.FMp4
         /// 
         /// </summary>
         /// <param name="writer"></param>
-        protected void WriterToBuffer(ref FMp4MessagePackWriter writer)
+        protected void WriterFullBoxToBuffer(ref FMp4MessagePackWriter writer)
         {
             writer.WriteByte(Version);
             writer.WriteUInt24(Flags);

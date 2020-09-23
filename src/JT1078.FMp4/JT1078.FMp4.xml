@@ -4,6 +4,16 @@
         <name>JT1078.FMp4</name>
     </assembly>
     <members>
+        <member name="T:JT1078.FMp4.AVCConfigurationBox">
+            <summary>
+            avcC
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.AVCConfigurationBox.#ctor">
+            <summary>
+            avcC
+            </summary>
+        </member>
         <member name="T:JT1078.FMp4.AVCDecoderConfigurationRecord">
             <summary>
             
@@ -17,6 +27,16 @@
         <member name="P:JT1078.FMp4.ChunkOffsetBox.ChunkOffset">
             <summary>
             length:EntryCount
+            </summary>
+        </member>
+        <member name="T:JT1078.FMp4.CleanApertureBox">
+            <summary>
+            clap
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.CleanApertureBox.#ctor">
+            <summary>
+            clap
             </summary>
         </member>
         <member name="P:JT1078.FMp4.CompactSampleSizeBox.FieldSize">
@@ -45,6 +65,33 @@
             16-15
             ISO-639-2/T language code
             </summary>
+        </member>
+        <member name="T:JT1078.FMp4.DataInformationBox">
+            <summary>
+            dinf
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.DataInformationBox.#ctor">
+            <summary>
+            dinf
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.DataInformationBox.DataReferenceBox">
+            <summary>
+            dref
+            </summary>
+        </member>
+        <member name="T:JT1078.FMp4.DataReferenceBox">
+            <summary>
+            dref
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.DataReferenceBox.#ctor(System.Byte,System.UInt32)">
+            <summary>
+            dref
+            </summary>
+            <param name="version"></param>
+            <param name="flags"></param>
         </member>
         <member name="P:JT1078.FMp4.DataReferenceBox.DataEntryBoxes">
             <summary>
@@ -81,6 +128,11 @@
             ftyp 盒子相当于就是该 mp4 的纲领性说明。即，告诉解码器它的基本解码版本，兼容格式。简而言之，就是用来告诉客户端，该 MP4 的使用的解码标准。通常，ftyp 都是放在 MP4 的开头。
             </summary>
         </member>
+        <member name="M:JT1078.FMp4.FileTypeBox.#ctor">
+            <summary>
+            ftyp
+            </summary>
+        </member>
         <member name="P:JT1078.FMp4.FileTypeBox.MajorBrand">
              <summary>
             因为兼容性一般可以分为推荐兼容性和默认兼容性。这里 major_brand 就相当于是推荐兼容性。通常，在 Web 中解码，一般而言都是使用 isom 这个万金油即可。如果是需要特定的格式，可以自行定义。
@@ -108,6 +160,18 @@
             <summary>
             填充数量
             </summary>
+        </member>
+        <member name="T:JT1078.FMp4.HandlerBox">
+            <summary>
+            hdlr
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.HandlerBox.#ctor(System.Byte,System.UInt32)">
+            <summary>
+            hdlr
+            </summary>
+            <param name="version"></param>
+            <param name="flags"></param>
         </member>
         <member name="P:JT1078.FMp4.ItemLocationBox.OffsetSize">
             <summary>
@@ -165,11 +229,135 @@
             assignment_type == 4
             </summary>
         </member>
+        <member name="T:JT1078.FMp4.MediaBox">
+            <summary>
+            mdia
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.MediaBox.#ctor">
+            <summary>
+            mdia
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.MediaBox.MediaHeaderBox">
+            <summary>
+            mdhd
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.MediaBox.HandlerBox">
+            <summary>
+            hdlr
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.MediaBox.MediaInformationBox">
+            <summary>
+            minf
+            </summary>
+        </member>
+        <member name="T:JT1078.FMp4.MediaHeaderBox">
+            <summary>
+            mdhd
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.MediaHeaderBox.#ctor(System.Byte,System.UInt32)">
+            <summary>
+            mdhd
+            </summary>
+            <param name="version"></param>
+            <param name="flags"></param>
+        </member>
         <member name="P:JT1078.FMp4.MediaHeaderBox.Language">
             <summary>
             ISO-639-2/T language code
             ref:doc\fmp4\ISO Language Codes.txt
             und-undetermined
+            </summary>
+        </member>
+        <member name="T:JT1078.FMp4.MediaInformationBox">
+            <summary>
+            minf
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.MediaInformationBox.#ctor">
+            <summary>
+            minf
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.MediaInformationBox.DataInformationBox">
+            <summary>
+            dinf
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.MediaInformationBox.SampleTableBox">
+            <summary>
+            stbl
+            </summary>
+        </member>
+        <member name="T:JT1078.FMp4.MovieBox">
+            <summary>
+            moov
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.MovieBox.#ctor">
+            <summary>
+            moov
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.MovieBox.MovieHeaderBox">
+            <summary>
+            mvhd
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.MovieBox.TrackBox">
+            <summary>
+            trak
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.MovieBox.MovieExtendsBox">
+            <summary>
+            trak
+            </summary>
+        </member>
+        <member name="T:JT1078.FMp4.MovieExtendsBox">
+            <summary>
+            mvex
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.MovieExtendsBox.#ctor">
+            <summary>
+            mvex
+            </summary>
+        </member>
+        <member name="T:JT1078.FMp4.MovieHeaderBox">
+            <summary>
+            mvhd
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.MovieHeaderBox.#ctor(System.Byte,System.UInt32)">
+            <summary>
+            mvhd
+            </summary>
+            <param name="version"></param>
+            <param name="flags"></param>
+        </member>
+        <member name="T:JT1078.FMp4.MPEG4BitRateBox">
+            <summary>
+            btrt
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.MPEG4BitRateBox.#ctor">
+            <summary>
+            btrt
+            </summary>
+        </member>
+        <member name="T:JT1078.FMp4.PixelAspectRatioBox">
+            <summary>
+            pasp
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.PixelAspectRatioBox.#ctor">
+            <summary>
+            pasp
             </summary>
         </member>
         <member name="P:JT1078.FMp4.ProducerReferenceTimeBox.MediaTime">
@@ -202,6 +390,19 @@
             is taken from the sample_count in the Sample Size Box ('stsz') or Compact Sample Size Box(‘stz2’).
             </summary>
         </member>
+        <member name="T:JT1078.FMp4.SampleDescriptionBox">
+            <summary>
+            stsd
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.SampleDescriptionBox.#ctor(JT1078.FMp4.Enums.HandlerType,System.Byte,System.UInt32)">
+            <summary>
+            stsd
+            </summary>
+            <param name="handlerType"></param>
+            <param name="version"></param>
+            <param name="flags"></param>
+        </member>
         <member name="P:JT1078.FMp4.SampleGroupDescriptionBox.DefaultLength">
             <summary>
             if (version==1)
@@ -211,6 +412,41 @@
             <summary>
              if (sample_size==0)
              length:sample_count
+            </summary>
+        </member>
+        <member name="T:JT1078.FMp4.SampleTableBox">
+            <summary>
+            stbl
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.SampleTableBox.#ctor">
+            <summary>
+            stbl
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SampleTableBox.SampleDescriptionBox">
+            <summary>
+            stsd
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SampleTableBox.TimeToSampleBox">
+            <summary>
+            stts
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SampleTableBox.CompositionOffsetBox">
+            <summary>
+            ctts
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SampleTableBox.SampleToChunkBox">
+            <summary>
+            stsc
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SampleTableBox.ChunkOffsetBox">
+            <summary>
+            stco
             </summary>
         </member>
         <member name="P:JT1078.FMp4.SampleToGroupBox.GroupingTypeParameter">
@@ -304,6 +540,26 @@
             length:ItemCount
             </summary>
         </member>
+        <member name="T:JT1078.FMp4.TrackBox">
+            <summary>
+            trak
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.TrackBox.#ctor">
+            <summary>
+            trak
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.TrackBox.TrackHeaderBox">
+            <summary>
+            tkhd
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.TrackBox.MediaBox">
+            <summary>
+            mdia
+            </summary>
+        </member>
         <member name="P:JT1078.FMp4.TrackFragmentRandomAccessBox.Reserved">
             <summary>
             4byte 32-26
@@ -324,6 +580,18 @@
             4byte 32-32
             </summary>
         </member>
+        <member name="T:JT1078.FMp4.TrackHeaderBox">
+            <summary>
+            tkhd
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.TrackHeaderBox.#ctor(System.Byte,System.UInt32)">
+            <summary>
+            tkhd
+            </summary>
+            <param name="version"></param>
+            <param name="flags"></param>
+        </member>
         <member name="P:JT1078.FMp4.TrackRunBox.DataOffset">
             <summary>
             可选的
@@ -339,9 +607,88 @@
             version == 0
             </summary>
         </member>
+        <member name="T:JT1078.FMp4.URIBox">
+            <summary>
+            uri 
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.URIBox.#ctor(System.Byte,System.UInt32)">
+            <summary>
+            uri 
+            </summary>
+            <param name="version"></param>
+            <param name="flags"></param>
+        </member>
+        <member name="T:JT1078.FMp4.URIInitBox">
+            <summary>
+            uriI
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.URIInitBox.#ctor(System.Byte,System.UInt32)">
+            <summary>
+            uriI
+            </summary>
+            <param name="version"></param>
+            <param name="flags"></param>
+        </member>
         <member name="T:JT1078.FMp4.Buffers.FMp4BufferWriter">
             <summary>
             <see cref="!:System.Buffers.Writer"/>
+            </summary>
+        </member>
+        <member name="F:JT1078.FMp4.Enums.HandlerType.none">
+            <summary>
+            null
+            </summary>
+        </member>
+        <member name="F:JT1078.FMp4.Enums.HandlerType.vide">
+            <summary>
+            Video track
+            </summary>
+        </member>
+        <member name="F:JT1078.FMp4.Enums.HandlerType.soun">
+            <summary>
+            Audio track
+            </summary>
+        </member>
+        <member name="F:JT1078.FMp4.Enums.HandlerType.hint">
+            <summary>
+            Hint track
+            </summary>
+        </member>
+        <member name="F:JT1078.FMp4.Enums.HandlerType.meta">
+            <summary>
+            Timed Metadata track 
+            </summary>
+        </member>
+        <member name="F:JT1078.FMp4.Enums.HandlerType.auxv">
+            <summary>
+            Auxiliary Video track 
+            </summary>
+        </member>
+        <member name="T:JT1078.FMp4.FMp4Box">
+            <summary>
+            fmp4
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.FMp4Box.FileTypeBox">
+            <summary>
+            ftyp
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.FMp4Box.MovieBox">
+            <summary>
+            moov
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.FMp4Box.FragmentBoxs">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.FMp4Box.MovieFragmentRandomAccessBox">
+            <summary>
+            
             </summary>
         </member>
         <member name="F:JT1078.FMp4.FMp4Constants.DateLimitYear">
@@ -359,7 +706,7 @@
             bit(24)
             </summary>
         </member>
-        <member name="M:JT1078.FMp4.FullBox.WriterToBuffer(JT1078.FMp4.MessagePack.FMp4MessagePackWriter@)">
+        <member name="M:JT1078.FMp4.FullBox.WriterFullBoxToBuffer(JT1078.FMp4.MessagePack.FMp4MessagePackWriter@)">
             <summary>
             
             </summary>
@@ -401,5 +748,169 @@
             <param name="writer"></param>
         </member>
         <!-- Badly formed XML comment ignored for member "P:JT1078.FMp4.Samples.AudioSampleEntry.Samplerate" -->
+        <member name="T:JT1078.FMp4.Samples.AVC1SampleEntry">
+            <summary>
+            avc1
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.Samples.AVC1SampleEntry.#ctor">
+            <summary>
+            avc1
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.Samples.AVC1SampleEntry.AVCConfigurationBox">
+            <summary>
+            avcC
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.Samples.AVC1SampleEntry.MPEG4BitRateBox">
+            <summary>
+            btrt
+            </summary>
+        </member>
+        <member name="T:JT1078.FMp4.Samples.HintSampleEntry">
+            <summary>
+            HintSampleEntry
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.Samples.HintSampleEntry.#ctor(System.String)">
+            <summary>
+            HintSampleEntry
+            </summary>
+            <param name="protocol"></param>
+        </member>
+        <member name="T:JT1078.FMp4.Samples.SampleEntry">
+            <summary>
+            SampleEntry
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.Samples.SampleEntry.#ctor(System.String)">
+            <summary>
+            SampleEntry
+            </summary>
+            <param name="boxType"></param>
+        </member>
+        <member name="M:JT1078.FMp4.Samples.SampleEntry.WriterSampleEntryToBuffer(JT1078.FMp4.MessagePack.FMp4MessagePackWriter@)">
+            <summary>
+            
+            </summary>
+            <param name="writer"></param>
+        </member>
+        <member name="T:JT1078.FMp4.Samples.TextMetaDataSampleEntry">
+            <summary>
+            mett
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.Samples.TextMetaDataSampleEntry.#ctor">
+            <summary>
+            mett
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.Samples.TextMetaDataSampleEntry.ContentEncoding">
+            <summary>
+            
+            optional
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.Samples.TextMetaDataSampleEntry.MimeFormat">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.Samples.TextMetaDataSampleEntry.BitRateBox">
+            <summary>
+            btrt
+            optional
+            </summary>
+        </member>
+        <member name="T:JT1078.FMp4.Samples.URIMetaSampleEntry">
+            <summary>
+            urim
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.Samples.URIMetaSampleEntry.#ctor">
+            <summary>
+            urim
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.Samples.URIMetaSampleEntry.TheLabel">
+            <summary>
+            uri 
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.Samples.URIMetaSampleEntry.Init">
+            <summary>
+            uriI
+            optional
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.Samples.URIMetaSampleEntry.BitRateBox">
+            <summary>
+            btrt
+            optional
+            </summary>
+        </member>
+        <member name="T:JT1078.FMp4.Samples.VisualSampleEntry">
+            <summary>
+            VisualSampleEntry
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.Samples.VisualSampleEntry.#ctor(System.String)">
+            <summary>
+            VisualSampleEntry
+            </summary>
+            <param name="boxType"></param>
+        </member>
+        <member name="P:JT1078.FMp4.Samples.VisualSampleEntry.Clap">
+            <summary>
+            clap
+            optional
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.Samples.VisualSampleEntry.Pasp">
+            <summary>
+            pasp
+            optional
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.Samples.VisualSampleEntry.WriterVisualSampleEntryToBuffer(JT1078.FMp4.MessagePack.FMp4MessagePackWriter@)">
+            <summary>
+            
+            </summary>
+            <param name="writer"></param>
+        </member>
+        <member name="T:JT1078.FMp4.Samples.XMLMetaDataSampleEntry">
+            <summary>
+            metx
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.Samples.XMLMetaDataSampleEntry.#ctor">
+            <summary>
+            metx
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.Samples.XMLMetaDataSampleEntry.ContentEncoding">
+            <summary>
+            
+            optional
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.Samples.XMLMetaDataSampleEntry.Namespace">
+            <summary>
+            Namespace
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.Samples.XMLMetaDataSampleEntry.SchemaLocation">
+            <summary>
+            
+            optional
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.Samples.XMLMetaDataSampleEntry.BitRateBox">
+            <summary>
+            
+            optional
+            </summary>
+        </member>
     </members>
 </doc>

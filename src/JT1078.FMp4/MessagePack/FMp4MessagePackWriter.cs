@@ -65,6 +65,13 @@ namespace JT1078.FMp4.MessagePack
             writer.Advance(data.Length);
         }
 
+        public void WriteUTF8(string value)
+        {
+            var data = Encoding.UTF8.GetBytes(value);
+            data.CopyTo(writer.Free);
+            writer.Advance(data.Length);
+        }
+
         public void WriteArray(ReadOnlySpan<byte> src)
         {
             src.CopyTo(writer.Free);

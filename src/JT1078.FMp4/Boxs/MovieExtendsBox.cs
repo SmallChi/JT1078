@@ -4,8 +4,14 @@ using System.Text;
 
 namespace JT1078.FMp4
 {
+    /// <summary>
+    /// mvex
+    /// </summary>
     public class MovieExtendsBox : Mp4Box
     {
+        /// <summary>
+        /// mvex
+        /// </summary>
         public MovieExtendsBox() : base("mvex")
         {
         }

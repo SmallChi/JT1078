@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JT1078.FMp4.MessagePack;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -15,5 +16,18 @@ namespace JT1078.FMp4
 
         public string Name { get; set; }
         public string Location { get; set; }
+        public override void ToBuffer(ref FMp4MessagePackWriter writer)
+        {
+            Start(ref writer);
+            if (!string.IsNullOrEmpty(Name))
+            {
+                writer.WriteUTF8(Name);
+            }
+            if (!string.IsNullOrEmpty(Location))
+            {
+                writer.WriteUTF8(Location);
+            }
+            End(ref writer);
+        }
     }
 }

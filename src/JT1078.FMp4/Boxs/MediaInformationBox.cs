@@ -1,16 +1,37 @@
-﻿using System;
+﻿using JT1078.FMp4.Interfaces;
+using JT1078.FMp4.MessagePack;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace JT1078.FMp4
 {
-    public class MediaInformationBox : Mp4Box
+    /// <summary>
+    /// minf
+    /// </summary>
+    public class MediaInformationBox : Mp4Box,IFMp4MessagePackFormatter
     {
+        /// <summary>
+        /// minf
+        /// </summary>
         public MediaInformationBox() : base("minf")
         {
         }
-        public FullBox MediaHeaderBox { get; set; }
+        /// <summary>
+        /// dinf
+        /// </summary>
         public DataInformationBox DataInformationBox { get; set; }
+        /// <summary>
+        /// stbl
+        /// </summary>
         public SampleTableBox SampleTableBox { get; set; }
+
+        public void ToBuffer(ref FMp4MessagePackWriter writer)
+        {
+            Start(ref writer);
+            DataInformationBox.ToBuffer(ref writer);
+            SampleTableBox.ToBuffer(ref writer);
+            End(ref writer);
+        }
     }
 }

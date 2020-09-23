@@ -6,8 +6,16 @@ using System.Text;
 
 namespace JT1078.FMp4
 {
+    /// <summary>
+    /// tkhd
+    /// </summary>
     public class TrackHeaderBox : FullBox, IFMp4MessagePackFormatter
     {
+        /// <summary>
+        /// tkhd
+        /// </summary>
+        /// <param name="version"></param>
+        /// <param name="flags"></param>
         public TrackHeaderBox(byte version, uint flags) : base("tkhd", version, flags)
         {
         }
@@ -27,7 +35,7 @@ namespace JT1078.FMp4
         public void ToBuffer(ref FMp4MessagePackWriter writer)
         {
             Start(ref writer);
-            WriterToBuffer(ref writer);
+            WriterFullBoxToBuffer(ref writer);
             if (Version == 1)
             {
                 writer.WriteUInt64(CreationTime);

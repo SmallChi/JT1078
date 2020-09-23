@@ -12,6 +12,9 @@ namespace JT1078.FMp4
     /// </summary>
     public class FileTypeBox : Mp4Box, IFMp4MessagePackFormatter
     {
+        /// <summary>
+        /// ftyp
+        /// </summary>
         public FileTypeBox() : base("ftyp")
         {
         }
