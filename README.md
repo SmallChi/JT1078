@@ -8,6 +8,7 @@
 3.1  [将1078的数据(h264)编码成FLV](#1078flv)  
 3.2  [将1078的数据(h264)编码成HLS](#1078hls)  
 3.3  [将1078的数据(h264)编码成FMp4](#1078fmp4)  
+4. ***====音频部分暂未实现====***
 
 [![MIT Licence](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/SmallChi/JT1078/blob/master/LICENSE)[![Github Build status](https://github.com/SmallChi/JT1078/workflows/.NET%20Core/badge.svg)]()
 
@@ -18,6 +19,7 @@
 | Install-Package JT1078 | ![JT1078](https://img.shields.io/nuget/v/JT1078.svg) | ![JT1078](https://img.shields.io/nuget/dt/JT1078.svg) |
 | Install-Package JT1078.Flv | ![JT1078.Flv](https://img.shields.io/nuget/v/JT1078.Flv.svg) | ![JT1078.Flv](https://img.shields.io/nuget/dt/JT1078.Flv.svg) |
 | Install-Package JT1078.Hls | ![JT1078.Hls](https://img.shields.io/nuget/v/JT1078.Hls.svg) | ![JT1078.Hls](https://img.shields.io/nuget/dt/JT1078.Hls.svg) |
+| Install-Package JT1078.FMp4 | ![JT1078.FMp4](https://img.shields.io/nuget/v/JT1078.FMp4.svg) | ![JT1078.FMp4](https://img.shields.io/nuget/dt/JT1078.FMp4.svg) |
 | Install-Package JT808.Protocol.Extensions.JT1078 | ![JT808.Protocol.Extensions.JT1078](https://img.shields.io/nuget/v/JT808.Protocol.Extensions.JT1078.svg) | ![JT808](https://img.shields.io/nuget/dt/JT808.Protocol.Extensions.JT1078.svg) |
 | Install-Package JT809.Protocol.Extensions.JT1078 | ![JT809.Protocol.Extensions.JT1078](https://img.shields.io/nuget/v/JT809.Protocol.Extensions.JT1078.svg) | ![JT809](https://img.shields.io/nuget/dt/JT809.Protocol.Extensions.JT1078.svg) |
 
@@ -180,7 +182,13 @@ Platform=AnyCpu  Server=False  Toolchain=.NET Core 3.1
 3. 掌握TS编码；
 4. 掌握Hls编码；
 
-> 音频暂未实现
+## <span id="1078fmp4">基于JT1078的FMp4视频编码器</span>
+
+### 前提条件
+
+1. 掌握JT078解码；
+2. 了解H264解码；
+3. 掌握FMp4编码；
 
 ### 使用BenchmarkDotNet性能测试报告（只是玩玩，不能当真）
 

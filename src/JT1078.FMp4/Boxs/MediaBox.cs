@@ -1,4 +1,6 @@
-﻿using System;
+﻿using JT1078.FMp4.Interfaces;
+using JT1078.FMp4.MessagePack;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -7,7 +9,7 @@ namespace JT1078.FMp4
     /// <summary>
     /// mdia
     /// </summary>
-    public class MediaBox : Mp4Box
+    public class MediaBox : Mp4Box, IFMp4MessagePackFormatter
     {
         /// <summary>
         /// mdia
@@ -27,5 +29,14 @@ namespace JT1078.FMp4
         /// minf
         /// </summary>
         public MediaInformationBox MediaInformationBox { get; set; }
+
+        public void ToBuffer(ref FMp4MessagePackWriter writer)
+        {
+            Start(ref writer);
+            MediaHeaderBox.ToBuffer(ref writer);
+            HandlerBox.ToBuffer(ref writer);
+            MediaInformationBox.ToBuffer(ref writer);
+            End(ref writer);
+        }
     }
 }

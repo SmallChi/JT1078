@@ -32,7 +32,8 @@ namespace JT1078.FMp4
             WriterFullBoxToBuffer(ref writer);
             if(SampleEntries!=null && SampleEntries.Count > 0)
             {
-                foreach(var item in SampleEntries)
+                writer.WriteUInt32((uint)SampleEntries.Count);
+                foreach (var item in SampleEntries)
                 {
                     item.ToBuffer(ref writer);
                 }

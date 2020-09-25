@@ -6,8 +6,16 @@ using System.Text;
 
 namespace JT1078.FMp4
 {
+    /// <summary>
+    /// ctts
+    /// </summary>
     public class CompositionOffsetBox : FullBox, IFMp4MessagePackFormatter
     {
+        /// <summary>
+        /// ctts
+        /// </summary>
+        /// <param name="version"></param>
+        /// <param name="flags"></param>
         public CompositionOffsetBox(byte version=0, uint flags=0) : base("ctts", version, flags)
         {
         }
@@ -17,7 +25,30 @@ namespace JT1078.FMp4
 
         public void ToBuffer(ref FMp4MessagePackWriter writer)
         {
-            throw new NotImplementedException();
+            Start(ref writer);
+            WriterFullBoxToBuffer(ref writer);
+            if(CompositionOffsetInfos!=null && CompositionOffsetInfos.Count > 0)
+            {
+                writer.WriteUInt32((uint)CompositionOffsetInfos.Count);
+                foreach(var item in CompositionOffsetInfos)
+                {
+                    if (Version == 0)
+                    {
+                        writer.WriteUInt32(item.SampleCount);
+                        writer.WriteUInt32(item.SampleOffset);
+                    }
+                    else
+                    {
+                        writer.WriteUInt32(item.SampleCount);
+                        writer.WriteInt32(item.SignedSampleOffset);
+                    }
+                }
+            }
+            else
+            {
+                writer.WriteUInt32(0);
+            }
+            End(ref writer);
         }
 
         public class CompositionOffsetInfo

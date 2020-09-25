@@ -6,8 +6,16 @@ using System.Text;
 
 namespace JT1078.FMp4
 {
+    /// <summary>
+    /// stsc
+    /// </summary>
     public class SampleToChunkBox : FullBox, IFMp4MessagePackFormatter
     {
+        /// <summary>
+        /// stsc
+        /// </summary>
+        /// <param name="version"></param>
+        /// <param name="flags"></param>
         public SampleToChunkBox(byte version=0, uint flags=0) : base("stsc", version, flags)
         {
         }
@@ -16,7 +24,23 @@ namespace JT1078.FMp4
 
         public void ToBuffer(ref FMp4MessagePackWriter writer)
         {
-            throw new NotImplementedException();
+            Start(ref writer);
+            WriterFullBoxToBuffer(ref writer);
+            if(SampleToChunkInfos!=null && SampleToChunkInfos.Count > 0)
+            {
+                writer.WriteUInt32((uint)SampleToChunkInfos.Count);
+                foreach(var item in SampleToChunkInfos)
+                {
+                    writer.WriteUInt32(item.FirstChunk);
+                    writer.WriteUInt32(item.SamplesPerChunk);
+                    writer.WriteUInt32(item.SampleDescriptionIindex);
+                }
+            }
+            else
+            {
+                writer.WriteUInt32(0);
+            }
+            End(ref writer);
         }
 
         public class SampleToChunkInfo

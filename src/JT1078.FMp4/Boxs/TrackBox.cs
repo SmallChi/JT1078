@@ -1,4 +1,6 @@
-﻿using System;
+﻿using JT1078.FMp4.Interfaces;
+using JT1078.FMp4.MessagePack;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -7,7 +9,7 @@ namespace JT1078.FMp4
     /// <summary>
     /// trak
     /// </summary>
-    public class TrackBox : Mp4Box
+    public class TrackBox : Mp4Box, IFMp4MessagePackFormatter
     {
         /// <summary>
         /// trak
@@ -25,5 +27,13 @@ namespace JT1078.FMp4
         /// mdia
         /// </summary>
         public MediaBox MediaBox { get; set; }
+
+        public void ToBuffer(ref FMp4MessagePackWriter writer)
+        {
+            Start(ref writer);
+            TrackHeaderBox.ToBuffer(ref writer);
+            MediaBox.ToBuffer(ref writer);
+            End(ref writer);
+        }
     }
 }

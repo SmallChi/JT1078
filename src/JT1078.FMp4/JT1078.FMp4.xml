@@ -747,7 +747,7 @@
             </summary>
             <param name="writer"></param>
         </member>
-        <!-- Badly formed XML comment ignored for member "P:JT1078.FMp4.Samples.AudioSampleEntry.Samplerate" -->
+        <!-- Badly formed XML comment ignored for member "P:JT1078.FMp4.Samples.AudioSampleEntry.SampleRate" -->
         <member name="T:JT1078.FMp4.Samples.AVC1SampleEntry">
             <summary>
             avc1

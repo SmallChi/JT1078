@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JT1078.FMp4.MessagePack;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -15,8 +16,22 @@ namespace JT1078.FMp4.Samples
         public ushort PreDefined { get; set; } = 0;
         public ushort Reserved2 { get; set; } = 0;
         /// <summary>
-        /// { default samplerate of media}<<16;
+        /// 
+        ///  default samplerate of media << 16;
         /// </summary>
-        public uint Samplerate{ get; set; }
+        public uint SampleRate{ get; set; }
+
+        protected void WriterAudioSampleEntryToBuffer(ref FMp4MessagePackWriter writer)
+        {
+            foreach(var item in Reserved1)
+            {
+                writer.WriteUInt32(item);
+            }
+            writer.WriteUInt16(ChannelCount);
+            writer.WriteUInt16(SampleSize);
+            writer.WriteUInt16(PreDefined);
+            writer.WriteUInt16(Reserved2);
+            writer.WriteUInt32(SampleRate<<16);
+        }
     }
 }
