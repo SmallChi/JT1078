@@ -1,11 +1,21 @@
-﻿using System;
+﻿using JT1078.FMp4.Interfaces;
+using JT1078.FMp4.MessagePack;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace JT1078.FMp4
 {
-    public class TrackRunBox : FullBox
+    /// <summary>
+    /// trun
+    /// </summary>
+    public class TrackRunBox : FullBox, IFMp4MessagePackFormatter
     {
+        /// <summary>
+        /// trun
+        /// </summary>
+        /// <param name="version"></param>
+        /// <param name="flags"></param>
         public TrackRunBox(byte version, uint flags) : base("trun", version, flags)
         {
         }
@@ -20,6 +30,15 @@ namespace JT1078.FMp4
         /// length:SampleCount
         /// </summary>
         public List<TrackRunInfo> TrackRunInfos { get; set; }
+
+        public void ToBuffer(ref FMp4MessagePackWriter writer)
+        {
+            Start(ref writer);
+            WriterFullBoxToBuffer(ref writer);
+            //todo: TrackRunBox
+            End(ref writer);
+        }
+
         public class TrackRunInfo
         {
             public uint SampleDuration { get; set; }

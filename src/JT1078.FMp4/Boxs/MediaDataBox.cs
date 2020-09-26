@@ -1,15 +1,33 @@
-﻿using System;
+﻿using JT1078.FMp4.Interfaces;
+using JT1078.FMp4.MessagePack;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace JT1078.FMp4
 {
-    public class MediaDataBox : Mp4Box
+    /// <summary>
+    /// mdat
+    /// </summary>
+    public class MediaDataBox : Mp4Box, IFMp4MessagePackFormatter
     {
+        /// <summary>
+        /// mdat
+        /// </summary>
         public MediaDataBox() : base("mdat")
         {
         }
 
         public byte[] Data { get; set; }
+
+        public void ToBuffer(ref FMp4MessagePackWriter writer)
+        {
+            Start(ref writer);
+            if (Data != null && Data.Length > 0)
+            {
+                writer.WriteArray(Data);
+            }
+            End(ref writer);
+        }
     }
 }

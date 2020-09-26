@@ -24,6 +24,18 @@
             length:EntryCount
             </summary>
         </member>
+        <member name="T:JT1078.FMp4.ChunkOffsetBox">
+            <summary>
+            stco
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.ChunkOffsetBox.#ctor(System.Byte,System.UInt32)">
+            <summary>
+            stco
+            </summary>
+            <param name="version"></param>
+            <param name="flags"></param>
+        </member>
         <member name="P:JT1078.FMp4.ChunkOffsetBox.ChunkOffset">
             <summary>
             length:EntryCount
@@ -49,6 +61,18 @@
             length:SampleCount
             DepOn:field_size=>DataType
             </summary>
+        </member>
+        <member name="T:JT1078.FMp4.CompositionOffsetBox">
+            <summary>
+            ctts
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.CompositionOffsetBox.#ctor(System.Byte,System.UInt32)">
+            <summary>
+            ctts
+            </summary>
+            <param name="version"></param>
+            <param name="flags"></param>
         </member>
         <member name="P:JT1078.FMp4.CompositionOffsetBox.CompositionOffsetInfo.SignedSampleOffset">
             <summary>
@@ -149,6 +173,16 @@
             <summary>
             和MajorBrand类似，通常是针对 MP4 中包含的额外格式，比如，AVC，AAC 等相当于的音视频解码格式。
             4位*n
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.FragmentBox.MovieFragmentBox">
+            <summary>
+            moof
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.FragmentBox.MediaDataBox">
+            <summary>
+            mdat
             </summary>
         </member>
         <member name="P:JT1078.FMp4.FreeSpaceBox.FillValue">
@@ -254,6 +288,16 @@
             minf
             </summary>
         </member>
+        <member name="T:JT1078.FMp4.MediaDataBox">
+            <summary>
+            mdat
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.MediaDataBox.#ctor">
+            <summary>
+            mdat
+            </summary>
+        </member>
         <member name="T:JT1078.FMp4.MediaHeaderBox">
             <summary>
             mdhd
@@ -315,7 +359,7 @@
         </member>
         <member name="P:JT1078.FMp4.MovieBox.MovieExtendsBox">
             <summary>
-            trak
+            mvex
             </summary>
         </member>
         <member name="T:JT1078.FMp4.MovieExtendsBox">
@@ -327,6 +371,82 @@
             <summary>
             mvex
             </summary>
+        </member>
+        <member name="T:JT1078.FMp4.MovieExtendsHeaderBox">
+            <summary>
+            mehd
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.MovieExtendsHeaderBox.#ctor(System.Byte,System.UInt32)">
+            <summary>
+            mehd
+            </summary>
+            <param name="version"></param>
+            <param name="flags"></param>
+        </member>
+        <member name="T:JT1078.FMp4.MovieFragmentBox">
+            <summary>
+            moof
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.MovieFragmentBox.#ctor">
+            <summary>
+            moof
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.MovieFragmentBox.MovieFragmentHeaderBox">
+            <summary>
+            mfhd
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.MovieFragmentBox.TrackFragmentBox">
+            <summary>
+            traf
+            </summary>
+        </member>
+        <member name="T:JT1078.FMp4.MovieFragmentHeaderBox">
+            <summary>
+            mfhd
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.MovieFragmentHeaderBox.#ctor(System.Byte,System.UInt32)">
+            <summary>
+            mfhd
+            </summary>
+            <param name="version"></param>
+            <param name="flags"></param>
+        </member>
+        <member name="T:JT1078.FMp4.MovieFragmentRandomAccessBox">
+            <summary>
+            mfra
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.MovieFragmentRandomAccessBox.#ctor">
+            <summary>
+            mfra
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.MovieFragmentRandomAccessBox.TrackFragmentRandomAccessBox">
+            <summary>
+            tfra
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.MovieFragmentRandomAccessBox.MovieFragmentRandomAccessOffsetBox">
+            <summary>
+            mfro
+            </summary>
+        </member>
+        <member name="T:JT1078.FMp4.MovieFragmentRandomAccessOffsetBox">
+            <summary>
+            mfro
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.MovieFragmentRandomAccessOffsetBox.#ctor(System.Byte,System.UInt32)">
+            <summary>
+            mfro
+            </summary>
+            <param name="version"></param>
+            <param name="flags"></param>
         </member>
         <member name="T:JT1078.FMp4.MovieHeaderBox">
             <summary>
@@ -384,6 +504,18 @@
             default_sample_info_size==0
              length:sample_count
             </summary>
+        </member>
+        <member name="T:JT1078.FMp4.SampleDependencyTypeBox">
+            <summary>
+            sdtp
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.SampleDependencyTypeBox.#ctor(System.Byte,System.UInt32)">
+            <summary>
+            sdtp
+            </summary>
+            <param name="version"></param>
+            <param name="flags"></param>
         </member>
         <member name="P:JT1078.FMp4.SampleDependencyTypeBox.SampleDependencyTypes">
             <summary>
@@ -449,6 +581,30 @@
             stco
             </summary>
         </member>
+        <member name="T:JT1078.FMp4.SampleToChunkBox">
+            <summary>
+            stsc
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.SampleToChunkBox.#ctor(System.Byte,System.UInt32)">
+            <summary>
+            stsc
+            </summary>
+            <param name="version"></param>
+            <param name="flags"></param>
+        </member>
+        <member name="T:JT1078.FMp4.SampleToGroupBox">
+            <summary>
+            sbgp
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.SampleToGroupBox.#ctor(System.Byte,System.UInt32)">
+            <summary>
+            sbgp
+            </summary>
+            <param name="version"></param>
+            <param name="flags"></param>
+        </member>
         <member name="P:JT1078.FMp4.SampleToGroupBox.GroupingTypeParameter">
             <summary>
             version == 1
@@ -510,6 +666,18 @@
             length:Length
             </summary>
         </member>
+        <member name="T:JT1078.FMp4.SubSampleInformationBox">
+            <summary>
+            subs
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.SubSampleInformationBox.#ctor(System.Byte,System.UInt32)">
+            <summary>
+            subs
+            </summary>
+            <param name="version"></param>
+            <param name="flags"></param>
+        </member>
         <member name="P:JT1078.FMp4.SubSampleInformationBox.SubSampleInformation.InnerSubSampleInformation.SubsampleSizeLarge">
             <summary>
             version == 1
@@ -540,6 +708,18 @@
             length:ItemCount
             </summary>
         </member>
+        <member name="T:JT1078.FMp4.TimeToSampleBox">
+            <summary>
+            stts
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.TimeToSampleBox.#ctor(System.Byte,System.UInt32)">
+            <summary>
+            stts
+            </summary>
+            <param name="version"></param>
+            <param name="flags"></param>
+        </member>
         <member name="T:JT1078.FMp4.TrackBox">
             <summary>
             trak
@@ -559,6 +739,88 @@
             <summary>
             mdia
             </summary>
+        </member>
+        <member name="T:JT1078.FMp4.TrackFragmentBaseMediaDecodeTimeBox">
+            <summary>
+            tfdt
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.TrackFragmentBaseMediaDecodeTimeBox.#ctor(System.Byte,System.UInt32)">
+            <summary>
+            tfdt
+            </summary>
+            <param name="version"></param>
+            <param name="flags"></param>
+        </member>
+        <member name="T:JT1078.FMp4.TrackFragmentBox">
+            <summary>
+            traf
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.TrackFragmentBox.#ctor">
+            <summary>
+            traf
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.TrackFragmentBox.TrackFragmentHeaderBox">
+            <summary>
+            tfhd
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.TrackFragmentBox.SampleDependencyTypeBox">
+            <summary>
+            sdtp
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.TrackFragmentBox.TrackRunBox">
+            <summary>
+            trun
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox">
+            <summary>
+            tfdt
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.TrackFragmentBox.SampleToGroupBox">
+            <summary>
+            sbgp
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.TrackFragmentBox.SubSampleInformationBox">
+            <summary>
+            subs
+            </summary>
+        </member>
+        <member name="T:JT1078.FMp4.TrackFragmentHeaderBox">
+            <summary>
+            tfhd
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.TrackFragmentHeaderBox.#ctor(System.Byte,System.UInt32)">
+            <summary>
+            tfhd
+            </summary>
+            <param name="version"></param>
+            <param name="flags"></param>
+        </member>
+        <member name="M:JT1078.FMp4.TrackFragmentHeaderBox.#ctor(System.UInt32)">
+            <summary>
+            tfhd
+            </summary>
+            <param name="flags"></param>
+        </member>
+        <member name="T:JT1078.FMp4.TrackFragmentRandomAccessBox">
+            <summary>
+            tfra
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.TrackFragmentRandomAccessBox.#ctor(System.Byte,System.UInt32)">
+            <summary>
+            tfra
+            </summary>
+            <param name="version"></param>
+            <param name="flags"></param>
         </member>
         <member name="P:JT1078.FMp4.TrackFragmentRandomAccessBox.Reserved">
             <summary>
@@ -588,6 +850,18 @@
         <member name="M:JT1078.FMp4.TrackHeaderBox.#ctor(System.Byte,System.UInt32)">
             <summary>
             tkhd
+            </summary>
+            <param name="version"></param>
+            <param name="flags"></param>
+        </member>
+        <member name="T:JT1078.FMp4.TrackRunBox">
+            <summary>
+            trun
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.TrackRunBox.#ctor(System.Byte,System.UInt32)">
+            <summary>
+            trun
             </summary>
             <param name="version"></param>
             <param name="flags"></param>
@@ -683,12 +957,12 @@
         </member>
         <member name="P:JT1078.FMp4.FMp4Box.FragmentBoxs">
             <summary>
-            
+            fboxs
             </summary>
         </member>
         <member name="P:JT1078.FMp4.FMp4Box.MovieFragmentRandomAccessBox">
             <summary>
-            
+            mfra
             </summary>
         </member>
         <member name="F:JT1078.FMp4.FMp4Constants.DateLimitYear">

@@ -1,11 +1,21 @@
-﻿using System;
+﻿using JT1078.FMp4.Interfaces;
+using JT1078.FMp4.MessagePack;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace JT1078.FMp4
 {
-    public class TrackFragmentRandomAccessBox : FullBox
+    /// <summary>
+    /// tfra
+    /// </summary>
+    public class TrackFragmentRandomAccessBox : FullBox, IFMp4MessagePackFormatter
     {
+        /// <summary>
+        /// tfra
+        /// </summary>
+        /// <param name="version"></param>
+        /// <param name="flags"></param>
         public TrackFragmentRandomAccessBox(byte version, uint flags=0) : base("tfra", version, flags)
         {
         }
@@ -28,6 +38,16 @@ namespace JT1078.FMp4
         public uint LengthSizeOfSampleNum { get; set; }
         public uint NumberOfEntry { get; set; }
         public List<TrackFragmentRandomAccessInfo> TrackFragmentRandomAccessInfos { get; set; }
+
+        public void ToBuffer(ref FMp4MessagePackWriter writer)
+        {
+            Start(ref writer);
+            WriterFullBoxToBuffer(ref writer);
+
+            //todo:tfra
+            End(ref writer);
+        }
+
         public class TrackFragmentRandomAccessInfo
         {
             public ulong Time { get; set; }

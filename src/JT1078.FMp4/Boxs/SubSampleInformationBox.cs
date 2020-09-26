@@ -1,11 +1,21 @@
-﻿using System;
+﻿using JT1078.FMp4.Interfaces;
+using JT1078.FMp4.MessagePack;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace JT1078.FMp4
 {
-    public class SubSampleInformationBox : FullBox
+    /// <summary>
+    /// subs
+    /// </summary>
+    public class SubSampleInformationBox : FullBox, IFMp4MessagePackFormatter
     {
+        /// <summary>
+        /// subs
+        /// </summary>
+        /// <param name="version"></param>
+        /// <param name="flags"></param>
         public SubSampleInformationBox(byte version, uint flags=0) : base("subs", version, flags)
         {
         }
@@ -13,6 +23,11 @@ namespace JT1078.FMp4
         public uint EntryCount { get; set; }
 
         public List<SubSampleInformation> SubSampleInformations { get; set; }
+
+        public void ToBuffer(ref FMp4MessagePackWriter writer)
+        {
+            //todo:subs
+        }
 
         public class SubSampleInformation
         {
