@@ -21,21 +21,21 @@ namespace JT1078.FMp4
         }
         public uint TrackID { get; set; }
         /// <summary>
-        /// 4byte 32-26
+        /// 26bit
         /// </summary>
-        public uint Reserved { get; set; } = 26;
+        private uint Reserved { get; set; } = 0;
         /// <summary>
-        /// 4byte 32-28
+        /// 2bit 
         /// </summary>
-        public uint LengthSizeOfTrafNum { get; set; }
+        public byte LengthSizeOfTrafNum { get; set; }
         /// <summary>
-        /// 4byte 32-30
+        /// 2bit
         /// </summary>
-        public uint LengthSizeOfTrunNum { get; set; }
+        public byte LengthSizeOfTrunNum { get; set; }
         /// <summary>
-        /// 4byte 32-32
+        /// 2bit 
         /// </summary>
-        public uint LengthSizeOfSampleNum { get; set; }
+        public byte LengthSizeOfSampleNum { get; set; }
         public uint NumberOfEntry { get; set; }
         public List<TrackFragmentRandomAccessInfo> TrackFragmentRandomAccessInfos { get; set; }
 
@@ -43,9 +43,54 @@ namespace JT1078.FMp4
         {
             Start(ref writer);
             WriterFullBoxToBuffer(ref writer);
-
-            //todo:tfra
+            writer.WriteUInt32(TrackID);
+            writer.WriteUInt32((uint)(LengthSizeOfSampleNum | (LengthSizeOfTrunNum << 2) | (LengthSizeOfTrafNum << 4)));
+            if(TrackFragmentRandomAccessInfos!=null && TrackFragmentRandomAccessInfos.Count > 0)
+            {
+                foreach (var item in TrackFragmentRandomAccessInfos)
+                {
+                    if (Version == 1) 
+                    {
+                        writer.WriteUInt64(item.Time);
+                        writer.WriteUInt64(item.MoofOffset);
+                    } 
+                    else 
+                    {
+                        writer.WriteUInt32((uint)item.Time);
+                        writer.WriteUInt32((uint)item.MoofOffset);
+                    }
+                    var length_size_of_traf_num = LengthSizeOfTrafNum + 1;
+                    ControlSizeOf(ref writer, item.TrafNumber, length_size_of_traf_num);
+                    var length_size_of_trun_num = LengthSizeOfTrunNum + 1;
+                    ControlSizeOf(ref writer, item.TrunNumber, length_size_of_trun_num);
+                    var length_size_of_sample_num = LengthSizeOfSampleNum + 1;
+                    ControlSizeOf(ref writer, item.SampleNumber, length_size_of_sample_num);
+                }
+            }
+            else
+            {
+                writer.WriteUInt32(0);
+            }
             End(ref writer);
+        }
+
+        private void ControlSizeOf(ref FMp4MessagePackWriter writer,uint value,int length)
+        {
+            switch (length)
+            {
+                case 1:
+                    writer.WriteByte((byte)value);
+                    break;
+                case 2:
+                    writer.WriteUInt16((ushort)value);
+                    break;
+                case 3:
+                    writer.WriteUInt24(value);
+                    break;
+                case 4:
+                    writer.WriteUInt32(value);
+                    break;
+            }
         }
 
         public class TrackFragmentRandomAccessInfo

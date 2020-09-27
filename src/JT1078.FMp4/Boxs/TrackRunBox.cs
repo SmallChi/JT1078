@@ -25,8 +25,12 @@ namespace JT1078.FMp4
         /// 可选的
         /// </summary>
         public int DataOffset { get; set; }
+        /// <summary>
+        /// 可选的
+        /// </summary>
         public uint FirstSampleFlags { get; set; }
         /// <summary>
+        /// 可选的
         /// length:SampleCount
         /// </summary>
         public List<TrackRunInfo> TrackRunInfos { get; set; }
@@ -35,7 +39,7 @@ namespace JT1078.FMp4
         {
             Start(ref writer);
             WriterFullBoxToBuffer(ref writer);
-            //todo: TrackRunBox
+            writer.WriteUInt32(SampleCount);
             End(ref writer);
         }
 

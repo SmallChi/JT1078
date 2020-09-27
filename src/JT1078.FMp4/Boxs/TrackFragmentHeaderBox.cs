@@ -41,7 +41,6 @@ namespace JT1078.FMp4
             Start(ref writer);
             WriterFullBoxToBuffer(ref writer);
             writer.WriteUInt32(TrackID);
-            //todo:all the following are optional fields
             End(ref writer);
         }
     }

@@ -30,7 +30,6 @@ namespace JT1078.FMp4
             WriterFullBoxToBuffer(ref writer);
             if(SampleDependencyTypes!=null && SampleDependencyTypes.Count > 0)
             {
-                //todo: wait ref doc
                 foreach(var item in SampleDependencyTypes)
                 {
                     writer.WriteByte(item.IsLeading);

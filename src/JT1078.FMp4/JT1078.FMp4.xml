@@ -824,22 +824,22 @@
         </member>
         <member name="P:JT1078.FMp4.TrackFragmentRandomAccessBox.Reserved">
             <summary>
-            4byte 32-26
+            26bit
             </summary>
         </member>
         <member name="P:JT1078.FMp4.TrackFragmentRandomAccessBox.LengthSizeOfTrafNum">
             <summary>
-            4byte 32-28
+            2bit 
             </summary>
         </member>
         <member name="P:JT1078.FMp4.TrackFragmentRandomAccessBox.LengthSizeOfTrunNum">
             <summary>
-            4byte 32-30
+            2bit
             </summary>
         </member>
         <member name="P:JT1078.FMp4.TrackFragmentRandomAccessBox.LengthSizeOfSampleNum">
             <summary>
-            4byte 32-32
+            2bit 
             </summary>
         </member>
         <member name="T:JT1078.FMp4.TrackHeaderBox">
@@ -871,8 +871,14 @@
             可选的
             </summary>
         </member>
+        <member name="P:JT1078.FMp4.TrackRunBox.FirstSampleFlags">
+            <summary>
+            可选的
+            </summary>
+        </member>
         <member name="P:JT1078.FMp4.TrackRunBox.TrackRunInfos">
             <summary>
+            可选的
             length:SampleCount
             </summary>
         </member>
