@@ -678,9 +678,10 @@
             <param name="version"></param>
             <param name="flags"></param>
         </member>
-        <member name="P:JT1078.FMp4.SubSampleInformationBox.SubSampleInformation.InnerSubSampleInformation.SubsampleSizeLarge">
+        <member name="P:JT1078.FMp4.SubSampleInformationBox.SubSampleInformation.InnerSubSampleInformation.SubsampleSize">
             <summary>
-            version == 1
+            version == 1 uint32
+            version != 1 uint16
             </summary>
         </member>
         <member name="P:JT1078.FMp4.SubsegmentIndexBox.SubsegmentIndexInfos">

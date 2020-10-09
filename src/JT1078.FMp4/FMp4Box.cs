@@ -40,7 +40,6 @@ namespace JT1078.FMp4
                     item.MediaDataBox.ToBuffer(ref writer);
                 }
             }
-
         }
     }
 }

@@ -26,7 +26,39 @@ namespace JT1078.FMp4
 
         public void ToBuffer(ref FMp4MessagePackWriter writer)
         {
-            //todo:subs
+            if(SubSampleInformations!=null && SubSampleInformations.Count > 0)
+            {
+                foreach(var item in SubSampleInformations)
+                {
+                    writer.WriteUInt32(item.SampleDelta);
+                    if (item.InnerSubSampleInformations != null && item.InnerSubSampleInformations.Count > 0)
+                    {
+                        writer.WriteUInt16((ushort)item.InnerSubSampleInformations.Count);
+                        foreach(var subItem in item.InnerSubSampleInformations)
+                        {
+                            if (Version == 1)
+                            {
+                                writer.WriteUInt32(subItem.SubsampleSize);
+                            }
+                            else
+                            {
+                                writer.WriteUInt16((ushort)subItem.SubsampleSize);
+                            }
+                            writer.WriteByte(subItem.SubsamplePriority);
+                            writer.WriteByte(subItem.Discardable);
+                            writer.WriteUInt32(subItem.Reserved);
+                        }
+                    }
+                    else
+                    {
+                        writer.WriteUInt16(0);
+                    }
+                }
+            }
+            else
+            {
+                writer.WriteUInt32((uint)SubSampleInformations.Count);
+            }
         }
 
         public class SubSampleInformation
@@ -39,10 +71,10 @@ namespace JT1078.FMp4
             public class InnerSubSampleInformation
             {
                 /// <summary>
-                /// version == 1
+                /// version == 1 uint32
+                /// version != 1 uint16
                 /// </summary>
-                public uint SubsampleSizeLarge { get; set; }
-                public ushort SubsampleSize { get; set; }
+                public uint SubsampleSize { get; set; }
                 public byte SubsamplePriority { get; set; }
                 public byte Discardable { get; set; }
                 public uint Reserved { get; set; }

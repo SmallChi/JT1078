@@ -36,6 +36,7 @@ namespace JT1078.FMp4.Samples
             }
             End(ref writer);
         }
-        //todo:public MPEG4ExtensionDescriptorsBox MPEG4BitRateBox { get; set; }
+
+        //public MPEG4ExtensionDescriptorsBox MPEG4BitRateBox { get; set; }
     }
 }

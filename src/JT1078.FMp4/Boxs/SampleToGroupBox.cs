@@ -32,7 +32,24 @@ namespace JT1078.FMp4
 
         public void ToBuffer(ref FMp4MessagePackWriter writer)
         {
-            //todo:sbgp
+            writer.WriteUInt32(GroupingType);
+            if (Version == 1)
+            {
+                writer.WriteUInt32(GroupingTypeParameter);
+            }
+            if(SampleToGroupInfos!=null && SampleToGroupInfos.Count > 0)
+            {
+                writer.WriteUInt32((uint)SampleToGroupInfos.Count);
+                foreach(var item in SampleToGroupInfos)
+                {
+                    writer.WriteUInt32(item.SampleCount);
+                    writer.WriteUInt32(item.GroupDescriptionIndex);
+                }
+            }
+            else
+            {
+                writer.WriteUInt32(0);
+            }
         }
 
         public class SampleToGroupInfo

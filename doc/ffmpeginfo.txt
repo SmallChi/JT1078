@@ -4,4 +4,7 @@ ffmpeg -i demo.mp4 -c copy -f flv -vcodec h264 -acodec aac demo_flv.flv
 
 ffmpeg -f dshow -i video="USB2.0 PC CAMERA" -t 60 -c copy -f h264 -vcodec h264 jt1078.264
 
+ffmpeg -i demo.264 -vcodec copy -f mp4 -movflags frag_keyframe+empty_moov fragmented_demo.mp4
+
+
 chrome://media-internals/
