@@ -15,9 +15,7 @@
     <PackageReference Include="System.Memory" Version="4.5.4" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\JT1078.Flv.Benchmark\JT1078.Flv.Benchmark.csproj" />
     <ProjectReference Include="..\JT1078.Flv\JT1078.Flv.csproj" />
-    <ProjectReference Include="..\JT1078.Protocol\JT1078.Protocol.csproj" />
   </ItemGroup>
 
 </Project>

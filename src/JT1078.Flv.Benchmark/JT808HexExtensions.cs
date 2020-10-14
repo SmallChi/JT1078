@@ -6,7 +6,7 @@ namespace JT808.Protocol.Extensions
     /// 
     /// ref:"www.codeproject.com/tips/447938/high-performance-csharp-byte-array-to-hex-string-t"
     /// </summary>
-    public static partial class JT808BinaryExtensions
+    internal static partial class JT808BinaryExtensions
     {
         public static string ToHexString(this byte[] source)
         {

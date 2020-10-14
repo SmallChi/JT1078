@@ -3,10 +3,10 @@ using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Environments;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Toolchains.CsProj;
-using JT808.Protocol.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JT1078.Protocol.Extensions;
 
 namespace JT1078.Protocol.Benchmark
 {
@@ -58,7 +58,7 @@ namespace JT1078.Protocol.Benchmark
     {
         public JT1078SerializerConfig()
         {
-            Add(Job.Default.WithGcServer(false).With(CsProjCoreToolchain.NetCoreApp31).With(Platform.AnyCpu));
+            AddJob(Job.Default.WithGcServer(false).WithToolchain(CsProjCoreToolchain.NetCoreApp31).WithPlatform(Platform.AnyCpu));
         }
     }
 }

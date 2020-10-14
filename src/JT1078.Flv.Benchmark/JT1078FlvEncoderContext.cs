@@ -69,7 +69,7 @@ namespace JT1078.Flv.Benchmark
     {
         public JT1078FlvEncoderConfig()
         {
-            Add(Job.Default.WithGcServer(false).With(CsProjCoreToolchain.NetCoreApp31).With(Platform.AnyCpu));
+            AddJob(Job.Default.WithGcServer(false).WithToolchain(CsProjCoreToolchain.NetCoreApp31).WithPlatform(Platform.AnyCpu));
         }
     }
 }
