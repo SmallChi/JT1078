@@ -327,6 +327,11 @@
             minf
             </summary>
         </member>
+        <member name="P:JT1078.FMp4.MediaInformationBox.VideoMediaHeaderBox">
+            <summary>
+            vmhd
+            </summary>
+        </member>
         <member name="P:JT1078.FMp4.MediaInformationBox.DataInformationBox">
             <summary>
             dinf
@@ -908,6 +913,18 @@
         <member name="M:JT1078.FMp4.URIInitBox.#ctor(System.Byte,System.UInt32)">
             <summary>
             uriI
+            </summary>
+            <param name="version"></param>
+            <param name="flags"></param>
+        </member>
+        <member name="T:JT1078.FMp4.VideoMediaHeaderBox">
+            <summary>
+            vmhd
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.VideoMediaHeaderBox.#ctor(System.Byte,System.UInt32)">
+            <summary>
+            vmhd
             </summary>
             <param name="version"></param>
             <param name="flags"></param>

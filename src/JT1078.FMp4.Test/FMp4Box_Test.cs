@@ -29,7 +29,6 @@ namespace JT1078.FMp4.Test
             var hex = writer.FlushAndGetArray().ToHexString();
             Assert.Equal("000000246674797069736f6d0000020069736f6d69736f326176633169736f366d703431".ToUpper(), hex);
         }
-
         /// <summary>
         /// 使用doc/video/fragmented_demo.mp4
         /// </summary>
@@ -47,7 +46,6 @@ namespace JT1078.FMp4.Test
             var hex = writer.FlushAndGetArray().ToHexString();
             Assert.Equal("0000006c6d766864000000000000000000000000000003e8000000000001000001000000000000000000000000010000000000000000000000000000000100000000000000000000000000004000000000000000000000000000000000000000000000000000000000000002".ToUpper(), hex);
         }
-
         /// <summary>
         /// 使用doc/video/fragmented_demo.mp4
         /// </summary>
@@ -66,7 +64,6 @@ namespace JT1078.FMp4.Test
             var hex = writer.FlushAndGetArray().ToHexString();
             Assert.Equal("0000005C746B68640000000300000000000000000000000100000000000000000000000000000000000000000000000000010000000000000000000000000000000100000000000000000000000000004000000000000220000003C0".ToUpper(), hex);
         }
-
         /// <summary>
         /// 使用doc/video/fragmented_demo.mp4
         /// </summary>
@@ -76,7 +73,6 @@ namespace JT1078.FMp4.Test
 
 
         }
-
         /// <summary>
         /// 使用doc/video/fragmented_demo.mp4
         /// </summary>
@@ -104,6 +100,71 @@ namespace JT1078.FMp4.Test
             //55c4
             //0000
             Assert.Equal("000000206d64686400000000000000000000000000124f800000000055c40000".ToUpper(), hex);
+        }
+        /// <summary>
+        /// 使用doc/video/fragmented_demo.mp4
+        /// </summary>
+        [Fact(DisplayName = "trak_mdia_hdlr")]
+        public void trak_mdia_hdlr_test()
+        {
+            HandlerBox handlerBox = new HandlerBox(0, 0);
+            handlerBox.HandlerType = Enums.HandlerType.vide;
+            handlerBox.Name = "VideoHandler";
+            FMp4MessagePackWriter writer = new MessagePack.FMp4MessagePackWriter(new byte[10240]);
+            handlerBox.ToBuffer(ref writer);
+            var hex = writer.FlushAndGetArray().ToHexString();
+            Assert.Equal("0000002C68646C72000000000000000076696465000000000000000000000000566964656F48616E646C6572".ToUpper(), hex);
+        }
+        /// <summary>
+        /// 使用doc/video/fragmented_demo.mp4
+        /// </summary>
+        [Fact(DisplayName = "trak_mdia_hdlr_minf")]
+        public void trak_mdia_hdlr_minf_test()
+        {
+            HandlerBox handlerBox = new HandlerBox(0, 0);
+            handlerBox.HandlerType = Enums.HandlerType.vide;
+            handlerBox.Name = "VideoHandler\0";
+            FMp4MessagePackWriter writer = new MessagePack.FMp4MessagePackWriter(new byte[10240]);
+            handlerBox.ToBuffer(ref writer);
+            var hex = writer.FlushAndGetArray().ToHexString();
+            Assert.Equal("0000002D68646C72000000000000000076696465000000000000000000000000566964656F48616E646C657200".ToUpper(), hex);
+        }
+        /// <summary>
+        /// 使用doc/video/fragmented_demo.mp4
+        /// </summary>
+        [Fact(DisplayName = "trak_mdia_hdlr_minf_vmhd")]
+        public void trak_mdia_hdlr_minf_vmhd_test()
+        {
+            VideoMediaHeaderBox videoMediaHeaderBox = new VideoMediaHeaderBox();
+            FMp4MessagePackWriter writer = new MessagePack.FMp4MessagePackWriter(new byte[10240]);
+            videoMediaHeaderBox.ToBuffer(ref writer);
+            var hex = writer.FlushAndGetArray().ToHexString();
+            Assert.Equal("00000014766d6864000000010000000000000000".ToUpper(), hex);
+        }        
+        /// <summary>
+        /// 使用doc/video/fragmented_demo.mp4
+        /// </summary>
+        [Fact(DisplayName = "trak_mdia_hdlr_minf_dinf")]
+        public void trak_mdia_hdlr_minf_dinf_test()
+        {
+            DataInformationBox dataInformationBox = new DataInformationBox();
+            DataReferenceBox dataReferenceBox = new DataReferenceBox();
+            dataReferenceBox.DataEntryBoxes = new List<DataEntryBox>();
+            dataReferenceBox.DataEntryBoxes.Add(new DataEntryUrlBox(version: 0, flags: 1));
+            dataInformationBox.DataReferenceBox = dataReferenceBox;
+            FMp4MessagePackWriter writer = new MessagePack.FMp4MessagePackWriter(new byte[10240]);
+            dataInformationBox.ToBuffer(ref writer);
+            var hex = writer.FlushAndGetArray().ToHexString();
+            //0000002464696e660000001c6472656600000000000000010000000c75726c2000000001
+            Assert.Equal("0000002464696e660000001c6472656600000000000000010000000c75726c2000000001".ToUpper(), hex);
+        }
+        /// <summary>
+        /// 使用doc/video/fragmented_demo.mp4
+        /// </summary>
+        [Fact(DisplayName = "trak_mdia_hdlr_minf_stbl")]
+        public void trak_mdia_hdlr_minf_stbl_test()
+        {
+            
         }
     }
 }

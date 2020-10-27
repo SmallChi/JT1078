@@ -1,11 +1,21 @@
-﻿using System;
+﻿using JT1078.FMp4.Interfaces;
+using JT1078.FMp4.MessagePack;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace JT1078.FMp4
 {
-    public class VideoMediaHeaderBox : FullBox
+    /// <summary>
+    /// vmhd
+    /// </summary>
+    public class VideoMediaHeaderBox : FullBox, IFMp4MessagePackFormatter
     {
+        /// <summary>
+        /// vmhd
+        /// </summary>
+        /// <param name="version"></param>
+        /// <param name="flags"></param>
         public VideoMediaHeaderBox(byte version = 0, uint flags = 1) : base("vmhd", version, flags)
         {
         }
@@ -22,6 +32,18 @@ namespace JT1078.FMp4
                     Red,Green,Blue
                 };
             }
+        }
+
+        public void ToBuffer(ref FMp4MessagePackWriter writer)
+        {
+            Start(ref writer);
+            WriterFullBoxToBuffer(ref writer);
+            writer.WriteUInt16(GraphicsMode);
+            foreach(var item in OpColor)
+            {
+                writer.WriteUInt16(item);
+            }
+            End(ref writer);
         }
     }
 }

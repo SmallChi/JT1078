@@ -18,6 +18,10 @@ namespace JT1078.FMp4
         {
         }
         /// <summary>
+        /// vmhd
+        /// </summary>
+        public VideoMediaHeaderBox VideoMediaHeaderBox { get; set; }
+        /// <summary>
         /// dinf
         /// </summary>
         public DataInformationBox DataInformationBox { get; set; }
@@ -29,6 +33,10 @@ namespace JT1078.FMp4
         public void ToBuffer(ref FMp4MessagePackWriter writer)
         {
             Start(ref writer);
+            if (VideoMediaHeaderBox != null)
+            {
+                VideoMediaHeaderBox.ToBuffer(ref writer);
+            }
             DataInformationBox.ToBuffer(ref writer);
             SampleTableBox.ToBuffer(ref writer);
             End(ref writer);
