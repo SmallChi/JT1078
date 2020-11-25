@@ -58,7 +58,7 @@ namespace JT1078.Protocol.Benchmark
     {
         public JT1078SerializerConfig()
         {
-            AddJob(Job.Default.WithGcServer(false).WithToolchain(CsProjCoreToolchain.NetCoreApp31).WithPlatform(Platform.AnyCpu));
+            AddJob(Job.Default.WithGcServer(false).WithToolchain(CsProjCoreToolchain.NetCoreApp50).WithPlatform(Platform.AnyCpu));
         }
     }
 }

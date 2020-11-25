@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard2.1;</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;net5.0;</TargetFrameworks>
     <LangVersion>8.0</LangVersion>
     <Copyright>Copyright 2019.</Copyright>
     <Authors>SmallChi(Koike)</Authors>
@@ -14,19 +14,13 @@
     <licenseUrl>https://github.com/SmallChi/JT1078/blob/master/LICENSE</licenseUrl>
     <license>https://github.com/SmallChi/JT1078/blob/master/LICENSE</license>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>1.0.0-preview1</Version>
+    <Version>1.1.0-preview1</Version>
     <SignAssembly>false</SignAssembly>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
     <DocumentationFile>JT1078.FMp4.xml</DocumentationFile>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
-    <DocumentationFile>JT1078.FMp4.xml</DocumentationFile>
-  </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE">
       <Pack>True</Pack>
@@ -34,7 +28,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.7" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\JT1078.Protocol\JT1078.Protocol.csproj" />

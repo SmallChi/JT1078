@@ -1,0 +1,313 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>JT1078.Protocol</name>
+    </assembly>
+    <members>
+        <member name="M:JT1078.Protocol.Audio.AdpcmCodec.ToPcm(System.Byte[],JT1078.Protocol.Audio.IAudioAttachData)">
+            <summary>
+            将adpcm转为pcm
+            </summary>
+            <see cref="!:https://github.com/ctuning/ctuning-programs/blob/master/program/cbench-telecom-adpcm-d/adpcm.c"/>
+            <param name="audio"></param>
+            <param name="audioAttachData"></param>
+            <returns></returns>
+        </member>
+        <member name="P:JT1078.Protocol.Audio.AdpcmState.Valprev">
+            <summary>
+            上一个采样数据，当index为0是该值应该为未压缩的原数据
+            </summary>
+        </member>
+        <member name="P:JT1078.Protocol.Audio.AdpcmState.Reserved">
+            <summary>
+            保留数据（未使用）
+            </summary>
+        </member>
+        <member name="P:JT1078.Protocol.Audio.AdpcmState.Index">
+            <summary>
+            上一个block最后一个index，第一个block的index=0
+            </summary>
+        </member>
+        <member name="M:JT1078.Protocol.Audio.AdpcmDecoderExtension.ToWav(System.Byte[],System.UInt32,System.Byte)">
+            <summary>
+            添加wav头
+            仅用于测试pcm是否转成成功，因此没考虑性能，因为播放器可播——#
+            </summary>
+            <param name="input">pcm数据</param>
+            <param name="frequency">采样率</param>
+            <param name="bitDepth">位深</param>
+            <returns></returns>
+        </member>
+        <member name="T:JT1078.Protocol.Buffers.JT1078BufferWriter">
+            <summary>
+            <see cref="!:System.Buffers.Writer"/>
+            </summary>
+        </member>
+        <member name="T:JT1078.Protocol.Enums.JT1078AVType">
+            <summary>
+            音视频类型
+            </summary>
+        </member>
+        <member name="T:JT1078.Protocol.Enums.JT1078SubPackageType">
+            <summary>
+            分包处理标记
+            </summary>
+        </member>
+        <member name="T:JT1078.Protocol.Extensions.HexExtensions">
+            <summary>
+            
+            ref:"www.codeproject.com/tips/447938/high-performance-csharp-byte-array-to-hex-string-t"
+            </summary>
+        </member>
+        <member name="M:JT1078.Protocol.Extensions.HexExtensions.ToHexBytes(System.String)">
+            <summary>
+            16进制字符串转16进制数组
+            </summary>
+            <param name="hexString"></param>
+            <param name="separator"></param>
+            <returns></returns>
+        </member>
+        <member name="M:JT1078.Protocol.H264.H264Decoder.ParseNALU(JT1078.Protocol.JT1078Package,System.String)">
+            <summary>
+            
+            <see cref="!:https://github.com/samirkumardas/jmuxer/blob/master/src/parsers/h264.js"/>
+            </summary>
+            <param name="package"></param>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:JT1078.Protocol.H264.H264Decoder.DiscardEmulationPreventionBytes(System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Expunge any "Emulation Prevention" bytes from a "Raw Byte Sequence Payload"
+            <see cref="!:https://blog.csdn.net/u011399342/article/details/80472084"/>
+            防止竞争插入0x03
+            </summary>
+            <param name="srcBuffer"></param>
+            <returns></returns>
+        </member>
+        <member name="P:JT1078.Protocol.H264.H264NALU.SIM">
+            <summary>
+            终端设备SIM卡号
+            BCD[6]
+            </summary>
+        </member>
+        <member name="P:JT1078.Protocol.H264.H264NALU.LogicChannelNumber">
+            <summary>
+            逻辑通道号
+            </summary>
+        </member>
+        <member name="P:JT1078.Protocol.H264.H264NALU.DataType">
+            <summary>
+            数据类型
+            </summary>
+        </member>
+        <member name="P:JT1078.Protocol.H264.H264NALU.LastIFrameInterval">
+            <summary>
+            该帧与上一个关键帧之间的时间间隔，单位毫秒(ms),
+            当数据类型为非视频帧时，则没有该字段
+            </summary>
+        </member>
+        <member name="P:JT1078.Protocol.H264.H264NALU.LastFrameInterval">
+            <summary>
+            该帧与上一个帧之间的时间间隔，单位毫秒(ms),
+            当数据类型为非视频帧时，则没有该字段
+            </summary>
+        </member>
+        <member name="P:JT1078.Protocol.H264.H264NALU.Timestamp">
+            <summary>
+            时间戳
+            标识此RTP数据包当前帧的相对时间，单位毫秒（ms）。
+            当数据类型为01000时，则没有该字段
+            </summary>
+        </member>
+        <member name="P:JT1078.Protocol.H264.H264NALU.RawData">
+            <summary>
+            数据体
+            </summary>
+        </member>
+        <member name="T:JT1078.Protocol.JT1078Label1">
+            <summary>
+            V  - 2 - 固定为2
+            P  - 1 - 固定为0
+            X  - 1 - RTP头是否需要扩展位，固定为0
+            CC - 4 - 固定为1
+            </summary>
+        </member>
+        <member name="M:JT1078.Protocol.JT1078Label1.#ctor(System.Byte,System.Byte,System.Byte,System.Byte)">
+            <summary>
+            
+            </summary>
+            <param name="v">0-3</param>
+            <param name="p">0-1</param>
+            <param name="x">0-1</param>
+            <param name="cc">0-15</param>
+        </member>
+        <member name="T:JT1078.Protocol.JT1078Label2">
+            <summary>
+            M  - 1 - 标志位，确定是否是完整数据帧的边界
+            PT - 7 - 负载类型
+            </summary>
+        </member>
+        <member name="M:JT1078.Protocol.JT1078Label2.#ctor(System.Byte,JT1078.Protocol.Enums.JT1078AVType)">
+            <summary>
+            
+            </summary>
+            <param name="m">0-1</param>
+            <param name="pt">0-127</param>
+        </member>
+        <member name="M:JT1078.Protocol.JT1078Label2.#ctor(System.Byte,System.Byte)">
+            <summary>
+            
+            </summary>
+            <param name="m">0-1</param>
+            <param name="pt">0-127</param>
+        </member>
+        <member name="P:JT1078.Protocol.JT1078Label2.M">
+            <summary>
+            M  - 1 - 标志位，确定是否是完整数据帧的边界
+            </summary>
+        </member>
+        <member name="P:JT1078.Protocol.JT1078Label2.PT">
+            <summary>
+            PT - 7 - 负载类型
+            用于说明RTP报文中有效载荷的类型，如GSM音频、JPEM图像等
+            </summary>
+        </member>
+        <member name="T:JT1078.Protocol.JT1078Label3">
+            <summary>
+            数据类型
+            分包处理标记
+            </summary>
+        </member>
+        <member name="P:JT1078.Protocol.JT1078Label3.DataType">
+            <summary>
+            数据类型
+            </summary>
+        </member>
+        <member name="P:JT1078.Protocol.JT1078Label3.SubpackageType">
+            <summary>
+            分包处理标记
+            </summary>
+        </member>
+        <member name="F:JT1078.Protocol.JT1078Package.FH_Bytes">
+            <summary>
+            帧头标识
+            </summary>
+        </member>
+        <member name="F:JT1078.Protocol.JT1078Package.FH">
+            <summary>
+            帧头标识
+            </summary>
+        </member>
+        <member name="P:JT1078.Protocol.JT1078Package.FH_Flag">
+            <summary>
+            帧头标识
+            固定为0x30 0x31 0x63 0x64
+            </summary>
+        </member>
+        <member name="P:JT1078.Protocol.JT1078Package.Label1">
+            <summary>
+            V  - 2 - 固定为2
+            P  - 1 - 固定为0
+            X  - 1 - RTP头是否需要扩展位，固定为0
+            CC - 4 - 固定为1
+            01000001
+            </summary>
+        </member>
+        <member name="P:JT1078.Protocol.JT1078Package.Label2">
+            <summary>
+            M  - 1 - 标志位，确定是否是完整数据帧的边界
+            PT - 7 - 负载类型
+            </summary>
+        </member>
+        <member name="P:JT1078.Protocol.JT1078Package.SN">
+            <summary>
+            初始化为0，每发送一个RTP数据包，序列号加1
+            </summary>
+        </member>
+        <member name="P:JT1078.Protocol.JT1078Package.SIM">
+            <summary>
+            终端设备SIM卡号
+            BCD[6]
+            </summary>
+        </member>
+        <member name="P:JT1078.Protocol.JT1078Package.LogicChannelNumber">
+            <summary>
+            逻辑通道号
+            </summary>
+        </member>
+        <member name="P:JT1078.Protocol.JT1078Package.Label3">
+            <summary>
+            数据类型
+            0000：视频I帧
+            0001：视频P帧
+            0010：视频B帧
+            0011：音频帧
+            0100：透传数据
+            
+            0000：原子包，不可被拆分
+            0001：分包处理时的第一个包
+            0010：分包处理是的最后一个包
+            0011：分包处理时间的中间包
+            </summary>
+        </member>
+        <member name="P:JT1078.Protocol.JT1078Package.Timestamp">
+            <summary>
+            时间戳
+            标识此RTP数据包当前帧的相对时间，单位毫秒（ms）。
+            当数据类型为01000时，则没有该字段
+            </summary>
+        </member>
+        <member name="P:JT1078.Protocol.JT1078Package.LastIFrameInterval">
+            <summary>
+            该帧与上一个关键帧之间的时间间隔，单位毫秒(ms),
+            当数据类型为非视频帧时，则没有该字段
+            </summary>
+        </member>
+        <member name="P:JT1078.Protocol.JT1078Package.LastFrameInterval">
+            <summary>
+            该帧与上一个关键帧之间的时间间隔，单位毫秒(ms),
+            当数据类型为非视频帧时，则没有该字段
+            </summary>
+        </member>
+        <member name="P:JT1078.Protocol.JT1078Package.DataBodyLength">
+            <summary>
+            后续数据体长度，不含此字段
+            </summary>
+        </member>
+        <member name="P:JT1078.Protocol.JT1078Package.Bodies">
+            <summary>
+            数据体
+            </summary>
+        </member>
+        <member name="T:JT1078.Protocol.MessagePack.ExpGolombReader">
+            <summary>
+            Exp-Golomb指数哥伦布编码
+            </summary>
+        </member>
+        <member name="M:JT1078.Protocol.MessagePack.ExpGolombReader.SkipScalingList(System.Int32)">
+             <summary>
+            Advance the ExpGolomb decoder past a scaling list.The scaling
+            list is optionally transmitted as part of a sequence parameter
+            set and is not relevant to transmuxing.
+            @param count { number}
+            the number of entries in this scaling list
+            @see Recommendation ITU-T H.264, Section 7.3.2.1.1.1
+             </summary>
+             <param name="count"></param>
+        </member>
+        <member name="M:JT1078.Protocol.MessagePack.JT1078MessagePackReader.ReadBigNumber(System.Int32)">
+            <summary>
+            数字编码 大端模式、高位在前
+            </summary>
+            <param name="len"></param>
+        </member>
+        <member name="M:JT1078.Protocol.MessagePack.JT1078MessagePackWriter.WriteBigNumber(System.String,System.Int32)">
+            <summary>
+            数字编码 大端模式、高位在前
+            </summary>
+            <param name="value"></param>
+            <param name="len"></param>
+        </member>
+    </members>
+</doc>
