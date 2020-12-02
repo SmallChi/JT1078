@@ -10,6 +10,7 @@ namespace JT1078.FMp4.Samples
     /// </summary>
     public abstract class VisualSampleEntry : SampleEntry
     {
+        const string COMPRESSORNAME = "jt1078&SmallChi(koike)&TK";
         /// <summary>
         /// VisualSampleEntry
         /// </summary>
@@ -27,9 +28,13 @@ namespace JT1078.FMp4.Samples
         public uint VertreSolution { get; set; }= 0x00480000;
         public uint Reserved3{ get; set; }
         public ushort FrameCount { get; set; } = 1;
+#if DEBUG
         public string CompressorName { get; set; }
+#else
+        public string CompressorName { get; set; } = COMPRESSORNAME;
+#endif
         public ushort Depth { get; set; } = 0x0018;
-        public short PreDefined3 { get; set; } = 0x1111;
+        public ushort PreDefined3 { get; set; } = 0x1111;
         /// <summary>
         /// clap
         /// optional
@@ -61,19 +66,18 @@ namespace JT1078.FMp4.Samples
             writer.WriteUInt16(FrameCount);
             if (string.IsNullOrEmpty(CompressorName))
             {
-                CompressorName = "";
+                //CompressorNameLength
+                writer.WriteByte(0);
+                writer.WriteArray(new byte[31]);
             }
-            writer.WriteUTF8(CompressorName.PadLeft(32, '\0'));
+            else
+            {
+                //CompressorNameLength
+                writer.WriteByte((byte)CompressorName.Length);
+                writer.WriteUTF8(CompressorName.PadRight(31, '\0'));
+            }
             writer.WriteUInt16(Depth);
-            writer.WriteInt16(PreDefined3);
-            if (Clap != null)
-            {
-                Clap.ToBuffer(ref writer);
-            }
-            if (Pasp != null)
-            {
-                Pasp.ToBuffer(ref writer);
-            }
+            writer.WriteUInt16(PreDefined3);
         }
     }
 }

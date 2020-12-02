@@ -17,7 +17,13 @@ namespace JT1078.FMp4
         public MovieExtendsBox() : base("mvex")
         {
         }
+        /// <summary>
+        /// mehd
+        /// </summary>
         public MovieExtendsHeaderBox MovieExtendsHeaderBox { get; set; }
+        /// <summary>
+        /// trex
+        /// </summary>
         public List<TrackExtendsBox> TrackExtendsBoxs { get; set; }
 
         public void ToBuffer(ref FMp4MessagePackWriter writer)

@@ -6,8 +6,16 @@ using System.Text;
 
 namespace JT1078.FMp4
 {
+    /// <summary>
+    /// trex
+    /// </summary>
     public class TrackExtendsBox : FullBox, IFMp4MessagePackFormatter
     {
+        /// <summary>
+        /// trex
+        /// </summary>
+        /// <param name="version"></param>
+        /// <param name="flags"></param>
         public TrackExtendsBox(byte version=0, uint flags=0) : base("trex", version, flags)
         {
         }

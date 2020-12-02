@@ -45,17 +45,15 @@ namespace JT1078.FMp4
         //bit(8*pictureParameterSetLength) pictureParameterSetNALUnit;
         //}
         //}
-        public byte ConfigurationVersion { get; set; } = 1;
+        private byte ConfigurationVersion { get; set; } = 1;
         public byte AVCProfileIndication { get; set; }
         public byte ProfileCompatibility { get; set; }
         public byte AVCLevelIndication { get; set; }
         public int LengthSizeMinusOne { get; set; }
-        public int NumOfSequenceParameterSets { get; set; }
-        //public List<(ushort SequenceParameterSetLength,byte[] SequenceParameterSetNALUnit)> SPS { get; set; }
-        public byte[] SPSBuffer { get; set; }
-        public byte NumOfPictureParameterSets { get; set; } = 1;
-        //public List<(ushort PictureParameterSetLength,byte[] PictureParameterSetNALUnit)> PPS { get; set; }
-        public byte[] PPSBuffer { get; set; }
+        //private byte NumOfSequenceParameterSets { get; set; }
+        public List<byte[]> SPSs { get; set; }
+        //private byte NumOfPictureParameterSets { get; set; } = 1;
+        public List<byte[]> PPSs { get; set; }
 
         public void ToBuffer(ref FMp4MessagePackWriter writer)
         {
@@ -65,12 +63,38 @@ namespace JT1078.FMp4
             writer.WriteByte(ProfileCompatibility);
             writer.WriteByte(AVCLevelIndication);
             writer.WriteByte((byte)(0xfc | LengthSizeMinusOne));
-            writer.WriteByte((byte)(0xE0 | NumOfSequenceParameterSets));
-            writer.WriteUInt16((ushort)SPSBuffer.Length);
-            writer.WriteArray(SPSBuffer);
-            writer.WriteByte(NumOfPictureParameterSets);
-            writer.WriteUInt16((ushort)PPSBuffer.Length);
-            writer.WriteArray(PPSBuffer);
+            if (SPSs!=null && SPSs.Count > 0)
+            {
+                //NumOfSequenceParameterSets
+                writer.WriteByte((byte)(0xE0 | SPSs.Count));
+                foreach(var sps in SPSs)
+                {
+                    //SequenceParameterSetLength
+                    writer.WriteUInt16((ushort)sps.Length);
+                    writer.WriteArray(sps);
+                }
+            }
+            else
+            {
+                //NumOfSequenceParameterSets
+                writer.WriteByte(0xE0);
+            }
+            if (PPSs != null && PPSs.Count > 0)
+            {
+                //NumOfPictureParameterSets
+                writer.WriteByte((byte)PPSs.Count);
+                foreach (var pps in PPSs)
+                {
+                    //PictureParameterSetLength
+                    writer.WriteUInt16((ushort)pps.Length);
+                    writer.WriteArray(pps);
+                }
+            }
+            else
+            {
+                //NumOfPictureParameterSets
+                writer.WriteByte(0);
+            }
             End(ref writer);
         }
     }

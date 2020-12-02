@@ -545,6 +545,18 @@
             if (version==1)
             </summary>
         </member>
+        <member name="T:JT1078.FMp4.SampleSizeBox">
+            <summary>
+            stsz
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.SampleSizeBox.#ctor(System.Byte,System.UInt32)">
+            <summary>
+            stsz
+            </summary>
+            <param name="version"></param>
+            <param name="flags"></param>
+        </member>
         <member name="P:JT1078.FMp4.SampleSizeBox.EntrySize">
             <summary>
              if (sample_size==0)
@@ -579,6 +591,11 @@
         <member name="P:JT1078.FMp4.SampleTableBox.SampleToChunkBox">
             <summary>
             stsc
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SampleTableBox.SampleSizeBox">
+            <summary>
+            stsz
             </summary>
         </member>
         <member name="P:JT1078.FMp4.SampleTableBox.ChunkOffsetBox">

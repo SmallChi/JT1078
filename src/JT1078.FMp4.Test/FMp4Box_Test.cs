@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Text;
 using Xunit;
 using JT1078.Protocol.Extensions;
+using JT1078.FMp4.Enums;
+using JT1078.FMp4.Samples;
 
 namespace JT1078.FMp4.Test
 {
@@ -49,8 +51,8 @@ namespace JT1078.FMp4.Test
         /// <summary>
         /// 使用doc/video/fragmented_demo.mp4
         /// </summary>
-        [Fact(DisplayName = "trak_tkhd")]
-        public void trak_tkhd_test()
+        [Fact(DisplayName = "moov_trak_tkhd")]
+        public void moov_trak_tkhd_test()
         {   
             TrackHeaderBox trackHeaderBox = new TrackHeaderBox(0,3);
             trackHeaderBox.CreationTime = 0;
@@ -67,8 +69,8 @@ namespace JT1078.FMp4.Test
         /// <summary>
         /// 使用doc/video/fragmented_demo.mp4
         /// </summary>
-        [Fact(DisplayName = "trak_mdia")]
-        public void trak_mdia_test()
+        [Fact(DisplayName = "moov_trak_mdia")]
+        public void moov_trak_mdia_test()
         {
 
 
@@ -76,8 +78,8 @@ namespace JT1078.FMp4.Test
         /// <summary>
         /// 使用doc/video/fragmented_demo.mp4
         /// </summary>
-        [Fact(DisplayName = "trak_mdia_mdhd")]
-        public void trak_mdia_mdhd_test()
+        [Fact(DisplayName = "moov_trak_mdia_mdhd")]
+        public void moov_trak_mdia_mdhd_test()
         {
             
             MediaHeaderBox mediaHeaderBox = new MediaHeaderBox(0, 0);
@@ -104,8 +106,8 @@ namespace JT1078.FMp4.Test
         /// <summary>
         /// 使用doc/video/fragmented_demo.mp4
         /// </summary>
-        [Fact(DisplayName = "trak_mdia_hdlr")]
-        public void trak_mdia_hdlr_test()
+        [Fact(DisplayName = "moov_trak_mdia_hdlr")]
+        public void moov_trak_mdia_hdlr_test()
         {
             HandlerBox handlerBox = new HandlerBox(0, 0);
             handlerBox.HandlerType = Enums.HandlerType.vide;
@@ -118,8 +120,8 @@ namespace JT1078.FMp4.Test
         /// <summary>
         /// 使用doc/video/fragmented_demo.mp4
         /// </summary>
-        [Fact(DisplayName = "trak_mdia_hdlr_minf")]
-        public void trak_mdia_hdlr_minf_test()
+        [Fact(DisplayName = "moov_trak_mdia_hdlr_minf")]
+        public void moov_trak_mdia_hdlr_minf_test()
         {
             HandlerBox handlerBox = new HandlerBox(0, 0);
             handlerBox.HandlerType = Enums.HandlerType.vide;
@@ -132,8 +134,8 @@ namespace JT1078.FMp4.Test
         /// <summary>
         /// 使用doc/video/fragmented_demo.mp4
         /// </summary>
-        [Fact(DisplayName = "trak_mdia_hdlr_minf_vmhd")]
-        public void trak_mdia_hdlr_minf_vmhd_test()
+        [Fact(DisplayName = "moov_trak_mdia_hdlr_minf_vmhd")]
+        public void moov_trak_mdia_hdlr_minf_vmhd_test()
         {
             VideoMediaHeaderBox videoMediaHeaderBox = new VideoMediaHeaderBox();
             FMp4MessagePackWriter writer = new MessagePack.FMp4MessagePackWriter(new byte[10240]);
@@ -144,8 +146,8 @@ namespace JT1078.FMp4.Test
         /// <summary>
         /// 使用doc/video/fragmented_demo.mp4
         /// </summary>
-        [Fact(DisplayName = "trak_mdia_hdlr_minf_dinf")]
-        public void trak_mdia_hdlr_minf_dinf_test()
+        [Fact(DisplayName = "moov_trak_mdia_hdlr_minf_dinf")]
+        public void moov_trak_mdia_hdlr_minf_dinf_test()
         {
             DataInformationBox dataInformationBox = new DataInformationBox();
             DataReferenceBox dataReferenceBox = new DataReferenceBox();
@@ -161,10 +163,58 @@ namespace JT1078.FMp4.Test
         /// <summary>
         /// 使用doc/video/fragmented_demo.mp4
         /// </summary>
-        [Fact(DisplayName = "trak_mdia_hdlr_minf_stbl")]
-        public void trak_mdia_hdlr_minf_stbl_test()
+        [Fact(DisplayName = "moov_trak_mdia_hdlr_minf_stbl")]
+        public void moov_trak_mdia_hdlr_minf_stbl_test()
         {
-            
+            //000000e17374626c000000957374736400000000000000010000008561766331000000000000000100000000000000000000000000000000022003c0004800000048000000000000000100000000000000000000000000000000000000000000000000000000000000000018ffff0000002f617663430164001fffe100176764001facd940881e684000f4240037b40883c60c658001000568efbcb0000000001073747473000000000000000000000010737473630000000000000000000000147374737a000000000000000000000000000000107374636f0000000000000000
+            //stbl
+            SampleTableBox sampleTableBox = new SampleTableBox();
+            //stbl->stsd
+            SampleDescriptionBox sampleDescriptionBox = new SampleDescriptionBox(HandlerType.none);
+            //stbl->stsd->avc1
+            AVC1SampleEntry aVC1SampleEntry = new AVC1SampleEntry();
+            aVC1SampleEntry.Width = 0x0220;
+            aVC1SampleEntry.Height = 0x03c0;
+            //stbl->stsd->avc1->avcc
+            AVCConfigurationBox aVCConfigurationBox = new AVCConfigurationBox();
+            aVCConfigurationBox.AVCProfileIndication = 0x64;
+            aVCConfigurationBox.ProfileCompatibility = 0;
+            aVCConfigurationBox.AVCLevelIndication = 0x1f;
+            aVCConfigurationBox.LengthSizeMinusOne = 0xff;
+            aVCConfigurationBox.SPSs = new List<byte[]>()
+            {
+                "6764001facd940881e684000f4240037b40883c60c6580".ToHexBytes()
+            };
+            aVCConfigurationBox.PPSs = new List<byte[]>()
+            {
+                "68efbcb000".ToHexBytes()
+            };
+            aVC1SampleEntry.AVCConfigurationBox = aVCConfigurationBox;
+            sampleDescriptionBox.SampleEntries = new List<SampleEntry>()
+            {
+                aVC1SampleEntry
+            };
+            sampleTableBox.SampleDescriptionBox = sampleDescriptionBox;
+            //stbl->stts
+            sampleTableBox.TimeToSampleBox = new TimeToSampleBox();
+            //stbl->stsc
+            sampleTableBox.SampleToChunkBox = new SampleToChunkBox();
+            //stbl->stsz
+            sampleTableBox.SampleSizeBox = new SampleSizeBox();
+            //stbl->stco
+            sampleTableBox.ChunkOffsetBox = new ChunkOffsetBox();
+            FMp4MessagePackWriter writer = new MessagePack.FMp4MessagePackWriter(new byte[0x000000e1]);
+            sampleTableBox.ToBuffer(ref writer);
+            var hex = writer.FlushAndGetArray().ToHexString();
+            Assert.Equal("000000e17374626c000000957374736400000000000000010000008561766331000000000000000100000000000000000000000000000000022003c0004800000048000000000000000100000000000000000000000000000000000000000000000000000000000000000018ffff0000002f617663430164001fffe100176764001facd940881e684000f4240037b40883c60c658001000568efbcb0000000001073747473000000000000000000000010737473630000000000000000000000147374737a000000000000000000000000000000107374636f0000000000000000".ToUpper(), hex);
+        }
+        /// <summary>
+        /// 使用doc/video/fragmented_demo.mp4
+        /// </summary>
+        [Fact(DisplayName = "moov_mvex")]
+        public void trak_mvex_test()
+        {
+            //todo:moov_mvex
         }
     }
 }

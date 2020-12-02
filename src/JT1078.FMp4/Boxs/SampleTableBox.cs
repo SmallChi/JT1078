@@ -33,7 +33,10 @@ namespace JT1078.FMp4
         /// stsc
         /// </summary>
         public SampleToChunkBox SampleToChunkBox { get; set; }
-        //public SampleSizeBox SampleSizeBox { get; set; }
+        /// <summary>
+        /// stsz
+        /// </summary>
+        public SampleSizeBox SampleSizeBox { get; set; }
         //public CompactSampleSizeBox CompactSampleSizeBox { get; set; }
         /// <summary>
         /// stco
@@ -54,8 +57,11 @@ namespace JT1078.FMp4
             Start(ref writer);
             SampleDescriptionBox.ToBuffer(ref writer);
             TimeToSampleBox.ToBuffer(ref writer);
-            CompositionOffsetBox.ToBuffer(ref writer);
+            if(CompositionOffsetBox!=null)
+                CompositionOffsetBox.ToBuffer(ref writer);
             SampleToChunkBox.ToBuffer(ref writer);
+            if (SampleSizeBox != null)
+                SampleSizeBox.ToBuffer(ref writer);
             ChunkOffsetBox.ToBuffer(ref writer);
             End(ref writer);
         }

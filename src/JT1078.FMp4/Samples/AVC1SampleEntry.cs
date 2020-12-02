@@ -15,6 +15,8 @@ namespace JT1078.FMp4.Samples
         /// </summary>
         public AVC1SampleEntry() : base("avc1")
         {
+            DataReferenceIndex = 1;
+            PreDefined3 = 0xffff;
         }
         /// <summary>
         /// avcC
@@ -28,8 +30,12 @@ namespace JT1078.FMp4.Samples
         public override void ToBuffer(ref FMp4MessagePackWriter writer)
         {
             Start(ref writer);
+            WriterSampleEntryToBuffer(ref writer);
             WriterVisualSampleEntryToBuffer(ref writer);
-            AVCConfigurationBox.ToBuffer(ref writer);
+            if (AVCConfigurationBox != null)
+            {
+                AVCConfigurationBox.ToBuffer(ref writer);
+            }
             if (MPEG4BitRateBox != null)
             {
                 MPEG4BitRateBox.ToBuffer(ref writer);
