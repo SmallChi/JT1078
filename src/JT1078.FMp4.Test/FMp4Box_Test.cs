@@ -80,8 +80,7 @@ namespace JT1078.FMp4.Test
         /// </summary>
         [Fact(DisplayName = "moov_trak_mdia_mdhd")]
         public void moov_trak_mdia_mdhd_test()
-        {
-            
+        {  
             MediaHeaderBox mediaHeaderBox = new MediaHeaderBox(0, 0);
             mediaHeaderBox.CreationTime = 0;
             mediaHeaderBox.ModificationTime = 0;
@@ -214,7 +213,114 @@ namespace JT1078.FMp4.Test
         [Fact(DisplayName = "moov_mvex")]
         public void trak_mvex_test()
         {
-            //todo:moov_mvex
+            //moov->mvex
+            MovieExtendsBox movieExtendsBox = new MovieExtendsBox();
+            //moov->mvex->trex
+            movieExtendsBox.TrackExtendsBoxs = new List<TrackExtendsBox>();
+            TrackExtendsBox trackExtendsBox1 = new TrackExtendsBox();
+            trackExtendsBox1.TrackID = 0x01;
+            trackExtendsBox1.DefaultSampleDescriptionIndex = 0x01;
+            movieExtendsBox.TrackExtendsBoxs.Add(trackExtendsBox1);
+            FMp4MessagePackWriter writer = new MessagePack.FMp4MessagePackWriter(new byte[0x00000028]);
+            movieExtendsBox.ToBuffer(ref writer);
+            var hex = writer.FlushAndGetArray().ToHexString();
+            Assert.Equal("000000286d7665780000002074726578000000000000000100000001000000000000000000000000".ToUpper(), hex);
+        }
+        /// <summary>
+        /// 使用doc/video/fragmented_demo.mp4
+        /// </summary>
+        [Fact(DisplayName = "moov_udta")]
+        public void moov_udta_test()
+        {
+            //todo:moov->udta
+        }
+        /// <summary>
+        /// 使用doc/video/fragmented_demo.mp4
+        /// </summary>
+        [Fact(DisplayName = "moof")]
+        public void moof_test()
+        {
+            //000006d8747261660000002474666864000000390000000100000000000002fc0000bb80000066ee01010000
+            //00 00 06 d8
+            //74 72 61 66
+            //00 00 00 24
+            //74 66 68 64
+            //00
+            //00 00 39
+            //00 00 00 01
+            //忽略以下可选数据
+            //00 00 00 00 00 00 02 fc
+            //00 00 bb 80
+            //00 00 66 ee
+            //01 01 00 00
+            //moof
+            MovieFragmentBox movieFragmentBox = new MovieFragmentBox();
+            //moof->mfhd
+            movieFragmentBox.MovieFragmentHeaderBox = new MovieFragmentHeaderBox();
+            movieFragmentBox.MovieFragmentHeaderBox.SequenceNumber = 0x01;
+            //moof->traf
+            movieFragmentBox.TrackFragmentBox = new TrackFragmentBox();
+            movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox = new TrackFragmentHeaderBox();
+            movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.TrackID = 0x01;
+            //moof->tfdt
+            movieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox = new TrackFragmentBaseMediaDecodeTimeBox();
+            //todo:moof->trun
+            movieFragmentBox.TrackFragmentBox.TrackRunBox = new TrackRunBox(0, 0x00000305);
+        }        
+        /// <summary>
+        /// 使用doc/video/fragmented_demo.mp4
+        /// </summary>
+        [Fact(DisplayName = "mdat")]
+        public void mdat_test()
+        {
+            //todo:mdat
+            MediaDataBox mediaDataBox = new MediaDataBox();
+            
+        }        
+        /// <summary>
+        /// 使用doc/video/fragmented_demo.mp4
+        /// </summary>
+        [Fact(DisplayName = "mfra")]
+        public void mfra_test()
+        {
+            //000000436d6672610000002b7466726101000000000000010000000000000001000000000000000000000000000002fc010101000000106d66726f0000000000000043
+            //00 00 00 43
+            //6d 66 72 61
+            //00 00 00 2b
+            //74 66 72 61
+            //01
+            //00 00 00
+            //00 00 00 01
+            //00 00 00 00
+            //00 00 00 01
+            //00 00 00 00 00 00 00 00 
+            //00 00 00 00 00 00 02 fc 
+            //01 01 01 
+            //00 00 00 10 
+            //6d 66 72 6f
+            //00
+            //00 00 00 
+            //00 00 00 43
+            //mfra
+            MovieFragmentRandomAccessBox movieFragmentRandomAccessBox = new MovieFragmentRandomAccessBox();
+            //mfra->tfra
+            movieFragmentRandomAccessBox.TrackFragmentRandomAccessBox = new TrackFragmentRandomAccessBox(1);
+            movieFragmentRandomAccessBox.TrackFragmentRandomAccessBox.TrackID = 0x01;
+            movieFragmentRandomAccessBox.TrackFragmentRandomAccessBox.TrackFragmentRandomAccessInfos = new List<TrackFragmentRandomAccessBox.TrackFragmentRandomAccessInfo>();
+            TrackFragmentRandomAccessBox.TrackFragmentRandomAccessInfo trackFragmentRandomAccessInfo1 = new TrackFragmentRandomAccessBox.TrackFragmentRandomAccessInfo();
+            trackFragmentRandomAccessInfo1.Time = 0;
+            trackFragmentRandomAccessInfo1.MoofOffset = 0x00000000000002fc;
+            trackFragmentRandomAccessInfo1.TrafNumber = 0x01;
+            trackFragmentRandomAccessInfo1.TrunNumber = 0x01;
+            trackFragmentRandomAccessInfo1.SampleNumber = 0x01;
+            movieFragmentRandomAccessBox.TrackFragmentRandomAccessBox.TrackFragmentRandomAccessInfos.Add(trackFragmentRandomAccessInfo1);
+           //mfra->mfro
+            movieFragmentRandomAccessBox.MovieFragmentRandomAccessOffsetBox = new MovieFragmentRandomAccessOffsetBox(0);
+            movieFragmentRandomAccessBox.MovieFragmentRandomAccessOffsetBox.MfraSize = 0x00000043;
+            FMp4MessagePackWriter writer = new MessagePack.FMp4MessagePackWriter(new byte[0x00000043]);
+            movieFragmentRandomAccessBox.ToBuffer(ref writer);
+            var hex = writer.FlushAndGetArray().ToHexString();
+            Assert.Equal("000000436d6672610000002b7466726101000000000000010000000000000001000000000000000000000000000002fc010101000000106d66726f0000000000000043".ToUpper(), hex);
         }
     }
 }

@@ -47,6 +47,7 @@ namespace JT1078.FMp4
             writer.WriteUInt32((uint)(LengthSizeOfSampleNum | (LengthSizeOfTrunNum << 2) | (LengthSizeOfTrafNum << 4)));
             if(TrackFragmentRandomAccessInfos!=null && TrackFragmentRandomAccessInfos.Count > 0)
             {
+                writer.WriteUInt32((uint)TrackFragmentRandomAccessInfos.Count);
                 foreach (var item in TrackFragmentRandomAccessInfos)
                 {
                     if (Version == 1) 

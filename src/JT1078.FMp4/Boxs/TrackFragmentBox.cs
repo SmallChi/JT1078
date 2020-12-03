@@ -52,14 +52,14 @@ namespace JT1078.FMp4
             if (SampleDependencyTypeBox != null)
             {
                 SampleDependencyTypeBox.ToBuffer(ref writer);
+            }      
+            if (TrackFragmentBaseMediaDecodeTimeBox != null)
+            {
+                TrackFragmentBaseMediaDecodeTimeBox.ToBuffer(ref writer);
             }
             if (TrackRunBox != null)
             {
                 TrackRunBox.ToBuffer(ref writer);
-            }        
-            if (TrackFragmentBaseMediaDecodeTimeBox != null)
-            {
-                TrackFragmentBaseMediaDecodeTimeBox.ToBuffer(ref writer);
             }
             if (SampleToGroupBox != null)
             {

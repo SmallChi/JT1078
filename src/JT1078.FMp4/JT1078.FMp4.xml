@@ -377,6 +377,16 @@
             mvex
             </summary>
         </member>
+        <member name="P:JT1078.FMp4.MovieExtendsBox.MovieExtendsHeaderBox">
+            <summary>
+            mehd
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.MovieExtendsBox.TrackExtendsBoxs">
+            <summary>
+            trex
+            </summary>
+        </member>
         <member name="T:JT1078.FMp4.MovieExtendsHeaderBox">
             <summary>
             mehd
@@ -762,6 +772,18 @@
             <summary>
             mdia
             </summary>
+        </member>
+        <member name="T:JT1078.FMp4.TrackExtendsBox">
+            <summary>
+            trex
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.TrackExtendsBox.#ctor(System.Byte,System.UInt32)">
+            <summary>
+            trex
+            </summary>
+            <param name="version"></param>
+            <param name="flags"></param>
         </member>
         <member name="T:JT1078.FMp4.TrackFragmentBaseMediaDecodeTimeBox">
             <summary>

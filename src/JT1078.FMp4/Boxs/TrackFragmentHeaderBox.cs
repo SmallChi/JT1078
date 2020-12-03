@@ -23,18 +23,18 @@ namespace JT1078.FMp4
         /// tfhd
         /// </summary>
         /// <param name="flags"></param>
-        public TrackFragmentHeaderBox(uint flags) : this(0, flags)
+        public TrackFragmentHeaderBox(uint flags=0) : this(0, flags)
         {
         }
 
         public uint TrackID { get; set; }
 
         #region  all the following are optional fields
-        public ulong BaseDataOffset { get; set; }
-        public uint SampleDescriptionIndex { get; set; }
-        public uint DefaultSampleDuration { get; set; }
-        public uint DefaultSampleSize { get; set; }
-        public uint DefaultSampleFlags { get; set; }
+        public ulong? BaseDataOffset { get; set; }
+        public uint? SampleDescriptionIndex { get; set; }
+        public uint? DefaultSampleDuration { get; set; }
+        public uint? DefaultSampleSize { get; set; }
+        public uint? DefaultSampleFlags { get; set; }
         #endregion
         public void ToBuffer(ref FMp4MessagePackWriter writer)
         {

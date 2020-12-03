@@ -16,7 +16,7 @@ namespace JT1078.FMp4
         /// </summary>
         /// <param name="version"></param>
         /// <param name="flags"></param>
-        public TrackFragmentBaseMediaDecodeTimeBox(byte version, uint flags=0) : base("tfdt", version, flags)
+        public TrackFragmentBaseMediaDecodeTimeBox(byte version=1, uint flags=0) : base("tfdt", version, flags)
         {
         }
         public uint BaseMediaDecodeTime { get; set; }
