@@ -298,6 +298,14 @@
             mdat
             </summary>
         </member>
+        <member name="P:JT1078.FMp4.MediaDataBox.Data">
+            <summary>
+            过滤掉AUD/SPS/PPS NAL <br/>
+            然后将其他NAL写入Data中 <br/>
+            Filter out AUD/SPS/PPS NAL units from your stream<br/>
+            Write you converted NAL units into the MDAT box<br/>
+            </summary>
+        </member>
         <member name="T:JT1078.FMp4.MediaHeaderBox">
             <summary>
             mdhd

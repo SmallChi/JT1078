@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -21,6 +21,17 @@
 
   <ItemGroup>
     <ProjectReference Include="..\JT1078.FMp4\JT1078.FMp4.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="H264\" />
+    <None Include="..\..\doc\video\fragmented_demo_mdat.txt" Link="H264\fragmented_demo_mdat.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="H264\fragmented_demo_mdat.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -6,6 +6,8 @@ using Xunit;
 using JT1078.Protocol.Extensions;
 using JT1078.FMp4.Enums;
 using JT1078.FMp4.Samples;
+using System.IO;
+using System.Linq;
 
 namespace JT1078.FMp4.Test
 {
@@ -233,6 +235,7 @@ namespace JT1078.FMp4.Test
         public void moov_udta_test()
         {
             //todo:moov->udta
+
         }
         /// <summary>
         /// 使用doc/video/fragmented_demo.mp4
@@ -266,17 +269,25 @@ namespace JT1078.FMp4.Test
             movieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox = new TrackFragmentBaseMediaDecodeTimeBox();
             //todo:moof->trun
             movieFragmentBox.TrackFragmentBox.TrackRunBox = new TrackRunBox(0, 0x00000305);
-        }        
+        }
         /// <summary>
         /// 使用doc/video/fragmented_demo.mp4
         /// </summary>
         [Fact(DisplayName = "mdat")]
         public void mdat_test()
         {
-            //todo:mdat
             MediaDataBox mediaDataBox = new MediaDataBox();
-            
-        }        
+            var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "fragmented_demo_mdat.txt"));
+            var buffers = lines.Where(w => !string.IsNullOrEmpty(w)).Select(s => s.ToHexBytes()).ToList();
+            List<byte> data = new List<byte>();
+            foreach (var buffer in buffers)
+            {
+                data = data.Concat(buffer).ToList();
+            }
+            //00 0E 3C 9C  Size
+            //6D 64 61 74  BoxType
+            Assert.Equal(0x000E3C9C-8, data.Count);
+        }  
         /// <summary>
         /// 使用doc/video/fragmented_demo.mp4
         /// </summary>
