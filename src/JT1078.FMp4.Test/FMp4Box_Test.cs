@@ -251,7 +251,6 @@ namespace JT1078.FMp4.Test
             //00
             //00 00 39
             //00 00 00 01
-            //忽略以下可选数据
             //00 00 00 00 00 00 02 fc
             //00 00 bb 80
             //00 00 66 ee
@@ -263,8 +262,13 @@ namespace JT1078.FMp4.Test
             movieFragmentBox.MovieFragmentHeaderBox.SequenceNumber = 0x01;
             //moof->traf
             movieFragmentBox.TrackFragmentBox = new TrackFragmentBox();
-            movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox = new TrackFragmentHeaderBox();
+            //moof->traf->tfhd
+            movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox = new TrackFragmentHeaderBox(0x000039);
             movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.TrackID = 0x01;
+            movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.BaseDataOffset = 0x00000000000002fc;
+            movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleDuration = 0x0000bb80;
+            movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleSize = 0x000066ee;
+            movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleFlags = 0x01010000;
             //moof->tfdt
             movieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox = new TrackFragmentBaseMediaDecodeTimeBox();
             //todo:moof->trun
