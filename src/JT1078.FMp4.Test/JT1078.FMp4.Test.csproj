@@ -23,13 +23,18 @@
     <ProjectReference Include="..\JT1078.FMp4\JT1078.FMp4.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="H264\" />
-    <None Include="..\..\doc\video\fragmented_demo_mdat.txt" Link="H264\fragmented_demo_mdat.txt">
+    <None Include="..\..\doc\video\fragmented_demo_mdat.txt" Link="FMP4\fragmented_demo_mdat.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>   
+    <None Include="..\..\doc\video\fragmented_demo_trun.txt" Link="FMP4\fragmented_demo_trun.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Update="H264\fragmented_demo_mdat.txt">
+    <None Update="FMP4\fragmented_demo_mdat.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>   
+    <None Update="FMP4\fragmented_demo_trun.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -932,6 +932,12 @@
             <param name="version"></param>
             <param name="flags"></param>
         </member>
+        <member name="M:JT1078.FMp4.TrackHeaderBox.#ctor(System.Byte)">
+            <summary>
+            tkhd
+            </summary>
+            <param name="version"></param>
+        </member>
         <member name="T:JT1078.FMp4.TrackRunBox">
             <summary>
             trun
@@ -1071,69 +1077,84 @@
             
             </summary>
         </member>
+        <member name="F:JT1078.FMp4.FMp4Constants.TKHD_FLAG_ENABLED">
+            <summary>
+            TKHD_FLAG_ENABLED
+            </summary>
+        </member>
+        <member name="F:JT1078.FMp4.FMp4Constants.TKHD_FLAG_IN_MOVIE">
+            <summary>
+            TKHD_FLAG_IN_MOVIE
+            </summary>
+        </member>
+        <member name="F:JT1078.FMp4.FMp4Constants.TKHD_FLAG_IN_PREVIEW">
+            <summary>                                                                      
+            TKHD_FLAG_IN_PREVIEW                                                    
+            </summary>
+        </member>
         <member name="F:JT1078.FMp4.FMp4Constants.TFHD_FLAG_BASE_DATA_OFFSET">
             <summary>
-            
+            TFHD_FLAG_BASE_DATA_OFFSET
             </summary>
         </member>
         <member name="F:JT1078.FMp4.FMp4Constants.TFHD_FLAG_SAMPLE_DESCRIPTION_INDEX">
             <summary>
-            
+            TFHD_FLAG_SAMPLE_DESC
             </summary>
         </member>
         <member name="F:JT1078.FMp4.FMp4Constants.TFHD_FLAG_DEFAULT_DURATION">
             <summary>
-            
+            TFHD_FLAG_SAMPLE_DUR
             </summary>
         </member>
         <member name="F:JT1078.FMp4.FMp4Constants.TFHD_FLAG_DEFAULT_SIZE">
             <summary>
-            
+            TFHD_FLAG_SAMPLE_SIZE
             </summary>
         </member>
         <member name="F:JT1078.FMp4.FMp4Constants.TFHD_FLAG_DEFAULT_FLAGS">
             <summary>
-            
+            TFHD_FLAG_SAMPLE_FLAGS
             </summary>
         </member>
         <member name="F:JT1078.FMp4.FMp4Constants.TFHD_FLAG_DURATION_IS_EMPTY">
             <summary>
-            
+            TFHD_FLAG_DUR_EMPTY
             </summary>
         </member>
         <member name="F:JT1078.FMp4.FMp4Constants.TFHD_FLAG_DEFAULT_BASE_IS_MOOF">
             <summary>
-            
+            TFHD_FLAG_DEFAULT_BASE_IS_MOOF
             </summary>
         </member>
         <member name="F:JT1078.FMp4.FMp4Constants.TRUN_FLAG_DATA_OFFSET_PRESENT">
             <summary>
-            
+            TRUN_FLAGS_DATA_OFFSET
             </summary>
         </member>
         <member name="F:JT1078.FMp4.FMp4Constants.TRUN_FLAG_FIRST_SAMPLE_FLAGS_PRESENT">
             <summary>
-            
+            TRUN_FLAGS_FIRST_FLAG
             </summary>
         </member>
         <member name="F:JT1078.FMp4.FMp4Constants.TRUN_FLAG_SAMPLE_DURATION_PRESENT">
             <summary>
-            
+            TRUN_FLAGS_DURATION
             </summary>
         </member>
         <member name="F:JT1078.FMp4.FMp4Constants.TRUN_FLAG_SAMPLE_SIZE_PRESENT">
             <summary>
-            
+            TRUN_FLAGS_SIZE
             </summary>
         </member>
         <member name="F:JT1078.FMp4.FMp4Constants.TRUN_FLAG_SAMPLE_FLAGS_PRESENT">
             <summary>
-            
+            TRUN_FLAGS_FLAGS
             </summary>
         </member>
         <member name="F:JT1078.FMp4.FMp4Constants.TRUN_FLAG_SAMPLE_COMPOSITION_TIME_OFFSET_PRESENT">
             <summary>
-            
+            TRUN_FLAGS_CTS_OFFSET
             </summary>
         </member>
         <member name="P:JT1078.FMp4.FullBox.Version">

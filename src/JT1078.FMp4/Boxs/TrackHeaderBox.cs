@@ -18,7 +18,18 @@ namespace JT1078.FMp4
         /// <param name="flags"></param>
         public TrackHeaderBox(byte version, uint flags) : base("tkhd", version, flags)
         {
+            
         }
+
+        /// <summary>
+        /// tkhd
+        /// </summary>
+        /// <param name="version"></param>
+        public TrackHeaderBox(byte version) : base("tkhd", version, (FMp4Constants.TKHD_FLAG_ENABLED | FMp4Constants.TKHD_FLAG_IN_MOVIE | FMp4Constants.TKHD_FLAG_IN_PREVIEW))
+        {
+
+        }
+
         public ulong CreationTime { get; set; }
         public ulong ModificationTime { get; set; }
         public uint TrackID { get; set; }

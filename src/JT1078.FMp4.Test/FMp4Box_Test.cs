@@ -272,7 +272,25 @@ namespace JT1078.FMp4.Test
             //moof->tfdt
             movieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox = new TrackFragmentBaseMediaDecodeTimeBox();
             //todo:moof->trun
+            //000006987472756E00000305000000D0000006F802000000
+            //00 00 06 98
+            //74 72 75 6E
+            //00
+            //00 03 05
+            //00 00 00 D0                           SampleCount
+            //00 00 06 F8                           DataOffset
+            //02 00 00 00                           FirstSampleFlags
+            //fragmented_demo_trun.txt              TrackRunInfos
             movieFragmentBox.TrackFragmentBox.TrackRunBox = new TrackRunBox(0, 0x00000305);
+            movieFragmentBox.TrackFragmentBox.TrackRunBox.SampleCount = 0x000000D0;
+            movieFragmentBox.TrackFragmentBox.TrackRunBox.DataOffset = 0x000006F8;
+            movieFragmentBox.TrackFragmentBox.TrackRunBox.FirstSampleFlags = 0x02000000;
+            movieFragmentBox.TrackFragmentBox.TrackRunBox.TrackRunInfos = new List<TrackRunBox.TrackRunInfo>();
+            var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FMP4", "fragmented_demo_trun.txt"));
+            var buffers = lines.Where(w => !string.IsNullOrEmpty(w)).Select(s => s.ToHexBytes()).ToList();
+            List<byte> data = new List<byte>();
+            //SampleDuration
+            //SampleSize
         }
         /// <summary>
         /// 使用doc/video/fragmented_demo.mp4
@@ -281,7 +299,7 @@ namespace JT1078.FMp4.Test
         public void mdat_test()
         {
             MediaDataBox mediaDataBox = new MediaDataBox();
-            var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "fragmented_demo_mdat.txt"));
+            var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FMP4", "fragmented_demo_mdat.txt"));
             var buffers = lines.Where(w => !string.IsNullOrEmpty(w)).Select(s => s.ToHexBytes()).ToList();
             List<byte> data = new List<byte>();
             foreach (var buffer in buffers)
