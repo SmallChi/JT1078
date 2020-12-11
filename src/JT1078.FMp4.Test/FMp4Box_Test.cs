@@ -6,6 +6,7 @@ using Xunit;
 using JT1078.Protocol.Extensions;
 using JT1078.FMp4.Enums;
 using JT1078.FMp4.Samples;
+using System.Buffers.Binary;
 using System.IO;
 using System.Linq;
 
@@ -271,7 +272,7 @@ namespace JT1078.FMp4.Test
             movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleFlags = 0x01010000;
             //moof->tfdt
             movieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox = new TrackFragmentBaseMediaDecodeTimeBox();
-            //todo:moof->trun
+            //moof->trun
             //000006987472756E00000305000000D0000006F802000000
             //00 00 06 98
             //74 72 75 6E
@@ -288,9 +289,20 @@ namespace JT1078.FMp4.Test
             movieFragmentBox.TrackFragmentBox.TrackRunBox.TrackRunInfos = new List<TrackRunBox.TrackRunInfo>();
             var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FMP4", "fragmented_demo_trun.txt"));
             var buffers = lines.Where(w => !string.IsNullOrEmpty(w)).Select(s => s.ToHexBytes()).ToList();
-            List<byte> data = new List<byte>();
             //SampleDuration
             //SampleSize
+            foreach (var buffer in buffers)
+            {
+                var mod = buffer.Length / 8;
+                for (int i = 0; i < mod; i++)
+                {
+                    TrackRunBox.TrackRunInfo trackRunInfo = new TrackRunBox.TrackRunInfo();
+                    trackRunInfo.SampleDuration = BinaryPrimitives.ReadUInt32BigEndian(buffer.Skip(i * 4).Take(4).ToArray());
+                    trackRunInfo.SampleSize= BinaryPrimitives.ReadUInt32BigEndian(buffer.Skip((i + 1)*4).Take(4).ToArray());
+                    movieFragmentBox.TrackFragmentBox.TrackRunBox.TrackRunInfos.Add(trackRunInfo);
+                }
+            }
+            Assert.Equal(0x00000698, movieFragmentBox.TrackFragmentBox.TrackRunBox.TrackRunInfos.Count*8+4*6);
         }
         /// <summary>
         /// 使用doc/video/fragmented_demo.mp4
