@@ -15,21 +15,20 @@
     <licenseUrl>https://github.com/SmallChi/JT1078/blob/master/LICENSE</licenseUrl>
     <license>https://github.com/SmallChi/JT1078/blob/master/LICENSE</license>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>2.3.1</Version>
+    <Version>2.3.3</Version>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <DocumentationFile>JT808.Protocol.Extensions.JT1078.xml</DocumentationFile>
   </PropertyGroup>
-
-
-  <ItemGroup>
-    <PackageReference Include="JT808" Version="2.3.1" />
-  </ItemGroup>
 
   <ItemGroup>
     <None Include="..\..\LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="JT808" Version="2.3.3" />
   </ItemGroup>
 
 </Project>
