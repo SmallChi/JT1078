@@ -45,7 +45,6 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
                 writer.WriteEndObject();
             }
             writer.WriteEndArray();
-
         }
 
         public JT808_0x1205 Deserialize(ref JT808MessagePackReader reader, IJT808Config config)
