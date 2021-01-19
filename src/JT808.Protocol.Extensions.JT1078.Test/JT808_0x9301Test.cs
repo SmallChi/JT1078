@@ -39,7 +39,7 @@ namespace JT808.Protocol.Extensions.JT1078.Test
         {
             JT808_0x9301 jT808_0x9301 = new JT808_0x9301()
             {
-                LogicChannelNo=1,
+                ChannelNo=1,
                 Speed=2,
                 Direction=3
             };
@@ -51,7 +51,7 @@ namespace JT808.Protocol.Extensions.JT1078.Test
         public void Test2()
         {
             var jT808_0x9301 = JT808Serializer.Deserialize<JT808_0x9301>("010302".ToHexBytes());
-            Assert.Equal(1, jT808_0x9301.LogicChannelNo);
+            Assert.Equal(1, jT808_0x9301.ChannelNo);
             Assert.Equal(2, jT808_0x9301.Speed);
             Assert.Equal(3, jT808_0x9301.Direction);
         }

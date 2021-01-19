@@ -40,10 +40,10 @@ namespace JT808.Protocol.Extensions.JT1078.Test
             JT808_0x9206 jT808_0x9206 = new JT808_0x9206()
             {
                 AlarmFlag=1,
-                AVResourceType=2,
+                MediaType=2,
                 BeginTime= Convert.ToDateTime("2019-07-16 10:10:10"),
                 EndTime= Convert.ToDateTime("2019-07-16 10:10:11"),
-                LogicChannelNo=3,   
+                ChannelNo=3,   
                 StreamType =5,
                 FileUploadPath ="D://1112",
                 FileUploadPathLength=8,
@@ -66,10 +66,10 @@ namespace JT808.Protocol.Extensions.JT1078.Test
         {
             var jT808_0x9206 = JT808Serializer.Deserialize<JT808_0x9206>("093132372E302E302E31032802746B0631323334353608443A2F2F31313132031907161010101907161010110000000102050407".ToHexBytes());
             Assert.Equal(1u, jT808_0x9206.AlarmFlag);
-            Assert.Equal(2, jT808_0x9206.AVResourceType);
+            Assert.Equal(2, jT808_0x9206.MediaType);
             Assert.Equal(Convert.ToDateTime("2019-07-16 10:10:10"), jT808_0x9206.BeginTime);
             Assert.Equal(Convert.ToDateTime("2019-07-16 10:10:11"), jT808_0x9206.EndTime);
-            Assert.Equal(3, jT808_0x9206.LogicChannelNo);
+            Assert.Equal(3, jT808_0x9206.ChannelNo);
             Assert.Equal(5, jT808_0x9206.StreamType);
             Assert.Equal("D://1112", jT808_0x9206.FileUploadPath);
             Assert.Equal(8, jT808_0x9206.FileUploadPathLength);

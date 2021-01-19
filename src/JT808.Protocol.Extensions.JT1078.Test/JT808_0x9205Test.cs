@@ -40,10 +40,10 @@ namespace JT808.Protocol.Extensions.JT1078.Test
             JT808_0x9205 jT808_0x9205 = new JT808_0x9205()
             {
                 AlarmFlag=1,
-                AVResourceType=2,
+                MediaType=2,
                 BeginTime= Convert.ToDateTime("2019-07-16 10:10:10"),
                 EndTime= Convert.ToDateTime("2019-07-16 10:10:11"),
-                LogicChannelNo=3,
+                ChannelNo=3,
                 MemoryType=4,
                 StreamType =5
             };
@@ -56,10 +56,10 @@ namespace JT808.Protocol.Extensions.JT1078.Test
         {
             var jT808_0x9205 = JT808Serializer.Deserialize<JT808_0x9205>("031907161010101907161010110000000000000001020504".ToHexBytes());
             Assert.Equal(1u, jT808_0x9205.AlarmFlag);
-            Assert.Equal(2, jT808_0x9205.AVResourceType);
+            Assert.Equal(2, jT808_0x9205.MediaType);
             Assert.Equal(Convert.ToDateTime("2019-07-16 10:10:10"), jT808_0x9205.BeginTime);
             Assert.Equal(Convert.ToDateTime("2019-07-16 10:10:11"), jT808_0x9205.EndTime);
-            Assert.Equal(3, jT808_0x9205.LogicChannelNo);
+            Assert.Equal(3, jT808_0x9205.ChannelNo);
             Assert.Equal(4, jT808_0x9205.MemoryType);
             Assert.Equal(5, jT808_0x9205.StreamType);
         }

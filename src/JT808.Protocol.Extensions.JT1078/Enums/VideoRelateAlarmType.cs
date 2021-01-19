@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace JT808.Protocol.Extensions.JT1078.Enums
 {
     [Flags]
+#pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
     public enum VideoRelateAlarmType:uint
     {
         视频信号丢失报警=0,
@@ -15,4 +14,5 @@ namespace JT808.Protocol.Extensions.JT1078.Enums
         异常驾驶行为报警=32,
         特殊报警录像达到存储阈值报警=64,
     }
+#pragma warning restore CS1591 // 缺少对公共可见类型或成员的 XML 注释
 }

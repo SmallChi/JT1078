@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace JT808.Protocol.Extensions.JT1078.Enums
+﻿namespace JT808.Protocol.Extensions.JT1078.Enums
 {
+#pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
     public enum JT808_JT1078_MsgId:ushort
+
     {
         终端上传音视频属性 = 0x1003,
         终端上传乘客流量 = 0x1005,
@@ -26,4 +24,5 @@ namespace JT808.Protocol.Extensions.JT1078.Enums
         红外补光控制 = 0x9305,
         云台变倍控制 = 0x9306
     }
+    #pragma warning restore CS1591 // 缺少对公共可见类型或成员的 XML 注释
 }

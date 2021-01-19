@@ -39,10 +39,10 @@ namespace JT808.Protocol.Extensions.JT1078.Test
         {
             JT808_0x9202 jT808_0x9202 = new JT808_0x9202()
             {
-                AVChannelNo=1,
-                DragPlaybackPosition=Convert.ToDateTime("2019-07-16 10:10:10"),
-                FastForwardOrFastRewindMultiples=2,
-                PlayBackControl=3
+                ChannelNo=1,
+                DragPlayPosition=Convert.ToDateTime("2019-07-16 10:10:10"),
+                PlaySpeed=2,
+                PlayControl=3
             };
             var hex = JT808Serializer.Serialize(jT808_0x9202).ToHexString();
             Assert.Equal("010302190716101010", hex);
@@ -52,10 +52,10 @@ namespace JT808.Protocol.Extensions.JT1078.Test
         public void Test2()
         {
             var jT808_0x9202 = JT808Serializer.Deserialize<JT808_0x9202>("010302190716101010".ToHexBytes());
-            Assert.Equal(1, jT808_0x9202.AVChannelNo);
-            Assert.Equal(Convert.ToDateTime("2019-07-16 10:10:10"), jT808_0x9202.DragPlaybackPosition);
-            Assert.Equal(2, jT808_0x9202.FastForwardOrFastRewindMultiples);
-            Assert.Equal(3, jT808_0x9202.PlayBackControl);
+            Assert.Equal(1, jT808_0x9202.ChannelNo);
+            Assert.Equal(Convert.ToDateTime("2019-07-16 10:10:10"), jT808_0x9202.DragPlayPosition);
+            Assert.Equal(2, jT808_0x9202.PlaySpeed);
+            Assert.Equal(3, jT808_0x9202.PlayControl);
         }
         [Fact]
         public void Test3()

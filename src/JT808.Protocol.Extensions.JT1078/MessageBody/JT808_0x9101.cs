@@ -9,32 +9,35 @@ using System.Text.Json;
 namespace JT808.Protocol.Extensions.JT1078.MessageBody
 {
     /// <summary>
-    /// 实时音视频传输请求
+    /// 实时音视频传输请求（live、talk、listen、fanout、passThrough直播、对讲、监听、广播、透传请求）
     /// </summary>
     public class JT808_0x9101: JT808Bodies, IJT808MessagePackFormatter<JT808_0x9101>, IJT808Analyze
     {
+#pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
         public override string Description => "实时音视频传输请求";
         public override ushort MsgId => 0x9101;
+#pragma warning restore CS1591 // 缺少对公共可见类型或成员的 XML 注释
+
         /// <summary>
-        /// 服务器IP地址长度
+        /// 视频服务器IP地址长度
         /// </summary>
-        public byte ServerIPAddressLength { get; set; }
+        public byte ServerIpLength { get;internal set; }
         /// <summary>
-        /// 服务器IP地址
+        /// 视频服务器IP地址
         /// </summary>
-        public string ServerIPAddress { get; set; }
+        public string ServerIp { get; set; }
         /// <summary>
-        /// 服务器视频通道监听端口号(TCP)
+        /// 视频服务器TCP端口号，不使用TCP协议传输时保持默认值0即可（TCP和UDP二选一，当TCP和UDP均非默认值时一般以TCP为准）
         /// </summary>
-        public ushort ServerVideoChannelTcpPort { get; set; }
+        public ushort TcpPort { get; set; }
         /// <summary>
-        /// 服务器视频通道监听端口号（UDP）
+        /// 视频服务器UDP端口号，不使用UDP协议传输时保持默认值0即可（TCP和UDP二选一，当TCP和UDP均非默认值时一般以TCP为准）
         /// </summary>
-        public ushort ServerVideoChannelUdpPort { get; set; }
+        public ushort UdpPort { get; set; }
         /// <summary>
         /// 逻辑通道号
         /// </summary>
-        public byte LogicalChannelNo { get; set; }
+        public byte ChannelNo { get; set; }
         /// <summary>
         /// 数据类型
         /// 0:音视频
@@ -52,105 +55,98 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
         /// </summary>
         public byte StreamType { get; set; }
 
+        /// <summary>
+        /// 格式分析
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="writer"></param>
+        /// <param name="config"></param>
         public void Analyze(ref JT808MessagePackReader reader, Utf8JsonWriter writer, IJT808Config config)
         {
-            JT808_0x9101 value = new JT808_0x9101();
-            value.ServerIPAddressLength = reader.ReadByte();
-            writer.WriteNumber($"[{value.ServerIPAddressLength.ReadNumber()}]服务器IP地址长度", value.ServerIPAddressLength);
-            string ipHex = reader.ReadVirtualArray(value.ServerIPAddressLength).ToArray().ToHexString();
-            value.ServerIPAddress = reader.ReadString(value.ServerIPAddressLength);
-            writer.WriteString($"[{ipHex}]服务器IP地址", value.ServerIPAddress);
-            value.ServerVideoChannelTcpPort = reader.ReadUInt16();
-            writer.WriteNumber($"[{value.ServerVideoChannelTcpPort.ReadNumber()}]服务器视频通道监听端口号(TCP)", value.ServerVideoChannelTcpPort);
-            value.ServerVideoChannelUdpPort = reader.ReadUInt16();
-            writer.WriteNumber($"[{value.ServerVideoChannelUdpPort.ReadNumber()}]服务器视频通道监听端口号（UDP）", value.ServerVideoChannelUdpPort);
-            value.LogicalChannelNo = reader.ReadByte();
-            writer.WriteString($"[{value.LogicalChannelNo.ReadNumber()}]逻辑通道号", LogicalChannelNoDisplay(value.LogicalChannelNo));
+            var value = new JT808_0x9101();
+            value.ServerIpLength = reader.ReadByte();
+            writer.WriteNumber($"[{value.ServerIpLength.ReadNumber()}]服务器IP地址长度", value.ServerIpLength);
+            string ipHex = reader.ReadVirtualArray(value.ServerIpLength).ToArray().ToHexString();
+            value.ServerIp = reader.ReadString(value.ServerIpLength);
+            writer.WriteString($"[{ipHex}]服务器IP地址", value.ServerIp);
+            value.TcpPort = reader.ReadUInt16();
+            writer.WriteNumber($"[{value.TcpPort.ReadNumber()}]服务器视频通道监听端口号(TCP)", value.TcpPort);
+            value.UdpPort = reader.ReadUInt16();
+            writer.WriteNumber($"[{value.UdpPort.ReadNumber()}]服务器视频通道监听端口号（UDP）", value.UdpPort);
+            value.ChannelNo = reader.ReadByte();
+            writer.WriteString($"[{value.ChannelNo.ReadNumber()}]逻辑通道号", LogicalChannelNoDisplay(value.ChannelNo));
             value.DataType = reader.ReadByte();
             writer.WriteString($"[{value.DataType.ReadNumber()}]数据类型", DataTypeDisplay(value.DataType));
             value.StreamType = reader.ReadByte();
             writer.WriteString($"[{value.StreamType.ReadNumber()}]码流类型", value.StreamType==0?"主码流":"子码流");
             string DataTypeDisplay(byte DataType) {
-                switch (DataType)
+                return DataType switch
                 {
-                    case 0:
-                        return "音视频";
-                    case 1:
-                        return "视频";
-                    case 2:
-                        return "双向对讲";
-                    case 3:
-                        return "监听";
-                    case 4:
-                        return "中心广播";
-                    case 5:
-                        return "透传";
-                    default:
-                        break;
-                }
-
-                return "未知";
+                    0 => "音视频",
+                    1 => "视频",
+                    2 => "双向对讲",
+                    3 => "监听",
+                    4 => "中心广播",
+                    5 => "透传",
+                    _ => "未知",
+                };
             }
             string LogicalChannelNoDisplay(byte LogicalChannelNo) {
-                switch (LogicalChannelNo)
+                return LogicalChannelNo switch
                 {
-                    case 1:
-                        return "驾驶员";
-                    case 2:
-                        return "车辆正前方";
-                    case 3:
-                        return "车前门";
-                    case 4:
-                        return "车厢前部";
-                    case 5:
-                        return "车厢后部";
-                    case 7:
-                        return  "行李舱";
-                    case 8:
-                        return  "车辆左侧";
-                    case 9:
-                        return  "车辆右侧";
-                    case 10:
-                        return  "车辆正后方";
-                    case 11:
-                        return  "车厢中部";
-                    case 12:
-                        return  "车中门";
-                    case 13:
-                        return "驾驶席车门";
-                    case 33:
-                        return "驾驶员";
-                    case 36:
-                        return "车厢前部";
-                    case 37:
-                        return "车厢后部";
-                    default:
-                        return "预留";
-                }
+                    1 => "驾驶员",
+                    2 => "车辆正前方",
+                    3 => "车前门",
+                    4 => "车厢前部",
+                    5 => "车厢后部",
+                    7 => "行李舱",
+                    8 => "车辆左侧",
+                    9 => "车辆右侧",
+                    10 => "车辆正后方",
+                    11 => "车厢中部",
+                    12 => "车中门",
+                    13 => "驾驶席车门",
+                    33 => "驾驶员",
+                    36 => "车厢前部",
+                    37 => "车厢后部",
+                    _ => "预留",
+                };
             }
         }
 
+        /// <summary>
+        ///  反序列化
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="config"></param>
+        /// <returns></returns>
         public JT808_0x9101 Deserialize(ref JT808MessagePackReader reader, IJT808Config config)
         {
-            JT808_0x9101 jT808_0X9101 = new JT808_0x9101();
-            jT808_0X9101.ServerIPAddressLength = reader.ReadByte();
-            jT808_0X9101.ServerIPAddress = reader.ReadString(jT808_0X9101.ServerIPAddressLength);
-            jT808_0X9101.ServerVideoChannelTcpPort = reader.ReadUInt16();
-            jT808_0X9101.ServerVideoChannelUdpPort = reader.ReadUInt16();
-            jT808_0X9101.LogicalChannelNo = reader.ReadByte();
-            jT808_0X9101.DataType = reader.ReadByte();
-            jT808_0X9101.StreamType = reader.ReadByte();
-            return jT808_0X9101;
+            var jT808_0x9101 = new JT808_0x9101();
+            jT808_0x9101.ServerIpLength = reader.ReadByte();
+            jT808_0x9101.ServerIp = reader.ReadString(jT808_0x9101.ServerIpLength);
+            jT808_0x9101.TcpPort = reader.ReadUInt16();
+            jT808_0x9101.UdpPort = reader.ReadUInt16();
+            jT808_0x9101.ChannelNo = reader.ReadByte();
+            jT808_0x9101.DataType = reader.ReadByte();
+            jT808_0x9101.StreamType = reader.ReadByte();
+            return jT808_0x9101;
         }
 
+        /// <summary>
+        /// 序列化
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="value"></param>
+        /// <param name="config"></param>
         public void Serialize(ref JT808MessagePackWriter writer, JT808_0x9101 value, IJT808Config config)
         {
             writer.Skip(1, out int position);
-            writer.WriteString(value.ServerIPAddress);
+            writer.WriteString(value.ServerIp);
             writer.WriteByteReturn((byte)(writer.GetCurrentPosition() - position - 1), position);
-            writer.WriteUInt16(value.ServerVideoChannelTcpPort);
-            writer.WriteUInt16(value.ServerVideoChannelUdpPort);
-            writer.WriteByte(value.LogicalChannelNo);
+            writer.WriteUInt16(value.TcpPort);
+            writer.WriteUInt16(value.UdpPort);
+            writer.WriteByte(value.ChannelNo);
             writer.WriteByte(value.DataType);
             writer.WriteByte(value.StreamType);
         }
