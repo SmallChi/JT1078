@@ -39,7 +39,7 @@ namespace JT808.Protocol.Extensions.JT1078.Test
         {
             JT808_0x9304 jT808_0x9304 = new JT808_0x9304()
             {
-                 LogicChannelNo=1,
+                 ChannelNo=1,
                  StartOrStop=2
             };
             var hex = JT808Serializer.Serialize(jT808_0x9304).ToHexString();
@@ -50,7 +50,7 @@ namespace JT808.Protocol.Extensions.JT1078.Test
         public void Test2()
         {
             var jT808_0x9304 = JT808Serializer.Deserialize<JT808_0x9304>("0102".ToHexBytes());
-            Assert.Equal(1, jT808_0x9304.LogicChannelNo);
+            Assert.Equal(1, jT808_0x9304.ChannelNo);
             Assert.Equal(2, jT808_0x9304.StartOrStop);
         }
         [Fact]

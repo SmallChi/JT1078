@@ -39,13 +39,13 @@ namespace JT808.Protocol.Extensions.JT1078.Test
         {
             JT808_0x9201 jT808_0x9201 = new JT808_0x9201()
             {
-                LogicChannelNo = 1,
-                AVItemType = 2,
+                ChannelNo = 1,
+                MediaType = 2,
                 BeginTime = Convert.ToDateTime("2019-07-16 10:10:10"),
                 EndTime = Convert.ToDateTime("2019-07-16 10:10:10"),
-                FastForwardOrFastRewindMultiples=3,
-                MemType=5,
-                PlayBackWay=6,
+                PlaySpeed=3,
+                MemoryType=5,
+                PlaybackWay=6,
                 ServerIp="127.0.0.1",
                 ServerIpLength=9,
                 StreamType=7,
@@ -60,13 +60,13 @@ namespace JT808.Protocol.Extensions.JT1078.Test
         public void Test2()
         {
             var jT808_0x9201 = JT808Serializer.Deserialize<JT808_0x9201>("093132372E302E302E3100501F90010207050603190716101010190716101010".ToHexBytes());
-            Assert.Equal(1, jT808_0x9201.LogicChannelNo);
-            Assert.Equal(2, jT808_0x9201.AVItemType);
+            Assert.Equal(1, jT808_0x9201.ChannelNo);
+            Assert.Equal(2, jT808_0x9201.MediaType);
             Assert.Equal(Convert.ToDateTime("2019-07-16 10:10:10"), jT808_0x9201.BeginTime);
             Assert.Equal(Convert.ToDateTime("2019-07-16 10:10:10"), jT808_0x9201.EndTime);
-            Assert.Equal(3, jT808_0x9201.FastForwardOrFastRewindMultiples);
-            Assert.Equal(5, jT808_0x9201.MemType);
-            Assert.Equal(6, jT808_0x9201.PlayBackWay);
+            Assert.Equal(3, jT808_0x9201.PlaySpeed);
+            Assert.Equal(5, jT808_0x9201.MemoryType);
+            Assert.Equal(6, jT808_0x9201.PlaybackWay);
             Assert.Equal("127.0.0.1", jT808_0x9201.ServerIp);
             Assert.Equal(9, jT808_0x9201.ServerIpLength);
             Assert.Equal(7, jT808_0x9201.StreamType);

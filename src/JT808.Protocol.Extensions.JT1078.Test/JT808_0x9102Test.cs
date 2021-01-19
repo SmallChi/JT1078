@@ -27,10 +27,10 @@ namespace JT808.Protocol.Extensions.JT1078.Test
         public void Test1()
         {
             JT808_0x9102 jT808_0X9102 = new JT808_0x9102();
-            jT808_0X9102.LogicalChannelNo = 1;
+            jT808_0X9102.ChannelNo = 1;
             jT808_0X9102.ControlCmd = 1;
             jT808_0X9102.CloseAVData = 0;
-            jT808_0X9102.SwitchStreamType = 0;
+            jT808_0X9102.StreamType = 0;
             var hex = JT808Serializer.Serialize(jT808_0X9102).ToHexString();
             Assert.Equal("01010000", hex);
         }
@@ -39,10 +39,10 @@ namespace JT808.Protocol.Extensions.JT1078.Test
         public void Test2()
         {
             JT808_0x9102 jT808_0X9102 = JT808Serializer.Deserialize<JT808_0x9102>("01010000".ToHexBytes());
-            Assert.Equal(1, jT808_0X9102.LogicalChannelNo);
+            Assert.Equal(1, jT808_0X9102.ChannelNo);
             Assert.Equal(1, jT808_0X9102.ControlCmd);
             Assert.Equal(0, jT808_0X9102.CloseAVData);
-            Assert.Equal(0, jT808_0X9102.SwitchStreamType);
+            Assert.Equal(0, jT808_0X9102.StreamType);
         }
 
         [Fact]
@@ -55,10 +55,10 @@ namespace JT808.Protocol.Extensions.JT1078.Test
             header.TerminalPhoneNo = "12345679810";
             jT808Package.Header = header;
             JT808_0x9102 jT808_0X9102 = new JT808_0x9102();
-            jT808_0X9102.LogicalChannelNo = 1;
+            jT808_0X9102.ChannelNo = 1;
             jT808_0X9102.ControlCmd = 1;
             jT808_0X9102.CloseAVData = 0;
-            jT808_0X9102.SwitchStreamType = 0;
+            jT808_0X9102.StreamType = 0;
             jT808Package.Bodies = jT808_0X9102;
             var hex = JT808Serializer.Serialize(jT808Package).ToHexString();
             //7E910200040123456798100001010100001E7E

@@ -39,7 +39,7 @@ namespace JT808.Protocol.Extensions.JT1078.Test
         {
             JT808_0x9305 jT808_0x9305 = new JT808_0x9305()
             {
-                 LogicChannelNo=1,
+                 ChannelNo=1,
                  StartOrStop=2
             };
             var hex = JT808Serializer.Serialize(jT808_0x9305).ToHexString();

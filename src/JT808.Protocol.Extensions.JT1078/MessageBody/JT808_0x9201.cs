@@ -9,12 +9,14 @@ using System.Text.Json;
 namespace JT808.Protocol.Extensions.JT1078.MessageBody
 {
     /// <summary>
-    /// 平台下发远程录像回放请求
+    /// 平台下发远程录像回放请求(vod点播请求)
     /// </summary>
     public class JT808_0x9201 : JT808Bodies, IJT808MessagePackFormatter<JT808_0x9201>, IJT808Analyze
     {
+#pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
         public override string Description => "平台下发远程录像回放请求";
         public override ushort MsgId => 0x9201;
+#pragma warning restore CS1591 // 缺少对公共可见类型或成员的 XML 注释
         /// <summary>
         /// 服务器IP地址长度
         /// </summary>
@@ -24,49 +26,77 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
         /// </summary>
         public string ServerIp { get; set; }
         /// <summary>
-        /// 服务器音视频通道监听端口号TCP
+        /// 视频服务器TCP端口号，不使用TCP协议传输时保持默认值0即可（TCP和UDP二选一，当TCP和UDP均非默认值时一般以TCP为准）
         /// </summary>
         public ushort TcpPort { get; set; }
         /// <summary>
-        /// 服务器音视频通道监听端口号UDP
+        /// 视频服务器UDP端口号，不使用UDP协议传输时保持默认值0即可（TCP和UDP二选一，当TCP和UDP均非默认值时一般以TCP为准）
         /// </summary>
         public ushort UdpPort { get; set; }
         /// <summary>
         /// 逻辑通道号
         /// </summary>
-        public byte LogicChannelNo { get; set; }
+        public byte ChannelNo { get; set; }
         /// <summary>
-        /// 音视频类型
+        /// 音视频类型(媒体类型)
+        /// 0：audio and video
+        /// 1：audio
+        /// 2：video
+        /// 3：audio or video
         /// </summary>
-        public byte AVItemType { get; set; }
+        public byte MediaType { get; set; }
         /// <summary>
         /// 码流类型
+        /// 0：主或子码流
+        /// 1：主
+        /// 2：子
+        /// 如果此通道只传输音频，置为0
         /// </summary>
         public byte StreamType { get; set; }
         /// <summary>
         /// 存储器类型
+        /// 0：主或灾备存储器
+        /// 1：主存储器
+        /// 2：灾备存储器
         /// </summary>
-        public byte MemType { get; set; }
+        public byte MemoryType { get; set; }
         /// <summary>
         /// 回放方式
+        /// 0：正常
+        /// 1：快进
+        /// 2：关键帧快退回放
+        /// 3：关键帧播放
+        /// 4：单帧上传
         /// </summary>
-        public byte PlayBackWay { get; set; }
+        public byte PlaybackWay { get; set; }
         /// <summary>
-        /// 快进或快退倍数
+        /// 快进或快退倍数，当<see cref="PlaybackWay"/>为1和2时，此字段有效，否则置0
+        /// 0：无效
+        /// 1：1倍
+        /// 2：2倍
+        /// 3：4倍
+        /// 4：8倍
+        /// 5：16倍
         /// </summary>
-        public byte FastForwardOrFastRewindMultiples { get; set; }
+        public byte PlaySpeed { get; set; }
         /// <summary>
-        /// 起始时间
+        /// 开始时间，当<see cref="PlaybackWay"/>为4时，该字段表示单帧上传时间
         /// </summary>
         public DateTime BeginTime { get; set; }
         /// <summary>
-        /// 结束时间
+        /// 结束时间，当<see cref="PlaybackWay"/>为4时，该字段无效
         /// </summary>
         public DateTime EndTime { get; set; }
 
+        /// <summary>
+        /// 格式分析
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="writer"></param>
+        /// <param name="config"></param>
         public void Analyze(ref JT808MessagePackReader reader, Utf8JsonWriter writer, IJT808Config config)
         {
-            JT808_0x9201 value = new JT808_0x9201();
+            var value = new JT808_0x9201();
             value.ServerIpLength = reader.ReadByte();
             writer.WriteNumber($"[{value.ServerIpLength.ReadNumber()}]服务器IP地址长度", value.ServerIpLength);
             string ipHex = reader.ReadVirtualArray(value.ServerIpLength).ToArray().ToHexString();
@@ -76,144 +106,107 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
             writer.WriteNumber($"[{value.TcpPort.ReadNumber()}]服务器视频通道监听端口号(TCP)", value.TcpPort);
             value.UdpPort = reader.ReadUInt16();
             writer.WriteNumber($"[{value.UdpPort.ReadNumber()}]服务器视频通道监听端口号（UDP）", value.UdpPort);
-            value.LogicChannelNo = reader.ReadByte();
-            writer.WriteString($"[{value.LogicChannelNo.ReadNumber()}]逻辑通道号", LogicalChannelNoDisplay(value.LogicChannelNo));
-            value.AVItemType = reader.ReadByte();
-            writer.WriteString($"[{value.AVItemType.ReadNumber()}]音视频类型", AVItemTypeDisplay(value.AVItemType));
+            value.ChannelNo = reader.ReadByte();
+            writer.WriteString($"[{value.ChannelNo.ReadNumber()}]逻辑通道号", LogicalChannelNoDisplay(value.ChannelNo));
+            value.MediaType = reader.ReadByte();
+            writer.WriteString($"[{value.MediaType.ReadNumber()}]音视频类型", AVItemTypeDisplay(value.MediaType));
             value.StreamType = reader.ReadByte();
             writer.WriteString($"[{value.StreamType.ReadNumber()}]码流类型", StreamTypeDisplay(value.StreamType));
-            value.MemType = reader.ReadByte();
-            writer.WriteString($"[{value.MemType.ReadNumber()}]存储器类型", MemTypeDisplay(value.MemType));
-            value.PlayBackWay = reader.ReadByte();
-            writer.WriteString($"[{value.PlayBackWay.ReadNumber()}]回访方式", PlayBackWayDisplay(value.PlayBackWay));
-            value.FastForwardOrFastRewindMultiples = reader.ReadByte();
-            writer.WriteString($"[{value.FastForwardOrFastRewindMultiples.ReadNumber()}]快进或快退倍数", FastForwardOrFastRewindMultiplesDisplay(value.FastForwardOrFastRewindMultiples));
+            value.MemoryType = reader.ReadByte();
+            writer.WriteString($"[{value.MemoryType.ReadNumber()}]存储器类型", MemTypeDisplay(value.MemoryType));
+            value.PlaybackWay = reader.ReadByte();
+            writer.WriteString($"[{value.PlaybackWay.ReadNumber()}]回访方式", PlayBackWayDisplay(value.PlaybackWay));
+            value.PlaySpeed = reader.ReadByte();
+            writer.WriteString($"[{value.PlaySpeed.ReadNumber()}]快进或快退倍数", FastForwardOrFastRewindMultiplesDisplay(value.PlaySpeed));
             value.BeginTime = reader.ReadDateTime6();
-            writer.WriteString($"[{value.BeginTime.ToString("yyMMddHHmmss")}]起始时间", value.BeginTime.ToString("yyyy-MM-dd HH:mm:ss"));
+            writer.WriteString($"[{value.BeginTime:yyMMddHHmmss}]起始时间", value.BeginTime.ToString("yyyy-MM-dd HH:mm:ss"));
             value.EndTime = reader.ReadDateTime6();
-            writer.WriteString($"[{value.EndTime.ToString("yyMMddHHmmss")}]结束时间", value.EndTime.ToString("yyyy-MM-dd HH:mm:ss"));
-            string AVItemTypeDisplay(byte AVItemType)
+            writer.WriteString($"[{value.EndTime:yyMMddHHmmss}]结束时间", value.EndTime.ToString("yyyy-MM-dd HH:mm:ss"));
+            static string AVItemTypeDisplay(byte AVItemType)
             {
-                switch (AVItemType)
+                return AVItemType switch
                 {
-                    case 0:
-                        return "音视频";
-                    case 1:
-                        return "音频";
-                    case 2:
-                        return "视频";
-                    case 3:
-                        return "音频或视频";
-                    default:
-                        return "未知";
-                }
+                    0 => "音视频",
+                    1 => "音频",
+                    2 => "视频",
+                    3 => "音频或视频",
+                    _ => "未知",
+                };
             }
-            string StreamTypeDisplay(byte StreamType)
+            static string StreamTypeDisplay(byte StreamType)
             {
-                switch (StreamType)
+                return StreamType switch
                 {
-                    case 0:
-                        return "主码流或子码流";
-                    case 1:
-                        return "主码流";
-                    case 2:
-                        return "子码流";
-                    default:
-                        return "未知";
-                }
+                    0 => "主码流或子码流",
+                    1 => "主码流",
+                    2 => "子码流",
+                    _ => "未知",
+                };
             }
-            string MemTypeDisplay(byte MemType)
+            static string MemTypeDisplay(byte MemType)
             {
-                switch (MemType)
+                return MemType switch
                 {
-                    case 0:
-                        return "主存储器或灾备服务器";
-                    case 1:
-                        return "主存储器";
-                    case 2:
-                        return "灾备服务器";
-                    default:
-                        return "未知";
-                }
+                    0 => "主存储器或灾备服务器",
+                    1 => "主存储器",
+                    2 => "灾备服务器",
+                    _ => "未知",
+                };
             }
-            string PlayBackWayDisplay(byte PlayBackWay)
+            static string PlayBackWayDisplay(byte PlayBackWay)
             {
-                switch (PlayBackWay)
+                return PlayBackWay switch
                 {
-                    case 0:
-                        return "正常回放";
-                    case 1:
-                        return "快进回放";
-                    case 2:
-                        return "关键帧快退回访";
-                    case 3:
-                        return "关键帧播放";
-                    case 4:
-                        return "单帧上传";
-                    default:
-                        return "未知";
-                }
+                    0 => "正常回放",
+                    1 => "快进回放",
+                    2 => "关键帧快退回访",
+                    3 => "关键帧播放",
+                    4 => "单帧上传",
+                    _ => "未知",
+                };
             }
-            string FastForwardOrFastRewindMultiplesDisplay(byte FastForwardOrFastRewindMultiples)
+            static string FastForwardOrFastRewindMultiplesDisplay(byte FastForwardOrFastRewindMultiples)
             {
-                switch (FastForwardOrFastRewindMultiples)
+                return FastForwardOrFastRewindMultiples switch
                 {
-                    case 0:
-                        return "无效";
-                    case 1:
-                        return "1倍";
-                    case 2:
-                        return "2倍";
-                    case 3:
-                        return "4倍";
-                    case 4:
-                        return "8倍";
-                    case 5:
-                        return "16倍";
-                    default:
-                        return "未知";
-                }
+                    0 => "无效",
+                    1 => "1倍",
+                    2 => "2倍",
+                    3 => "4倍",
+                    4 => "8倍",
+                    5 => "16倍",
+                    _ => "未知",
+                };
             }
-            string LogicalChannelNoDisplay(byte LogicalChannelNo)
+            static string LogicalChannelNoDisplay(byte LogicalChannelNo)
             {
-                switch (LogicalChannelNo)
+                return LogicalChannelNo switch
                 {
-                    case 1:
-                        return "驾驶员";
-                    case 2:
-                        return "车辆正前方";
-                    case 3:
-                        return "车前门";
-                    case 4:
-                        return "车厢前部";
-                    case 5:
-                        return "车厢后部";
-                    case 7:
-                        return "行李舱";
-                    case 8:
-                        return "车辆左侧";
-                    case 9:
-                        return "车辆右侧";
-                    case 10:
-                        return "车辆正后方";
-                    case 11:
-                        return "车厢中部";
-                    case 12:
-                        return "车中门";
-                    case 13:
-                        return "驾驶席车门";
-                    case 33:
-                        return "驾驶员";
-                    case 36:
-                        return "车厢前部";
-                    case 37:
-                        return "车厢后部";
-                    default:
-                        return "预留";
-                }
+                    1 => "驾驶员",
+                    2 => "车辆正前方",
+                    3 => "车前门",
+                    4 => "车厢前部",
+                    5 => "车厢后部",
+                    7 => "行李舱",
+                    8 => "车辆左侧",
+                    9 => "车辆右侧",
+                    10 => "车辆正后方",
+                    11 => "车厢中部",
+                    12 => "车中门",
+                    13 => "驾驶席车门",
+                    33 => "驾驶员",
+                    36 => "车厢前部",
+                    37 => "车厢后部",
+                    _ => "预留",
+                };
             }
         }
-
+        /// <summary>
+        ///  反序列化
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="config"></param>
+        /// <returns></returns>
         public JT808_0x9201 Deserialize(ref JT808MessagePackReader reader, IJT808Config config)
         {
             JT808_0x9201 jT808_0x9201 = new JT808_0x9201();
@@ -221,17 +214,23 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
             jT808_0x9201.ServerIp = reader.ReadString(jT808_0x9201.ServerIpLength);
             jT808_0x9201.TcpPort = reader.ReadUInt16();
             jT808_0x9201.UdpPort = reader.ReadUInt16();
-            jT808_0x9201.LogicChannelNo = reader.ReadByte();
-            jT808_0x9201.AVItemType = reader.ReadByte();
+            jT808_0x9201.ChannelNo = reader.ReadByte();
+            jT808_0x9201.MediaType = reader.ReadByte();
             jT808_0x9201.StreamType = reader.ReadByte();
-            jT808_0x9201.MemType = reader.ReadByte();
-            jT808_0x9201.PlayBackWay = reader.ReadByte();
-            jT808_0x9201.FastForwardOrFastRewindMultiples = reader.ReadByte();
+            jT808_0x9201.MemoryType = reader.ReadByte();
+            jT808_0x9201.PlaybackWay = reader.ReadByte();
+            jT808_0x9201.PlaySpeed = reader.ReadByte();
             jT808_0x9201.BeginTime = reader.ReadDateTime6();
             jT808_0x9201.EndTime = reader.ReadDateTime6();
             return jT808_0x9201;
         }
 
+        /// <summary>
+        /// 序列化
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="value"></param>
+        /// <param name="config"></param>
         public void Serialize(ref JT808MessagePackWriter writer, JT808_0x9201 value, IJT808Config config)
         {
             writer.Skip(1, out int position);
@@ -239,12 +238,12 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
             writer.WriteByteReturn((byte)(writer.GetCurrentPosition() - position - 1), position);//计算完字符串后，回写字符串长度
             writer.WriteUInt16(value.TcpPort);
             writer.WriteUInt16(value.UdpPort);
-            writer.WriteByte(value.LogicChannelNo);
-            writer.WriteByte(value.AVItemType);
+            writer.WriteByte(value.ChannelNo);
+            writer.WriteByte(value.MediaType);
             writer.WriteByte(value.StreamType);
-            writer.WriteByte(value.MemType);
-            writer.WriteByte(value.PlayBackWay);
-            writer.WriteByte(value.FastForwardOrFastRewindMultiples);
+            writer.WriteByte(value.MemoryType);
+            writer.WriteByte(value.PlaybackWay);
+            writer.WriteByte(value.PlaySpeed);
             writer.WriteDateTime6(value.BeginTime);
             writer.WriteDateTime6(value.EndTime);
         }

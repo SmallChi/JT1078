@@ -9,137 +9,136 @@ using System.Text.Json;
 namespace JT808.Protocol.Extensions.JT1078.MessageBody
 {
     /// <summary>
-    /// 平台下发远程录像回放控制
+    /// 平台下发远程录像回放控制(VodControl点播控制)
     /// </summary>
     public class JT808_0x9202 : JT808Bodies, IJT808MessagePackFormatter<JT808_0x9202>, IJT808Analyze
     {
+#pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
         public override string Description => "平台下发远程录像回放控制";
         public override ushort MsgId => 0x9202;
+#pragma warning restore CS1591 // 缺少对公共可见类型或成员的 XML 注释
         /// <summary>
         /// 音视频通道号
         /// </summary>
-        public byte AVChannelNo { get; set; }
+        public byte ChannelNo { get; set; }
         /// <summary>
         /// 回放控制
+        /// 0：开始
+        /// 1：暂停
+        /// 2：结束
+        /// 3：快进
+        /// 4：关键帧快退播放
+        /// 5：拖动(到指定位置)
+        /// 6：关键帧播放
         /// </summary>
-        public byte PlayBackControl { get; set; }
+        public byte PlayControl { get; set; }
         /// <summary>
-        /// 快进或快退倍数
+        /// 快进或快退倍数，当<see cref="PlayControl"/>为3和4时，此字段有效，否则置0
+        /// 0：无效
+        /// 1：1倍
+        /// 2：2倍
+        /// 3：4倍
+        /// 4：8倍
+        /// 5：16倍
         /// </summary>
-        public byte FastForwardOrFastRewindMultiples { get; set; }
+        public byte PlaySpeed { get; set; }
         /// <summary>
-        /// 拖动回放位置
+        /// 拖动回放位置，当<see cref="PlayControl"/>为5时有效（必须）
         /// </summary>
-        public DateTime DragPlaybackPosition { get; set; }
-
+        public DateTime DragPlayPosition { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="writer"></param>
+        /// <param name="config"></param>
         public void Analyze(ref JT808MessagePackReader reader, Utf8JsonWriter writer, IJT808Config config)
         {
             JT808_0x9202 value = new JT808_0x9202();
-            value.AVChannelNo = reader.ReadByte();
-            writer.WriteString($"[{value.AVChannelNo.ReadNumber()}]音视频通道号", AVChannelNoDisplay(value.AVChannelNo));
-            value.PlayBackControl = reader.ReadByte();
-            writer.WriteString($"[{value.PlayBackControl.ReadNumber()}]回放控制", PlayBackControlDisplay(value.PlayBackControl));
-            value.FastForwardOrFastRewindMultiples = reader.ReadByte();
-            writer.WriteString($"[{value.FastForwardOrFastRewindMultiples.ReadNumber()}]快进或快退倍数", FastForwardOrFastRewindMultiplesDisplay(value.FastForwardOrFastRewindMultiples));
-            value.DragPlaybackPosition = reader.ReadDateTime6();
-            writer.WriteString($"[{value.DragPlaybackPosition.ToString("yyMMddHHmmss")}]拖动回放位置", value.DragPlaybackPosition.ToString("yyyy-MM-dd HH:mm:ss"));
-            string AVChannelNoDisplay(byte LogicalChannelNo)
+            value.ChannelNo = reader.ReadByte();
+            writer.WriteString($"[{value.ChannelNo.ReadNumber()}]音视频通道号", AVChannelNoDisplay(value.ChannelNo));
+            value.PlayControl = reader.ReadByte();
+            writer.WriteString($"[{value.PlayControl.ReadNumber()}]回放控制", PlayBackControlDisplay(value.PlayControl));
+            value.PlaySpeed = reader.ReadByte();
+            writer.WriteString($"[{value.PlaySpeed.ReadNumber()}]快进或快退倍数", FastForwardOrFastRewindMultiplesDisplay(value.PlaySpeed));
+            value.DragPlayPosition = reader.ReadDateTime6();
+            writer.WriteString($"[{value.DragPlayPosition.ToString("yyMMddHHmmss")}]拖动回放位置", value.DragPlayPosition.ToString("yyyy-MM-dd HH:mm:ss"));
+            static string AVChannelNoDisplay(byte LogicalChannelNo)
             {
-                switch (LogicalChannelNo)
+                return LogicalChannelNo switch
                 {
-                    case 1:
-                        return "驾驶员";
-                    case 2:
-                        return "车辆正前方";
-                    case 3:
-                        return "车前门";
-                    case 4:
-                        return "车厢前部";
-                    case 5:
-                        return "车厢后部";
-                    case 7:
-                        return "行李舱";
-                    case 8:
-                        return "车辆左侧";
-                    case 9:
-                        return "车辆右侧";
-                    case 10:
-                        return "车辆正后方";
-                    case 11:
-                        return "车厢中部";
-                    case 12:
-                        return "车中门";
-                    case 13:
-                        return "驾驶席车门";
-                    case 33:
-                        return "驾驶员";
-                    case 36:
-                        return "车厢前部";
-                    case 37:
-                        return "车厢后部";
-                    default:
-                        return "预留";
-                }
+                    1 => "驾驶员",
+                    2 => "车辆正前方",
+                    3 => "车前门",
+                    4 => "车厢前部",
+                    5 => "车厢后部",
+                    7 => "行李舱",
+                    8 => "车辆左侧",
+                    9 => "车辆右侧",
+                    10 => "车辆正后方",
+                    11 => "车厢中部",
+                    12 => "车中门",
+                    13 => "驾驶席车门",
+                    33 => "驾驶员",
+                    36 => "车厢前部",
+                    37 => "车厢后部",
+                    _ => "预留",
+                };
             }
-            string PlayBackControlDisplay(byte PlayBackControl) {
-                switch (PlayBackControl)
+            static string PlayBackControlDisplay(byte PlayBackControl) {
+                return PlayBackControl switch
                 {
-                    case 0:
-                        return "开始回放";
-                    case 1:
-                        return "暂停回放";
-                    case 2:
-                        return "结束回放";
-                    case 3:
-                        return "快进回放";
-                    case 4:
-                        return "关键帧快退回放";
-                    case 5:
-                        return "拖动回放";
-                    case 6:
-                        return "关键帧播放";
-                    default:
-                        return "未知";
-                }
+                    0 => "开始回放",
+                    1 => "暂停回放",
+                    2 => "结束回放",
+                    3 => "快进回放",
+                    4 => "关键帧快退回放",
+                    5 => "拖动回放",
+                    6 => "关键帧播放",
+                    _ => "未知",
+                };
             }
-            string FastForwardOrFastRewindMultiplesDisplay(byte FastForwardOrFastRewindMultiples)
+            static string FastForwardOrFastRewindMultiplesDisplay(byte FastForwardOrFastRewindMultiples)
             {
-                switch (FastForwardOrFastRewindMultiples)
+                return FastForwardOrFastRewindMultiples switch
                 {
-                    case 0:
-                        return "无效";
-                    case 1:
-                        return "1倍";
-                    case 2:
-                        return "2倍";
-                    case 3:
-                        return "4倍";
-                    case 4:
-                        return "8倍";
-                    case 5:
-                        return "16倍";
-                    default:
-                        return "未知";
-                }
+                    0 => "无效",
+                    1 => "1倍",
+                    2 => "2倍",
+                    3 => "4倍",
+                    4 => "8倍",
+                    5 => "16倍",
+                    _ => "未知",
+                };
             }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="config"></param>
+        /// <returns></returns>
         public JT808_0x9202 Deserialize(ref JT808MessagePackReader reader, IJT808Config config)
         {
-            JT808_0x9202 jT808_0x9202 = new JT808_0x9202();
-            jT808_0x9202.AVChannelNo = reader.ReadByte();
-            jT808_0x9202.PlayBackControl = reader.ReadByte();
-            jT808_0x9202.FastForwardOrFastRewindMultiples = reader.ReadByte();
-            jT808_0x9202.DragPlaybackPosition = reader.ReadDateTime6();
+            var jT808_0x9202 = new JT808_0x9202();
+            jT808_0x9202.ChannelNo = reader.ReadByte();
+            jT808_0x9202.PlayControl = reader.ReadByte();
+            jT808_0x9202.PlaySpeed = reader.ReadByte();
+            jT808_0x9202.DragPlayPosition = reader.ReadDateTime6();
             return jT808_0x9202;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="value"></param>
+        /// <param name="config"></param>
         public void Serialize(ref JT808MessagePackWriter writer, JT808_0x9202 value, IJT808Config config)
         {
-            writer.WriteByte(value.AVChannelNo);
-            writer.WriteByte(value.PlayBackControl);
-            writer.WriteByte(value.FastForwardOrFastRewindMultiples);
-            writer.WriteDateTime6(value.DragPlaybackPosition);
+            writer.WriteByte(value.ChannelNo);
+            writer.WriteByte(value.PlayControl);
+            writer.WriteByte(value.PlaySpeed);
+            writer.WriteDateTime6(value.DragPlayPosition);
         }
     }
 }

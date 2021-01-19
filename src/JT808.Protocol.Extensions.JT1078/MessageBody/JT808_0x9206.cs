@@ -13,12 +13,14 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
     /// </summary>
     public class JT808_0x9206 : JT808Bodies, IJT808MessagePackFormatter<JT808_0x9206>, IJT808Analyze
     {
+#pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
         public override string Description => "文件上传指令";
         public override ushort MsgId => 0x9206;
+#pragma warning restore CS1591 // 缺少对公共可见类型或成员的 XML 注释
         /// <summary>
         /// 服务器IP地址服务
         /// </summary>
-        public byte ServerIpLength { get; set; }
+        public byte ServerIpLength { get;internal set; }
         /// <summary>
         /// 服务器IP地址
         /// </summary>
@@ -30,7 +32,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
         /// <summary>
         /// 用户名长度
         /// </summary>
-        public byte UserNameLength { get; set; }
+        public byte UserNameLength { get; internal set; }
         /// <summary>
         /// 用户名
         /// </summary>
@@ -38,7 +40,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
         /// <summary>
         /// 密码长度
         /// </summary>
-        public byte PasswordLength { get; set; }
+        public byte PasswordLength { get; internal set; }
         /// <summary>
         /// 密码
         /// </summary>
@@ -46,7 +48,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
         /// <summary>
         /// 文件上传路径长度
         /// </summary>
-        public byte FileUploadPathLength { get; set; }
+        public byte FileUploadPathLength { get; internal set; }
         /// <summary>
         /// 文件上传路径
         /// </summary>
@@ -54,7 +56,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
         /// <summary>
         /// 逻辑通道号
         /// </summary>
-        public byte LogicChannelNo { get; set; }
+        public byte ChannelNo { get; set; }
         /// <summary>
         /// 起始时间
         /// </summary>
@@ -70,7 +72,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
         /// <summary>
         /// 音视频资源类型
         /// </summary>
-        public byte AVResourceType { get; set; }
+        public byte MediaType { get; set; }
         /// <summary>
         /// 码流类型
         /// </summary>
@@ -84,6 +86,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
         /// </summary>
         public byte TaskExcuteCondition { get; set; }
 
+#pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
         public void Analyze(ref JT808MessagePackReader reader, Utf8JsonWriter writer, IJT808Config config)
         {
             JT808_0x9206 value = new JT808_0x9206();
@@ -110,16 +113,16 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
             value.FileUploadPath = reader.ReadString(value.FileUploadPathLength);
             writer.WriteString($"[{fileUploadPathHex}]文件上传路径", value.FileUploadPath);
 
-            value.LogicChannelNo = reader.ReadByte();
-            writer.WriteString($"[{value.LogicChannelNo.ReadNumber()}]逻辑通道号", LogicalChannelNoDisplay(value.LogicChannelNo));
+            value.ChannelNo = reader.ReadByte();
+            writer.WriteString($"[{value.ChannelNo.ReadNumber()}]逻辑通道号", LogicalChannelNoDisplay(value.ChannelNo));
             value.BeginTime = reader.ReadDateTime6();
             writer.WriteString($"[{value.BeginTime.ToString("yyMMddHHmmss")}]起始时间", value.BeginTime.ToString("yyyy-MM-dd HH:mm:ss"));
             value.EndTime = reader.ReadDateTime6();
             writer.WriteString($"[{value.EndTime.ToString("yyMMddHHmmss")}]起始时间", value.EndTime.ToString("yyyy-MM-dd HH:mm:ss"));
             value.AlarmFlag = reader.ReadUInt32();
             writer.WriteNumber($"[{value.AlarmFlag.ReadNumber()}]报警标志", value.AlarmFlag);
-            value.AVResourceType = reader.ReadByte();
-            writer.WriteString($"[{value.AVResourceType.ReadNumber()}]音视频类型", AVResourceTypeDisplay(value.AVResourceType));
+            value.MediaType = reader.ReadByte();
+            writer.WriteString($"[{value.MediaType.ReadNumber()}]音视频类型", AVResourceTypeDisplay(value.MediaType));
             value.StreamType = reader.ReadByte();
             writer.WriteString($"[{value.StreamType.ReadNumber()}]码流类型", StreamTypeDisplay(value.StreamType));
             value.MemoryPositon = reader.ReadByte();
@@ -127,90 +130,61 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
             value.TaskExcuteCondition = reader.ReadByte();
             writer.WriteString($"[{value.TaskExcuteCondition.ReadNumber()}]任务执行条件", TaskExcuteConditionDisplay(value.TaskExcuteCondition));
 
-            string AVResourceTypeDisplay(byte AVResourceType)
+            static string AVResourceTypeDisplay(byte AVResourceType)
             {
-                switch (AVResourceType)
+                return AVResourceType switch
                 {
-                    case 0:
-                        return "音视频";
-                    case 1:
-                        return "音频";
-                    case 2:
-                        return "视频";
-                    case 3:
-                        return "音频或视频";
-                    default:
-                        return "未知";
-                }
+                    0 => "音视频",
+                    1 => "音频",
+                    2 => "视频",
+                    3 => "音频或视频",
+                    _ => "未知",
+                };
             }
-            string StreamTypeDisplay(byte StreamType)
+            static string StreamTypeDisplay(byte StreamType)
             {
-                switch (StreamType)
+                return StreamType switch
                 {
-                    case 0:
-                        return "所有码流";
-                    case 1:
-                        return "主码流";
-                    case 2:
-                        return "子码流";
-                    default:
-                        return "未知";
-                }
+                    0 => "所有码流",
+                    1 => "主码流",
+                    2 => "子码流",
+                    _ => "未知",
+                };
             }
-            string MemoryPositonDisplay(byte MemoryPositon)
+            static string MemoryPositonDisplay(byte MemoryPositon)
             {
-                switch (MemoryPositon)
+                return MemoryPositon switch
                 {
-                    case 0:
-                        return "主存储器或灾备服务器";
-                    case 1:
-                        return "主存储器";
-                    case 2:
-                        return "灾备服务器";
-                    default:
-                        return "未知";
-                }
+                    0 => "主存储器或灾备服务器",
+                    1 => "主存储器",
+                    2 => "灾备服务器",
+                    _ => "未知",
+                };
             }
-            string LogicalChannelNoDisplay(byte LogicalChannelNo)
+            static string LogicalChannelNoDisplay(byte LogicalChannelNo)
             {
-                switch (LogicalChannelNo)
+                return LogicalChannelNo switch
                 {
-                    case 1:
-                        return "驾驶员";
-                    case 2:
-                        return "车辆正前方";
-                    case 3:
-                        return "车前门";
-                    case 4:
-                        return "车厢前部";
-                    case 5:
-                        return "车厢后部";
-                    case 7:
-                        return "行李舱";
-                    case 8:
-                        return "车辆左侧";
-                    case 9:
-                        return "车辆右侧";
-                    case 10:
-                        return "车辆正后方";
-                    case 11:
-                        return "车厢中部";
-                    case 12:
-                        return "车中门";
-                    case 13:
-                        return "驾驶席车门";
-                    case 33:
-                        return "驾驶员";
-                    case 36:
-                        return "车厢前部";
-                    case 37:
-                        return "车厢后部";
-                    default:
-                        return "预留";
-                }
+                    1 => "驾驶员",
+                    2 => "车辆正前方",
+                    3 => "车前门",
+                    4 => "车厢前部",
+                    5 => "车厢后部",
+                    7 => "行李舱",
+                    8 => "车辆左侧",
+                    9 => "车辆右侧",
+                    10 => "车辆正后方",
+                    11 => "车厢中部",
+                    12 => "车中门",
+                    13 => "驾驶席车门",
+                    33 => "驾驶员",
+                    36 => "车厢前部",
+                    37 => "车厢后部",
+                    _ => "预留",
+                };
             }
-            string TaskExcuteConditionDisplay(byte TaskExcuteCondition) {
-                string taskExcuteConditionDisplay = string.Empty;
+            static string TaskExcuteConditionDisplay(byte TaskExcuteCondition) {
+                var taskExcuteConditionDisplay = string.Empty;
                 taskExcuteConditionDisplay += (TaskExcuteCondition & 0x01) == 1 ? ",WIFI":"";
                 taskExcuteConditionDisplay += (TaskExcuteCondition & 0x01) == 1 ? ",LAN" : "";
                 taskExcuteConditionDisplay += (TaskExcuteCondition & 0x01) == 1 ? ",3G/4G" : "";
@@ -220,7 +194,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
 
         public JT808_0x9206 Deserialize(ref JT808MessagePackReader reader, IJT808Config config)
         {
-            JT808_0x9206 jT808_0x9206 = new JT808_0x9206();
+            var jT808_0x9206 = new JT808_0x9206();
             jT808_0x9206.ServerIpLength = reader.ReadByte();
             jT808_0x9206.ServerIp = reader.ReadString(jT808_0x9206.ServerIpLength);
             jT808_0x9206.Port = reader.ReadUInt16();
@@ -230,11 +204,11 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
             jT808_0x9206.Password = reader.ReadString(jT808_0x9206.PasswordLength);
             jT808_0x9206.FileUploadPathLength = reader.ReadByte();
             jT808_0x9206.FileUploadPath = reader.ReadString(jT808_0x9206.FileUploadPathLength);
-            jT808_0x9206.LogicChannelNo = reader.ReadByte();
+            jT808_0x9206.ChannelNo = reader.ReadByte();
             jT808_0x9206.BeginTime = reader.ReadDateTime6();
             jT808_0x9206.EndTime = reader.ReadDateTime6();
             jT808_0x9206.AlarmFlag = reader.ReadUInt32();
-            jT808_0x9206.AVResourceType = reader.ReadByte();
+            jT808_0x9206.MediaType = reader.ReadByte();
             jT808_0x9206.StreamType = reader.ReadByte();
             jT808_0x9206.MemoryPositon = reader.ReadByte();
             jT808_0x9206.TaskExcuteCondition = reader.ReadByte();
@@ -256,14 +230,15 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
             writer.Skip(1, out int fileUploadPathLengthLengthposition);
             writer.WriteString(value.FileUploadPath);
             writer.WriteByteReturn((byte)(writer.GetCurrentPosition() - fileUploadPathLengthLengthposition - 1), fileUploadPathLengthLengthposition);
-            writer.WriteByte(value.LogicChannelNo);
+            writer.WriteByte(value.ChannelNo);
             writer.WriteDateTime6(value.BeginTime);
             writer.WriteDateTime6(value.EndTime);
             writer.WriteUInt32(value.AlarmFlag);
-            writer.WriteByte(value.AVResourceType);
+            writer.WriteByte(value.MediaType);
             writer.WriteByte(value.StreamType);
             writer.WriteByte(value.MemoryPositon);
             writer.WriteByte(value.TaskExcuteCondition);
         }
+#pragma warning restore CS1591 // 缺少对公共可见类型或成员的 XML 注释
     }
 }
