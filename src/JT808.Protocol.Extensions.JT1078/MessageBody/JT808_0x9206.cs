@@ -20,7 +20,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
         /// <summary>
         /// 服务器IP地址服务
         /// </summary>
-        public byte ServerIpLength { get;internal set; }
+        public byte ServerIpLength { get; set; }
         /// <summary>
         /// 服务器IP地址
         /// </summary>
@@ -32,7 +32,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
         /// <summary>
         /// 用户名长度
         /// </summary>
-        public byte UserNameLength { get; internal set; }
+        public byte UserNameLength { get; set; }
         /// <summary>
         /// 用户名
         /// </summary>
@@ -40,7 +40,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
         /// <summary>
         /// 密码长度
         /// </summary>
-        public byte PasswordLength { get; internal set; }
+        public byte PasswordLength { get; set; }
         /// <summary>
         /// 密码
         /// </summary>
@@ -48,7 +48,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
         /// <summary>
         /// 文件上传路径长度
         /// </summary>
-        public byte FileUploadPathLength { get; internal set; }
+        public byte FileUploadPathLength { get;  set; }
         /// <summary>
         /// 文件上传路径
         /// </summary>
