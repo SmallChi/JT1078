@@ -34,7 +34,7 @@ namespace JT808.Protocol.Extensions.JT1078.MessageBody
             writer.WriteNumber($"[{value.AttachInfoLength.ReadNumber()}]附加信息长度", value.AttachInfoLength);
             value.VideoRelateAlarm = reader.ReadUInt32();
             writer.WriteNumber($"[{value.VideoRelateAlarm.ReadNumber()}]视频相关报警", value.VideoRelateAlarm);
-            var videoRelateAlarmFlags = JT808EnumExtensions.GetEnumTypes<VideoRelateAlarmType>((int)value.VideoRelateAlarm, 32);
+            var videoRelateAlarmFlags = JT808EnumExtensions.GetEnumTypes<VideoRelateAlarmType>(value.VideoRelateAlarm, 32);
             if (videoRelateAlarmFlags.Any())
             {
                 writer.WriteStartArray("视频报警集合");

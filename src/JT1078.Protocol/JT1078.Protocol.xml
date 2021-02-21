@@ -67,6 +67,52 @@
             <param name="separator"></param>
             <returns></returns>
         </member>
+        <member name="T:JT1078.Protocol.JT1078PackageExtensions">
+            <summary>
+            1078扩展类
+            </summary>
+        </member>
+        <member name="M:JT1078.Protocol.JT1078PackageExtensions.ConvertAudio(System.Byte[],System.String,System.Int32,JT1078.Protocol.Enums.JT1078AVType,System.UInt64)">
+            <summary>
+            将音频数据包转换到1078包
+            </summary>
+            <param name="value"></param>
+            <param name="sim"></param>
+            <param name="channelNo"></param>
+            <param name="jT1078AVType"></param>
+            <param name="timestamp"></param>
+            <returns></returns>
+        </member>
+        <member name="M:JT1078.Protocol.JT1078PackageExtensions.ConvertVideo(System.Byte[],System.String,System.Int32,JT1078.Protocol.Enums.JT1078AVType,JT1078.Protocol.Enums.JT1078DataType,System.UInt64,System.Int32,System.Int32)">
+            <summary>
+            将视频数据包转换到1078包
+            </summary>
+            <param name="value"></param>
+            <param name="sim"></param>
+            <param name="channelNo"></param>
+            <param name="jT1078AVType"></param>
+            <param name="jT1078DataType"></param>
+            <param name="timestamp"></param>
+            <param name="lastIFrameInterval"></param>
+            <param name="lastFrameInterval"></param>
+            <returns></returns>
+        </member>
+        <member name="M:JT1078.Protocol.JT1078PackageExtensions.ConvertPassthrough(System.Byte[],System.String,System.Int32)">
+            <summary>
+            将透传数据包转换到1078包
+            </summary>
+            <param name="value"></param>
+            <param name="sim"></param>
+            <param name="channelNo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:JT1078.Protocol.JT1078PackageExtensions.Slice(System.Byte[])">
+            <summary>
+            切分数据包
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
         <member name="M:JT1078.Protocol.H264.H264Decoder.ParseNALU(JT1078.Protocol.JT1078Package,System.String)">
             <summary>
             

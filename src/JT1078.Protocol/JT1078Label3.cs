@@ -21,6 +21,10 @@ namespace JT1078.Protocol
             DataType = dataType;
             SubpackageType = subpackageType;
         }
+        public JT1078Label3(JT1078DataType dataType)
+        {
+            DataType = dataType;
+        }
         /// <summary>
         /// 数据类型
         /// </summary>

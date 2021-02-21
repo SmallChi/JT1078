@@ -46,6 +46,7 @@ namespace JT1078.Protocol
                 JT1078ArrayPool.Return(buffer);
             }
         }
+
         public static JT1078Package Deserialize(ReadOnlySpan<byte> bytes)
         {
             JT1078Package jT1078Package = new JT1078Package();
