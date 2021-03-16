@@ -22,6 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\JT1078.FMp4\JT1078.FMp4.csproj" />
   </ItemGroup>
+  
   <ItemGroup>
     <None Include="..\..\doc\video\fragmented_demo_mdat.txt" Link="FMP4\fragmented_demo_mdat.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -30,6 +31,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  
   <ItemGroup>
     <None Update="FMP4\fragmented_demo_mdat.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -38,5 +40,17 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
+  
+  <ItemGroup>
+    <None Include="..\..\doc\video\jt1078_3.txt" Link="H264\jt1078_3.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\doc\video\jt1078_1.txt" Link="H264\jt1078_1.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\doc\video\jt1078_2.txt" Link="H264\jt1078_2.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  
 </Project>

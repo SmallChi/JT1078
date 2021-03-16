@@ -8,6 +8,15 @@ namespace JT1078.FMp4
 {
     /// <summary>
     /// fmp4
+    /// stream data 
+    /// ftyp
+    /// moov
+    /// moof 1
+    /// mdat 1
+    /// ...
+    /// moof n
+    /// mdat n
+    /// mfra
     /// </summary>
     public class FMp4Box:IFMp4MessagePackFormatter
     {
@@ -27,7 +36,10 @@ namespace JT1078.FMp4
         /// mfra
         /// </summary>
         public MovieFragmentRandomAccessBox MovieFragmentRandomAccessBox { get; set; }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="writer"></param>
         public void ToBuffer(ref FMp4MessagePackWriter writer)
         {
             FileTypeBox.ToBuffer(ref writer);

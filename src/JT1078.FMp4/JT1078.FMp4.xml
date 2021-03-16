@@ -175,6 +175,11 @@
             4位*n
             </summary>
         </member>
+        <member name="T:JT1078.FMp4.FragmentBox">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="P:JT1078.FMp4.FragmentBox.MovieFragmentBox">
             <summary>
             moof
@@ -184,6 +189,12 @@
             <summary>
             mdat
             </summary>
+        </member>
+        <member name="M:JT1078.FMp4.FragmentBox.ToBuffer(JT1078.FMp4.MessagePack.FMp4MessagePackWriter@)">
+            <summary>
+            
+            </summary>
+            <param name="writer"></param>
         </member>
         <member name="P:JT1078.FMp4.FreeSpaceBox.FillValue">
             <summary>
@@ -1045,6 +1056,15 @@
         <member name="T:JT1078.FMp4.FMp4Box">
             <summary>
             fmp4
+            stream data 
+            ftyp
+            moov
+            moof 1
+            mdat 1
+            ...
+            moof n
+            mdat n
+            mfra
             </summary>
         </member>
         <member name="P:JT1078.FMp4.FMp4Box.FileTypeBox">
@@ -1066,6 +1086,12 @@
             <summary>
             mfra
             </summary>
+        </member>
+        <member name="M:JT1078.FMp4.FMp4Box.ToBuffer(JT1078.FMp4.MessagePack.FMp4MessagePackWriter@)">
+            <summary>
+            
+            </summary>
+            <param name="writer"></param>
         </member>
         <member name="F:JT1078.FMp4.FMp4Constants.DateLimitYear">
             <summary>
@@ -1185,6 +1211,11 @@
             ref
             </summary>
             <param name="language"></param>
+        </member>
+        <member name="T:JT1078.FMp4.Mp4Box">
+            <summary>
+            
+            </summary>
         </member>
         <member name="P:JT1078.FMp4.Mp4Box.Size">
             <summary>

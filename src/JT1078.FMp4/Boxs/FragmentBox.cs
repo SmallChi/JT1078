@@ -6,6 +6,9 @@ using System.Text;
 
 namespace JT1078.FMp4
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class FragmentBox:IFMp4MessagePackFormatter
     {
         /// <summary>
@@ -16,7 +19,10 @@ namespace JT1078.FMp4
         /// mdat
         /// </summary>
         public MediaDataBox MediaDataBox { get; set; }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="writer"></param>
         public void ToBuffer(ref FMp4MessagePackWriter writer)
         {
             if (MovieFragmentBox != null)

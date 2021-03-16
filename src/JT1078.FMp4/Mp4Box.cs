@@ -6,6 +6,9 @@ using System.Text;
 
 namespace JT1078.FMp4
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public abstract class Mp4Box
     {
         //public const string UUID = "uuid";

@@ -30,13 +30,14 @@ namespace JT1078.FMp4
         /// </summary>
         public CompositionOffsetBox CompositionOffsetBox { get; set; }
         /// <summary>
-        /// stsc
-        /// </summary>
-        public SampleToChunkBox SampleToChunkBox { get; set; }
-        /// <summary>
         /// stsz
         /// </summary>
         public SampleSizeBox SampleSizeBox { get; set; }
+        /// <summary>
+        /// stsc
+        /// </summary>
+        public SampleToChunkBox SampleToChunkBox { get; set; }
+
         //public CompactSampleSizeBox CompactSampleSizeBox { get; set; }
         /// <summary>
         /// stco

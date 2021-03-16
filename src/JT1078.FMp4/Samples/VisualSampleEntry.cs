@@ -10,7 +10,7 @@ namespace JT1078.FMp4.Samples
     /// </summary>
     public abstract class VisualSampleEntry : SampleEntry
     {
-        const string COMPRESSORNAME = "jt1078&SmallChi(koike)&TK";
+        const string COMPRESSORNAME = "jt1078&SmallChi(Koike)&TK";
         /// <summary>
         /// VisualSampleEntry
         /// </summary>

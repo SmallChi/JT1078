@@ -16,7 +16,7 @@ namespace JT1078.FMp4
         /// </summary>
         /// <param name="version"></param>
         /// <param name="flags"></param>
-        public MediaHeaderBox(byte version, uint flags=0) : base("mdhd", version, flags)
+        public MediaHeaderBox(byte version=1, uint flags=0) : base("mdhd", version, flags)
         {
         }
         public ulong CreationTime { get; set; }
