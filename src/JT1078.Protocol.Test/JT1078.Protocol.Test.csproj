@@ -21,12 +21,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="H264\jt1078_1.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="JT1078.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
+  <ItemGroup>
+    <None Include="..\..\doc\video\jt1078_3.txt" Link="H264\jt1078_3.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\doc\video\jt1078_1.txt" Link="H264\jt1078_1.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\doc\video\jt1078_2.txt" Link="H264\jt1078_2.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

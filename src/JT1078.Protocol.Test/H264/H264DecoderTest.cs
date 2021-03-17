@@ -74,5 +74,26 @@ namespace JT1078.Protocol.Test.H264
             var seiNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == 6);
             Assert.NotNull(seiNALU);
         }
+
+        [Fact]
+        public void ParseNALUTest3()
+        {
+            string file = "jt1078_1";
+            var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", $"{file}.txt"));
+            string filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", $"{file}.h264");
+            if (File.Exists(filepath))
+            {
+                File.Delete(filepath);
+            }
+            using var fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
+            foreach (var line in lines)
+            {
+                var data = line.Split(',');
+                var bytes = data[6].ToHexBytes();
+                JT1078Package package = JT1078Serializer.Deserialize(bytes);
+                fileStream.Write(package.Bodies);
+            }
+            fileStream.Close();
+        }
     }
 }
