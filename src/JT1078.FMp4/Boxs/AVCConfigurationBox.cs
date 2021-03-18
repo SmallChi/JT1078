@@ -62,7 +62,8 @@ namespace JT1078.FMp4
             writer.WriteByte(AVCProfileIndication);
             writer.WriteByte(ProfileCompatibility);
             writer.WriteByte(AVCLevelIndication);
-            writer.WriteByte((byte)(0xfc | LengthSizeMinusOne));
+            //writer.WriteByte((byte)(0xfc | LengthSizeMinusOne));
+            writer.WriteByte(0xff);
             if (SPSs!=null && SPSs.Count > 0)
             {
                 //NumOfSequenceParameterSets

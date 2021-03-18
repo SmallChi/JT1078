@@ -43,7 +43,15 @@ namespace JT1078.FMp4
             {
                 writer.WriteUInt32(r);
             }
-            writer.WriteUTF8(Name??"\0");
+            if (!string.IsNullOrEmpty(Name))
+            {
+                writer.WriteUTF8(Name);
+                writer.WriteUTF8("\0");
+            }
+            else
+            {
+                writer.WriteUTF8("\0");
+            }
             End(ref writer);
         }
     }

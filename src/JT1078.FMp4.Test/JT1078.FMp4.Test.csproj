@@ -30,6 +30,7 @@
     <None Include="..\..\doc\video\fragmented_demo_trun.txt" Link="FMP4\fragmented_demo_trun.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+
   </ItemGroup>
   
   <ItemGroup>
@@ -49,6 +50,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="..\..\doc\video\jt1078_2.txt" Link="H264\jt1078_2.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\doc\video\jt1078_1_fragmented.mp4" Link="H264\jt1078_1_fragmented.mp4">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

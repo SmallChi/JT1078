@@ -44,6 +44,7 @@ namespace JT1078.FMp4
         public uint DefaultSampleDuration { get; set; }
         /// <summary>
         /// TFHD_FLAG_DEFAULT_SIZE
+        /// H.264 NALU SIZE
         /// </summary>
         public uint DefaultSampleSize { get; set; }
         /// <summary>

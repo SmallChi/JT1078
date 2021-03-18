@@ -19,7 +19,9 @@ namespace JT1078.FMp4
         public MovieFragmentRandomAccessOffsetBox(byte version, uint flags=0) : base("mfro", version, flags)
         {
         }
-
+        /// <summary>
+        /// mfra 盒子大小
+        /// </summary>
         public uint MfraSize { get; set; }
 
         public void ToBuffer(ref FMp4MessagePackWriter writer)

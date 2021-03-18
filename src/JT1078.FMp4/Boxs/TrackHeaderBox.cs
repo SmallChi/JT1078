@@ -82,8 +82,21 @@ namespace JT1078.FMp4
             {
                 writer.WriteInt32(m);
             }
-            writer.WriteUInt32(Width);
-            writer.WriteUInt32(Height);
+            //好奇葩的解析方式
+            //实际
+            //01 60 00 00
+            //01 20 00 00
+            //32位大端
+            //00 00 01 60 
+            //00 00 01 20
+            //32位小端
+            //60 01 00 00
+            //20 01 00 00
+            //直接用32位去解析是解析不出来的。
+            writer.WriteUInt16((ushort)Width);
+            writer.WriteUInt16(0);
+            writer.WriteUInt16((ushort)Height);
+            writer.WriteUInt16(0);
             End(ref writer);
         }
     }

@@ -19,13 +19,20 @@ namespace JT1078.FMp4
         public TrackFragmentBaseMediaDecodeTimeBox(byte version=1, uint flags=0) : base("tfdt", version, flags)
         {
         }
-        public uint BaseMediaDecodeTime { get; set; }
+        public ulong BaseMediaDecodeTime { get; set; }
 
         public void ToBuffer(ref FMp4MessagePackWriter writer)
         {
             Start(ref writer);
             WriterFullBoxToBuffer(ref writer);
-            writer.WriteUInt32(BaseMediaDecodeTime);
+            if (Version == 1)
+            {
+                writer.WriteUInt64(BaseMediaDecodeTime);
+            }
+            else
+            {
+                writer.WriteUInt32((uint)BaseMediaDecodeTime);
+            }
             End(ref writer);
         }
     }

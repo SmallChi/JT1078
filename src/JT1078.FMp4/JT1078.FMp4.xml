@@ -386,6 +386,11 @@
             mvex
             </summary>
         </member>
+        <member name="P:JT1078.FMp4.MovieBox.UserDataBox">
+            <summary>
+            udta
+            </summary>
+        </member>
         <member name="T:JT1078.FMp4.MovieExtendsBox">
             <summary>
             mvex
@@ -481,6 +486,11 @@
             </summary>
             <param name="version"></param>
             <param name="flags"></param>
+        </member>
+        <member name="P:JT1078.FMp4.MovieFragmentRandomAccessOffsetBox.MfraSize">
+            <summary>
+            mfra 盒子大小
+            </summary>
         </member>
         <member name="T:JT1078.FMp4.MovieHeaderBox">
             <summary>
@@ -892,6 +902,7 @@
         <member name="P:JT1078.FMp4.TrackFragmentHeaderBox.DefaultSampleSize">
             <summary>
             TFHD_FLAG_DEFAULT_SIZE
+            H.264 NALU SIZE
             </summary>
         </member>
         <member name="P:JT1078.FMp4.TrackFragmentHeaderBox.DefaultSampleFlags">
@@ -929,6 +940,16 @@
         <member name="P:JT1078.FMp4.TrackFragmentRandomAccessBox.LengthSizeOfSampleNum">
             <summary>
             2bit 
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.TrackFragmentRandomAccessBox.TrackFragmentRandomAccessInfos">
+            <summary>
+            (moof+mdta)N
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.TrackFragmentRandomAccessBox.TrackFragmentRandomAccessInfo.MoofOffset">
+            <summary>
+            需要定位到当前 moof offset
             </summary>
         </member>
         <member name="T:JT1078.FMp4.TrackHeaderBox">

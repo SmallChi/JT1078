@@ -5,6 +5,7 @@ using JT1078.Protocol;
 using JT1078.Protocol.Extensions;
 using JT1078.Protocol.H264;
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -38,34 +39,27 @@ namespace JT1078.FMp4.Test
             fileTypeBox.CompatibleBrands.Add("mp41");
             //moov
             MovieBox movieBox = new MovieBox();
-            movieBox.MovieHeaderBox = new MovieHeaderBox(1, 0);
-            movieBox.MovieHeaderBox.CreationTime = 2;
-            movieBox.MovieHeaderBox.ModificationTime = 3;
-            //var upperWordDuration = Math.floor(duration / (UINT32_MAX + 1));
-            //var lowerWordDuration = Math.floor(duration % (UINT32_MAX + 1));
-            movieBox.MovieHeaderBox.Duration = 1;
+            movieBox.MovieHeaderBox = new MovieHeaderBox(0, 0);
+            movieBox.MovieHeaderBox.CreationTime = 0;
+            movieBox.MovieHeaderBox.ModificationTime = 0;
+            movieBox.MovieHeaderBox.Duration = 0;
             movieBox.MovieHeaderBox.Timescale = 1000;
+            movieBox.MovieHeaderBox.NextTrackID = 2;
             movieBox.TrackBox = new TrackBox();
-            movieBox.TrackBox.TrackHeaderBox = new TrackHeaderBox(1, 7);
-            movieBox.TrackBox.TrackHeaderBox.CreationTime = 2;
-            movieBox.TrackBox.TrackHeaderBox.ModificationTime = 3;
-            movieBox.TrackBox.TrackHeaderBox.TrackID = movieBox.MovieHeaderBox.NextTrackID;
-            //duration = track.duration * track.timescale,
-            //upperWordDuration = Math.floor(duration / (UINT32_MAX + 1)),
-            //lowerWordDuration = Math.floor(duration % (UINT32_MAX + 1));
+            movieBox.TrackBox.TrackHeaderBox = new TrackHeaderBox(0, 3);
+            movieBox.TrackBox.TrackHeaderBox.CreationTime = 0;
+            movieBox.TrackBox.TrackHeaderBox.ModificationTime = 0;
+            movieBox.TrackBox.TrackHeaderBox.TrackID = 1;
             movieBox.TrackBox.TrackHeaderBox.Duration = 0;
             movieBox.TrackBox.TrackHeaderBox.TrackIsAudio = false;
             movieBox.TrackBox.TrackHeaderBox.Width = 352;
             movieBox.TrackBox.TrackHeaderBox.Height = 288;
             movieBox.TrackBox.MediaBox = new MediaBox();
             movieBox.TrackBox.MediaBox.MediaHeaderBox = new MediaHeaderBox();
-            //duration *= timescale;
-            //var upperWordDuration = Math.floor(duration / (UINT32_MAX + 1));
-            //var lowerWordDuration = Math.floor(duration % (UINT32_MAX + 1));
-            movieBox.TrackBox.MediaBox.MediaHeaderBox.CreationTime = 2;
-            movieBox.TrackBox.MediaBox.MediaHeaderBox.ModificationTime = 3;
-            movieBox.TrackBox.MediaBox.MediaHeaderBox.Timescale = 1000;
-            movieBox.TrackBox.MediaBox.MediaHeaderBox.Duration = 1;
+            movieBox.TrackBox.MediaBox.MediaHeaderBox.CreationTime = 0;
+            movieBox.TrackBox.MediaBox.MediaHeaderBox.ModificationTime = 0;
+            movieBox.TrackBox.MediaBox.MediaHeaderBox.Timescale = 1200000;
+            movieBox.TrackBox.MediaBox.MediaHeaderBox.Duration = 0;
             movieBox.TrackBox.MediaBox.HandlerBox = new HandlerBox();
             movieBox.TrackBox.MediaBox.HandlerBox.HandlerType = HandlerType.vide;
             movieBox.TrackBox.MediaBox.HandlerBox.Name = "VideoHandler";
@@ -85,7 +79,10 @@ namespace JT1078.FMp4.Test
             avc1.Height = (ushort)movieBox.TrackBox.TrackHeaderBox.Height;
             avc1.AVCConfigurationBox.AVCLevelIndication = 20;
             avc1.AVCConfigurationBox.AVCProfileIndication = 77;
-            avc1.AVCConfigurationBox.PPSs = new List<byte[]>() { ppsNALU.RawData };
+            //todo:pps解析多一位
+            var a = ppsNALU.RawData.ToList();
+            a.Add(0);
+            avc1.AVCConfigurationBox.PPSs = new List<byte[]>() { a.ToArray() };
             avc1.AVCConfigurationBox.SPSs = new List<byte[]>() { spsNALU.RawData };
             avc1.AVCConfigurationBox.ProfileCompatibility = 0;
             movieBox.TrackBox.MediaBox.MediaInformationBox.SampleTableBox.SampleDescriptionBox.SampleEntries.Add(avc1);
@@ -96,46 +93,68 @@ namespace JT1078.FMp4.Test
             movieBox.MovieExtendsBox = new MovieExtendsBox();
             movieBox.MovieExtendsBox.TrackExtendsBoxs = new List<TrackExtendsBox>();
             TrackExtendsBox trex = new TrackExtendsBox();
-            trex.TrackID = movieBox.MovieHeaderBox.NextTrackID;
+            trex.TrackID = 1;
             trex.DefaultSampleDescriptionIndex = 1;
             trex.DefaultSampleDuration = 0;
             trex.DefaultSampleSize = 0;
-            trex.DefaultSampleFlags = 1;
+            trex.DefaultSampleFlags = 0;
             movieBox.MovieExtendsBox.TrackExtendsBoxs.Add(trex);
+            //用户自定义可以不用
+            //movieBox.UserDataBox = new UserDataBox();
+            //movieBox.UserDataBox.Data = "0000005a6d657461000000000000002168646c7200000000000000006d6469726170706c0000000000000000000000002d696c737400000025a9746f6f0000001d6461746100000001000000004c61766635382e34352e313030".ToHexBytes();
             //fragment moof n
             List<FragmentBox> moofs = new List<FragmentBox>();
             FragmentBox fragmentBox = new FragmentBox();
             fragmentBox.MovieFragmentBox = new MovieFragmentBox();
             fragmentBox.MovieFragmentBox.MovieFragmentHeaderBox = new MovieFragmentHeaderBox();
-            fragmentBox.MovieFragmentBox.MovieFragmentHeaderBox.SequenceNumber = 0;
+            fragmentBox.MovieFragmentBox.MovieFragmentHeaderBox.SequenceNumber = 1;
             fragmentBox.MovieFragmentBox.TrackFragmentBox = new TrackFragmentBox();
-            fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox = new TrackFragmentHeaderBox();
-            fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.TrackID = movieBox.MovieHeaderBox.NextTrackID;
-            fragmentBox.MovieFragmentBox.TrackFragmentBox.SampleDependencyTypeBox = new SampleDependencyTypeBox();
-            fragmentBox.MovieFragmentBox.TrackFragmentBox.SampleDependencyTypeBox.SampleDependencyTypes = new List<SampleDependencyTypeBox.SampleDependencyType>();
+            fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox = new TrackFragmentHeaderBox(0x39);
+            fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.TrackID = 1;
+            fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.BaseDataOffset = 0x000000000000028c;
+            fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleDuration = 48000;
+            fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleSize = (uint)jT1078Package.Bodies.Length;
+            fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleFlags = 0x1010000;
+            //fragmentBox.MovieFragmentBox.TrackFragmentBox.SampleDependencyTypeBox = new SampleDependencyTypeBox();
+            //fragmentBox.MovieFragmentBox.TrackFragmentBox.SampleDependencyTypeBox.SampleDependencyTypes = new List<SampleDependencyTypeBox.SampleDependencyType>();
             //todo:fragmentBox.MovieFragmentBox.TrackFragmentBox.SampleDependencyTypeBox.SampleDependencyTypes
             fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox = new TrackFragmentBaseMediaDecodeTimeBox();
             //upperWordBaseMediaDecodeTime = Math.floor(baseMediaDecodeTime / (UINT32_MAX + 1)),
             //lowerWordBaseMediaDecodeTime = Math.floor(baseMediaDecodeTime % (UINT32_MAX + 1));
             fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox.BaseMediaDecodeTime = 0;
             //trun
-            fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackRunBox = new TrackRunBox();
+            fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackRunBox = new TrackRunBox(flags: 0x5);
+            fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackRunBox.DataOffset = 120;
+            fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackRunBox.FirstSampleFlags = 33554432;
+            fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackRunBox.TrackRunInfos = new List<TrackRunBox.TrackRunInfo>();
+            fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackRunBox.TrackRunInfos.Add(new TrackRunBox.TrackRunInfo());
             fragmentBox.MediaDataBox = new MediaDataBox();
-            var nalUnitTypes = new List<int>() { 7, 8 };
             fragmentBox.MediaDataBox.Data = nalus
-                        .Where(w => !nalUnitTypes.Contains(w.NALUHeader.NalUnitType))
                         .Select(s => s.RawData)
-                        .SelectMany(a => a)
-                        .ToArray();
+                        .ToList();
             moofs.Add(fragmentBox);
-
-
             //mfra
+            MovieFragmentRandomAccessBox movieFragmentRandomAccessBox = new MovieFragmentRandomAccessBox();
+            //mfra->tfra
+            movieFragmentRandomAccessBox.TrackFragmentRandomAccessBox = new TrackFragmentRandomAccessBox(1);
+            movieFragmentRandomAccessBox.TrackFragmentRandomAccessBox.TrackID = 0x01;
+            movieFragmentRandomAccessBox.TrackFragmentRandomAccessBox.TrackFragmentRandomAccessInfos = new List<TrackFragmentRandomAccessBox.TrackFragmentRandomAccessInfo>();
+            TrackFragmentRandomAccessBox.TrackFragmentRandomAccessInfo trackFragmentRandomAccessInfo1 = new TrackFragmentRandomAccessBox.TrackFragmentRandomAccessInfo();
+            trackFragmentRandomAccessInfo1.Time = 0;
+            trackFragmentRandomAccessInfo1.MoofOffset = 0x000000000000028c;
+            trackFragmentRandomAccessInfo1.TrafNumber = 0x01;
+            trackFragmentRandomAccessInfo1.TrunNumber = 0x01;
+            trackFragmentRandomAccessInfo1.SampleNumber = 0x01;
+            movieFragmentRandomAccessBox.TrackFragmentRandomAccessBox.TrackFragmentRandomAccessInfos.Add(trackFragmentRandomAccessInfo1);
+            //mfra->mfro
+            movieFragmentRandomAccessBox.MovieFragmentRandomAccessOffsetBox = new MovieFragmentRandomAccessOffsetBox(0);
+            movieFragmentRandomAccessBox.MovieFragmentRandomAccessOffsetBox.MfraSize = 0x00000043;
 
             FMp4Box fMp4Box = new FMp4Box();
             fMp4Box.FileTypeBox = fileTypeBox;
             fMp4Box.MovieBox = movieBox;
             fMp4Box.FragmentBoxs = moofs;
+            fMp4Box.MovieFragmentRandomAccessBox = movieFragmentRandomAccessBox;
             FMp4MessagePackWriter writer = new FMp4MessagePackWriter(new byte[65535]);
             fMp4Box.ToBuffer(ref writer);
             var buffer = writer.FlushAndGetArray();
@@ -147,9 +166,59 @@ namespace JT1078.FMp4.Test
             using var fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
             fileStream.Write(buffer);
             fileStream.Close();
-
         }
 
+        [Fact]
+        public void tkhd_width_height_test()
+        {
+            //01 60 00 00
+            //01 20 00 00
+            var a = BinaryPrimitives.ReadUInt32LittleEndian(new byte[] { 0x01, 0x60, 0, 0 });
+            var b = BinaryPrimitives.ReadUInt32LittleEndian(new byte[] { 0x01, 0x20, 0, 0 });
+            
+            //00 00 01 60 
+            //00 00 01 20
+            var c = BinaryPrimitives.ReadUInt32BigEndian(new byte[] { 0, 0, 0x01, 0x20 });
+            var d = BinaryPrimitives.ReadUInt32BigEndian(new byte[] { 0, 0, 0x01, 0x60 });
+
+            var e = new byte[4];
+            var f = new byte[4];
+            BinaryPrimitives.WriteUInt32LittleEndian(e, 352);
+            BinaryPrimitives.WriteUInt32LittleEndian(f, 288);
+            //60 01 00 00
+            //20 01 00 00
+            var g = e.ToHexString();
+            var h = f.ToHexString();
+        }
+
+        [Fact]
+        public void tfdt_test()
+        {
+            var TrackFragmentBaseMediaDecodeTimeBox = new TrackFragmentBaseMediaDecodeTimeBox();
+            TrackFragmentBaseMediaDecodeTimeBox.BaseMediaDecodeTime = 0;
+            FMp4MessagePackWriter writer = new FMp4MessagePackWriter(new byte[65535]);
+            TrackFragmentBaseMediaDecodeTimeBox.ToBuffer(ref writer);
+            var buffer = writer.FlushAndGetArray().ToHexString();
+        }
+
+        [Fact]
+        public void match_test()
+        {
+            var filepath1 = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_1.mp4");
+            var filepath2 = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "jt1078_1_fragmented.mp4");
+            var byte1=File.ReadAllBytes(filepath1);
+            var byte2=File.ReadAllBytes(filepath2);
+            if(byte1.Length== byte2.Length)
+            {
+                for(var i=0;i< byte1.Length; i++)
+                {
+                    if (byte1[i] != byte2[i])
+                    {
+                        
+                    }
+                }
+            }
+        }
 
         public JT1078Package ParseNALUTest()
         {

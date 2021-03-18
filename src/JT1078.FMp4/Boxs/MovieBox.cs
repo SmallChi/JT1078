@@ -30,6 +30,10 @@ namespace JT1078.FMp4
         /// mvex
         /// </summary>
         public MovieExtendsBox MovieExtendsBox { get; set; }
+        /// <summary>
+        /// udta
+        /// </summary>
+        public UserDataBox UserDataBox { get; set; }
 
         public void ToBuffer(ref FMp4MessagePackWriter writer)
         {
@@ -37,6 +41,10 @@ namespace JT1078.FMp4
             MovieHeaderBox.ToBuffer(ref writer);
             TrackBox.ToBuffer(ref writer);
             MovieExtendsBox.ToBuffer(ref writer);
+            if (UserDataBox != null)
+            {
+                UserDataBox.ToBuffer(ref writer);
+            }
             End(ref writer);
         }
     }

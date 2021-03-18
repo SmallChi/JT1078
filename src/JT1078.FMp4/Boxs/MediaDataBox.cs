@@ -23,14 +23,22 @@ namespace JT1078.FMp4
         /// Filter out AUD/SPS/PPS NAL units from your stream<br/>
         /// Write you converted NAL units into the MDAT box<br/>
         /// </summary>
-        public byte[] Data { get; set; }
+        public List<byte[]> Data { get; set; }
 
         public void ToBuffer(ref FMp4MessagePackWriter writer)
         {
             Start(ref writer);
-            if (Data != null && Data.Length > 0)
+            
+            if (Data != null && Data.Count > 0)
             {
-                writer.WriteArray(Data);
+                foreach(var nalu in Data)
+                {
+                    if(nalu!=null && nalu.Length > 0)
+                    {
+                        writer.WriteInt32(nalu.Length);
+                        writer.WriteArray(nalu);
+                    }
+                }
             }
             End(ref writer);
         }

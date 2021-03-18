@@ -49,6 +49,12 @@ namespace JT1078.FMp4.MessagePack
             writer.Advance(4);
         }
 
+        public void WriteUInt32Little(uint value)
+        {
+            BinaryPrimitives.WriteUInt32LittleEndian(writer.Free, value);
+            writer.Advance(4);
+        }
+
         public void WriteUInt24(uint value)
         {
             var span = writer.Free;

@@ -37,6 +37,9 @@ namespace JT1078.FMp4
         /// </summary>
         public byte LengthSizeOfSampleNum { get; set; }
         public uint NumberOfEntry { get; set; }
+        /// <summary>
+        /// (moof+mdta)N
+        /// </summary>
         public List<TrackFragmentRandomAccessInfo> TrackFragmentRandomAccessInfos { get; set; }
 
         public void ToBuffer(ref FMp4MessagePackWriter writer)
@@ -97,6 +100,9 @@ namespace JT1078.FMp4
         public class TrackFragmentRandomAccessInfo
         {
             public ulong Time { get; set; }
+            /// <summary>
+            /// 需要定位到当前 moof offset
+            /// </summary>
             public ulong MoofOffset { get; set; }
             public uint TrafNumber { get; set; }
             public uint TrunNumber { get; set; }
