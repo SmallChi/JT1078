@@ -79,10 +79,7 @@ namespace JT1078.FMp4.Test
             avc1.Height = (ushort)movieBox.TrackBox.TrackHeaderBox.Height;
             avc1.AVCConfigurationBox.AVCLevelIndication = 20;
             avc1.AVCConfigurationBox.AVCProfileIndication = 77;
-            //todo:pps解析多一位
-            var a = ppsNALU.RawData.ToList();
-            a.Add(0);
-            avc1.AVCConfigurationBox.PPSs = new List<byte[]>() { a.ToArray() };
+            avc1.AVCConfigurationBox.PPSs = new List<byte[]>() { ppsNALU.RawData };
             avc1.AVCConfigurationBox.SPSs = new List<byte[]>() { spsNALU.RawData };
             avc1.AVCConfigurationBox.ProfileCompatibility = 0;
             movieBox.TrackBox.MediaBox.MediaInformationBox.SampleTableBox.SampleDescriptionBox.SampleEntries.Add(avc1);
@@ -111,7 +108,8 @@ namespace JT1078.FMp4.Test
             fragmentBox.MovieFragmentBox.TrackFragmentBox = new TrackFragmentBox();
             fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox = new TrackFragmentHeaderBox(0x39);
             fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.TrackID = 1;
-            fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.BaseDataOffset = 0x000000000000028c;
+            //todo:BaseDataOffset 
+            fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.BaseDataOffset = 0x000000000000028b;
             fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleDuration = 48000;
             fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleSize = (uint)jT1078Package.Bodies.Length;
             fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleFlags = 0x1010000;
@@ -121,10 +119,13 @@ namespace JT1078.FMp4.Test
             fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox = new TrackFragmentBaseMediaDecodeTimeBox();
             //upperWordBaseMediaDecodeTime = Math.floor(baseMediaDecodeTime / (UINT32_MAX + 1)),
             //lowerWordBaseMediaDecodeTime = Math.floor(baseMediaDecodeTime % (UINT32_MAX + 1));
+            //todo:BaseMediaDecodeTime 
             fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox.BaseMediaDecodeTime = 0;
             //trun
             fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackRunBox = new TrackRunBox(flags: 0x5);
+            //todo:DataOffset 
             fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackRunBox.DataOffset = 120;
+            //todo:FirstSampleFlags 
             fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackRunBox.FirstSampleFlags = 33554432;
             fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackRunBox.TrackRunInfos = new List<TrackRunBox.TrackRunInfo>();
             fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackRunBox.TrackRunInfos.Add(new TrackRunBox.TrackRunInfo());
@@ -141,15 +142,16 @@ namespace JT1078.FMp4.Test
             movieFragmentRandomAccessBox.TrackFragmentRandomAccessBox.TrackFragmentRandomAccessInfos = new List<TrackFragmentRandomAccessBox.TrackFragmentRandomAccessInfo>();
             TrackFragmentRandomAccessBox.TrackFragmentRandomAccessInfo trackFragmentRandomAccessInfo1 = new TrackFragmentRandomAccessBox.TrackFragmentRandomAccessInfo();
             trackFragmentRandomAccessInfo1.Time = 0;
-            trackFragmentRandomAccessInfo1.MoofOffset = 0x000000000000028c;
+            //todo:MoofOffset
+            trackFragmentRandomAccessInfo1.MoofOffset = 0x000000000000028b;
             trackFragmentRandomAccessInfo1.TrafNumber = 0x01;
             trackFragmentRandomAccessInfo1.TrunNumber = 0x01;
             trackFragmentRandomAccessInfo1.SampleNumber = 0x01;
             movieFragmentRandomAccessBox.TrackFragmentRandomAccessBox.TrackFragmentRandomAccessInfos.Add(trackFragmentRandomAccessInfo1);
             //mfra->mfro
             movieFragmentRandomAccessBox.MovieFragmentRandomAccessOffsetBox = new MovieFragmentRandomAccessOffsetBox(0);
+            //todo:MfraSize 
             movieFragmentRandomAccessBox.MovieFragmentRandomAccessOffsetBox.MfraSize = 0x00000043;
-
             FMp4Box fMp4Box = new FMp4Box();
             fMp4Box.FileTypeBox = fileTypeBox;
             fMp4Box.MovieBox = movieBox;
