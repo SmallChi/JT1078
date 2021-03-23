@@ -23,6 +23,8 @@ namespace JT1078.FMp4
         public uint SampleCount { get; set; }
         /// <summary>
         /// 可选的
+        /// 用来表示和该moof配套的mdat中实际数据内容距moof开头有多少byte
+        /// 相当于就是 moof.byteLength + mdat.headerSize(8)
         /// </summary>
         public int DataOffset { get; set; }
         /// <summary>

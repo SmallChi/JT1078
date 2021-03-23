@@ -117,16 +117,12 @@ namespace JT1078.FMp4.Test
             //fragmentBox.MovieFragmentBox.TrackFragmentBox.SampleDependencyTypeBox.SampleDependencyTypes = new List<SampleDependencyTypeBox.SampleDependencyType>();
             //todo:fragmentBox.MovieFragmentBox.TrackFragmentBox.SampleDependencyTypeBox.SampleDependencyTypes
             fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox = new TrackFragmentBaseMediaDecodeTimeBox();
-            //upperWordBaseMediaDecodeTime = Math.floor(baseMediaDecodeTime / (UINT32_MAX + 1)),
-            //lowerWordBaseMediaDecodeTime = Math.floor(baseMediaDecodeTime % (UINT32_MAX + 1));
             //todo:BaseMediaDecodeTime 
             fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox.BaseMediaDecodeTime = 0;
             //trun
             fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackRunBox = new TrackRunBox(flags: 0x5);
-            //todo:DataOffset 
             fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackRunBox.DataOffset = 120;
-            //todo:FirstSampleFlags 
-            fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackRunBox.FirstSampleFlags = 33554432;
+            fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackRunBox.FirstSampleFlags = 0;
             fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackRunBox.TrackRunInfos = new List<TrackRunBox.TrackRunInfo>();
             fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackRunBox.TrackRunInfos.Add(new TrackRunBox.TrackRunInfo());
             fragmentBox.MediaDataBox = new MediaDataBox();
