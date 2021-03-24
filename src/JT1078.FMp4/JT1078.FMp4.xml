@@ -986,7 +986,7 @@
             <summary>
             可选的
             用来表示和该moof配套的mdat中实际数据内容距moof开头有多少byte
-            相当于就是 moof.byteLength + mdat.headerSize
+            相当于就是 moof.byteLength + mdat.headerSize(8)
             </summary>
         </member>
         <member name="P:JT1078.FMp4.TrackRunBox.FirstSampleFlags">
@@ -1248,6 +1248,11 @@
         <member name="P:JT1078.FMp4.Mp4Box.BoxType">
             <summary>
             盒子类型
+            </summary>
+        </member>
+        <member name="F:JT1078.FMp4.Mp4Box.SizePosition">
+            <summary>
+            
             </summary>
         </member>
         <member name="M:JT1078.FMp4.Mp4Box.Start(JT1078.FMp4.MessagePack.FMp4MessagePackWriter@)">

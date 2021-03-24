@@ -28,7 +28,17 @@ namespace JT1078.FMp4
         {
             Start(ref writer);
             WriterFullBoxToBuffer(ref writer);
-            writer.WriteUInt32(MfraSize);
+            if (MfraSize > 0)
+            {
+                //人工
+                writer.WriteUInt32(MfraSize);
+            }
+            else
+            {
+                //程序自动计算
+                writer.CreateMfraSizePosition();
+                writer.Skip(4, out _);
+            }
             End(ref writer);
         }
     }

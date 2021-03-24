@@ -52,8 +52,10 @@ namespace JT1078.FMp4
         ///// int(8)[16]
         ///// </summary>
         //public string UserType { get; set; }
-
-        private int sizePosition;
+        /// <summary>
+        /// 
+        /// </summary>
+        public int SizePosition;
 
         /// <summary>
         /// 
@@ -61,7 +63,7 @@ namespace JT1078.FMp4
         /// <param name="writer"></param>
         public void Start(ref FMp4MessagePackWriter writer)
         {
-            writer.Skip(FixedSizeLength, out sizePosition);
+            writer.Skip(FixedSizeLength, out SizePosition);
             writer.WriteASCII(BoxType);
         }
         
@@ -71,7 +73,7 @@ namespace JT1078.FMp4
         /// <param name="writer"></param>
         public void End(ref FMp4MessagePackWriter writer)
         {
-            writer.WriteUInt32Return((uint)(writer.GetCurrentPosition() - sizePosition), sizePosition);
+            writer.WriteUInt32Return((uint)(writer.GetCurrentPosition() - SizePosition), SizePosition);
         }
     }
 }

@@ -52,7 +52,17 @@ namespace JT1078.FMp4
             }
             if((Flags & FMp4Constants.TRUN_FLAG_DATA_OFFSET_PRESENT) > 0)
             {
-                writer.WriteInt32(DataOffset);
+                if (DataOffset > 0)
+                {
+                    //人工
+                    writer.WriteInt32(DataOffset);
+                }
+                else
+                {
+                    //程序自动计算
+                    writer.CreateTrunOffsetPosition();
+                    writer.Skip(4, out _);
+                }
             }
             if ((Flags & FMp4Constants.TRUN_FLAG_FIRST_SAMPLE_FLAGS_PRESENT) > 0)
             {

@@ -9,9 +9,16 @@ namespace JT1078.FMp4.MessagePack
     public ref struct FMp4MessagePackWriter
     {
         private FMp4BufferWriter writer;
+
+        private int TrunDataOffsetPosition;
+
+        private int MfraSizePosition;
+
         public FMp4MessagePackWriter(Span<byte> buffer)
         {
             this.writer = new FMp4BufferWriter(buffer);
+            TrunDataOffsetPosition = 0;
+            MfraSizePosition = 0;
         }
         public byte[] FlushAndGetArray()
         {
@@ -90,7 +97,6 @@ namespace JT1078.FMp4.MessagePack
             tmp.CopyTo(writer.Free);
             writer.Advance(count);
         }
-
         public void WriteUInt16Return(ushort value, int position)
         {
             BinaryPrimitives.WriteUInt16BigEndian(writer.Written.Slice(position, 2), value);
@@ -111,6 +117,36 @@ namespace JT1078.FMp4.MessagePack
         public int GetCurrentPosition()
         {
             return writer.WrittenCount;
+        }
+
+        public void CreateTrunOffsetPosition()
+        {
+            TrunDataOffsetPosition = writer.WrittenCount;
+        }
+
+        public int GetTrunOffsetPosition()
+        {
+            return TrunDataOffsetPosition;
+        }
+
+        public void ClearTrunOffsetPosition()
+        {
+            TrunDataOffsetPosition = 0;
+        }
+
+        public void CreateMfraSizePosition()
+        {
+            MfraSizePosition = writer.WrittenCount;
+        }
+
+        public int GetMfraSizePositionn()
+        {
+            return MfraSizePosition;
+        }
+
+        public void ClearMfraSizePosition()
+        {
+            MfraSizePosition = 0;
         }
 
         /// <summary>

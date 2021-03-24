@@ -38,6 +38,12 @@ namespace JT1078.FMp4
                 TrackFragmentBox.ToBuffer(ref writer);
             }
             End(ref writer);
+            var trunOffsetPosition = writer.GetTrunOffsetPosition();
+            if (trunOffsetPosition > 0)
+            {
+                writer.WriteInt32Return(writer.GetCurrentPosition() - SizePosition + 8, trunOffsetPosition);
+                writer.ClearTrunOffsetPosition();
+            }
         }
     }
 }
