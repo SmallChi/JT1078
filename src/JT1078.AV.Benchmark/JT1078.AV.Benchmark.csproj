@@ -14,7 +14,7 @@
     <ProjectReference Include="..\JT1078.Flv\JT1078.Flv.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="jt1078_1.txt">
+    <None Include="..\..\doc\video\jt1078_1.txt" Link="jt1078_1.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

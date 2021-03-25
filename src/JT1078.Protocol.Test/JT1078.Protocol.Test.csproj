@@ -19,12 +19,6 @@
   <ItemGroup>
     <ProjectReference Include="..\JT1078.Protocol\JT1078.Protocol.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <None Update="JT1078.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
   <ItemGroup>
     <None Include="..\..\doc\video\jt1078_3.txt" Link="H264\jt1078_3.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

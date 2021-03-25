@@ -78,6 +78,9 @@ namespace JT1078.FMp4.Test
             //h264
             avc1.Width = (ushort)movieBox.TrackBox.TrackHeaderBox.Width;
             avc1.Height = (ushort)movieBox.TrackBox.TrackHeaderBox.Height;
+            //MSE codecs avc1.4D0014
+            //4D 00 14
+            //AVCProfileIndication profile_compability AVCLevelIndication
             avc1.AVCConfigurationBox.AVCLevelIndication = 20;
             avc1.AVCConfigurationBox.AVCProfileIndication = 77;
             avc1.AVCConfigurationBox.PPSs = new List<byte[]>() { ppsNALU.RawData };
@@ -415,7 +418,7 @@ namespace JT1078.FMp4.Test
                 fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleSize = (uint)package.Bodies.Length;
                 fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleFlags = 0x1010000;
                 fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox = new TrackFragmentBaseMediaDecodeTimeBox();
-                fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox.BaseMediaDecodeTime = package.Timestamp;
+                fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox.BaseMediaDecodeTime = package.Timestamp * 1000;
                 //trun
                 fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackRunBox = new TrackRunBox(flags: 0x5);
                 fragmentBox.MovieFragmentBox.TrackFragmentBox.TrackRunBox.FirstSampleFlags = 0;
@@ -427,6 +430,30 @@ namespace JT1078.FMp4.Test
             }
             var buffer = writer.FlushAndGetArray();
             fileStream.Write(buffer);
+            fileStream.Close();
+        }
+
+        [Fact]
+        public void Test4()
+        {
+            FMp4Encoder fMp4Encoder = new FMp4Encoder();
+            var packages = ParseNALUTests();
+            var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_4.mp4");
+            if (File.Exists(filepath))
+            {
+                File.Delete(filepath);
+            }
+            using var fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
+            var package1 = packages[0];
+            var buffer1 = fMp4Encoder.EncoderFirstVideoBox(package1);
+            fileStream.Write(buffer1);
+            int moofOffset = buffer1.Length;
+            foreach (var package in packages.Take(2))
+            {
+                var otherBuffer = fMp4Encoder.EncoderOtherVideoBox(package, (ulong)moofOffset);
+                moofOffset += otherBuffer.Length;
+                fileStream.Write(otherBuffer);
+            }
             fileStream.Close();
         }
 

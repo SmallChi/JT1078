@@ -1206,6 +1206,41 @@
             TRUN_FLAGS_CTS_OFFSET
             </summary>
         </member>
+        <member name="T:JT1078.FMp4.FMp4Encoder">
+            <summary>
+            FMp4编码
+            fmp4
+            stream data 
+            ftyp
+            moov
+            moof 1
+            mdat 1
+            ...
+            moof n
+            mdat n
+            mfra
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.FMp4Encoder.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderFirstVideoBox(JT1078.Protocol.JT1078Package)">
+            <summary>
+            编码首个视频盒子
+            </summary>
+            <param name="package">jt1078完整包</param>
+            <returns></returns>
+        </member>
+        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderOtherVideoBox(JT1078.Protocol.JT1078Package,System.UInt64)">
+            <summary>
+            编码其他视频数据盒子
+            </summary>
+            <param name="package">jt1078完整包</param>
+            <param name="moofOffset">moof位置</param>
+            <returns></returns>
+        </member>
         <member name="P:JT1078.FMp4.FullBox.Version">
             <summary>
             unsigned int(8)

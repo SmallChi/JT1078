@@ -2,7 +2,7 @@
 using BenchmarkDotNet.Running;
 using System;
 
-namespace JT1078.Flv.Benchmark
+namespace JT1078.AV.Benchmark
 {
     class Program
     {

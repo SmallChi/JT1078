@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>fmp4 demo</title>
+</head>
+<body>
+    <h1>MSE FMp4 Demo</h1>
+    <video autoplay controls></video>
+    <!--<video src="/JT1078_4.mp4" autoplay controls></video>-->
+    <script>
+        var video = document.querySelector('video');
+        var mimeCodec = 'video/mp4;codecs="avc1.42E01E, mp4a.40.2"';
+        if ('MediaSource' in window && MediaSource.isTypeSupported(mimeCodec)) {
+            var mediaSource = new MediaSource();
+            console.log(mediaSource.readyState);
+            video.src = URL.createObjectURL(mediaSource);
+            mediaSource.addEventListener('sourceopen', sourceOpen);
+        } else {
+            console.log('Unsupported MIME type pr cpdec：', mimeCodec);
+        }
+        function sourceOpen(_) {
+            URL.revokeObjectURL(video.src);
+            console.log(this.readyState);
+            var mediaSource = this;
+            var sourceBuffer = mediaSource.addSourceBuffer(mimeCodec);
+            fetchMedia("/JT1078_4.mp4", function (buf) {
+                sourceBuffer.addEventListener("updateend", function (_) {
+                    mediaSource.endOfStream();
+                    video.play();
+                    console.log(mediaSource.readyState);
+                });
+                sourceBuffer.appendBuffer(buf);
+            });
+        }
+        function fetchMedia(url, callback) {
+            console.log(url);
+            var xhr = new XMLHttpRequest;
+            xhr.open('get', url);
+            xhr.responseType = 'arraybuffer';
+            xhr.onload = function () {
+                callback(xhr.response);
+            };
+            xhr.send();
+        }
+    </script>
+</body>
+</html>
