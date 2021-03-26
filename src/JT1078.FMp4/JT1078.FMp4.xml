@@ -1219,12 +1219,37 @@
             moof n
             mdat n
             mfra
+            ref: https://www.w3.org/TR/mse-byte-stream-format-isobmff/#movie-fragment-relative-addressing
             </summary>
         </member>
         <member name="M:JT1078.FMp4.FMp4Encoder.#ctor">
             <summary>
             
             </summary>
+        </member>
+        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderFtypBox">
+            <summary>
+            编码ftyp盒子
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderMoovBox(System.Collections.Generic.List{JT1078.Protocol.H264.H264NALU},System.Int32)">
+            <summary>
+            编码moov盒子
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderMoofBox(System.Collections.Generic.List{JT1078.Protocol.H264.H264NALU},System.Int32,System.UInt64,System.UInt32,System.UInt32)">
+            <summary>
+            编码Moof盒子
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderMdatBox(System.Collections.Generic.List{JT1078.Protocol.H264.H264NALU},System.Int32)">
+            <summary>
+            编码Mdat盒子
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:JT1078.FMp4.FMp4Encoder.EncoderFirstVideoBox(JT1078.Protocol.JT1078Package)">
             <summary>

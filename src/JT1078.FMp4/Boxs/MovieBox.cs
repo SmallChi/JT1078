@@ -40,7 +40,10 @@ namespace JT1078.FMp4
             Start(ref writer);
             MovieHeaderBox.ToBuffer(ref writer);
             TrackBox.ToBuffer(ref writer);
-            MovieExtendsBox.ToBuffer(ref writer);
+            if (MovieExtendsBox != null)
+            {
+                MovieExtendsBox.ToBuffer(ref writer);
+            }
             if (UserDataBox != null)
             {
                 UserDataBox.ToBuffer(ref writer);

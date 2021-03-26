@@ -277,7 +277,7 @@ namespace JT1078.FMp4.Test
             fragmentBox.MediaDataBox = new MediaDataBox();
             fragmentBox.MediaDataBox.Data = nalus.Select(s => s.RawData).ToList();
             moofs.Add(fragmentBox);
-            foreach(var moof in moofs)
+            foreach (var moof in moofs)
             {
                 moof.ToBuffer(ref writer);
             }
@@ -437,6 +437,7 @@ namespace JT1078.FMp4.Test
         public void Test4()
         {
             FMp4Encoder fMp4Encoder = new FMp4Encoder();
+            H264Decoder h264Decoder = new H264Decoder();
             var packages = ParseNALUTests();
             var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_4.mp4");
             if (File.Exists(filepath))
@@ -444,15 +445,20 @@ namespace JT1078.FMp4.Test
                 File.Delete(filepath);
             }
             using var fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
+            var ftyp = fMp4Encoder.EncoderFtypBox();
+            fileStream.Write(ftyp);
             var package1 = packages[0];
-            var buffer1 = fMp4Encoder.EncoderFirstVideoBox(package1);
-            fileStream.Write(buffer1);
-            int moofOffset = buffer1.Length;
-            foreach (var package in packages.Take(2))
+            var nalus1 = h264Decoder.ParseNALU(package1);
+            var moov = fMp4Encoder.EncoderMoovBox(nalus1, package1.Bodies.Length);
+            fileStream.Write(moov);
+            int moofOffset = ftyp.Length + moov.Length;
+            var flag = package1.Label3.DataType == Protocol.Enums.JT1078DataType.视频I帧 ? 1u : 0u;
+            var otherMoofBuffer = fMp4Encoder.EncoderMoofBox(nalus1, package1.Bodies.Length, package1.Timestamp, flag);
+            foreach (var package in packages)
             {
-                var otherBuffer = fMp4Encoder.EncoderOtherVideoBox(package, (ulong)moofOffset);
-                moofOffset += otherBuffer.Length;
-                fileStream.Write(otherBuffer);
+                var otherNalus = h264Decoder.ParseNALU(package);
+                var otherMdatBuffer = fMp4Encoder.EncoderMdatBox(otherNalus, package.Bodies.Length);
+                fileStream.Write(otherMdatBuffer);
             }
             fileStream.Close();
         }
@@ -464,7 +470,7 @@ namespace JT1078.FMp4.Test
             //01 20 00 00
             var a = BinaryPrimitives.ReadUInt32LittleEndian(new byte[] { 0x01, 0x60, 0, 0 });
             var b = BinaryPrimitives.ReadUInt32LittleEndian(new byte[] { 0x01, 0x20, 0, 0 });
-            
+
             //00 00 01 60 
             //00 00 01 20
             var c = BinaryPrimitives.ReadUInt32BigEndian(new byte[] { 0, 0, 0x01, 0x20 });
@@ -495,15 +501,15 @@ namespace JT1078.FMp4.Test
         {
             var filepath1 = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_1.mp4");
             var filepath2 = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "jt1078_1_fragmented.mp4");
-            var byte1=File.ReadAllBytes(filepath1);
-            var byte2=File.ReadAllBytes(filepath2);
-            if(byte1.Length== byte2.Length)
+            var byte1 = File.ReadAllBytes(filepath1);
+            var byte2 = File.ReadAllBytes(filepath2);
+            if (byte1.Length == byte2.Length)
             {
-                for(var i=0;i< byte1.Length; i++)
+                for (var i = 0; i < byte1.Length; i++)
                 {
                     if (byte1[i] != byte2[i])
                     {
-                        
+
                     }
                 }
             }
