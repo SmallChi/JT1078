@@ -451,13 +451,13 @@ namespace JT1078.FMp4.Test
             var nalus1 = h264Decoder.ParseNALU(package1);
             var moov = fMp4Encoder.EncoderMoovBox(nalus1, package1.Bodies.Length);
             fileStream.Write(moov);
-            int moofOffset = ftyp.Length + moov.Length;
-            var flag = package1.Label3.DataType == Protocol.Enums.JT1078DataType.视频I帧 ? 1u : 0u;
-            var otherMoofBuffer = fMp4Encoder.EncoderMoofBox(nalus1, package1.Bodies.Length, package1.Timestamp, flag);
             foreach (var package in packages)
             {
                 var otherNalus = h264Decoder.ParseNALU(package);
+                var flag = package.Label3.DataType == Protocol.Enums.JT1078DataType.视频I帧 ? 1u : 0u;
+                var otherMoofBuffer = fMp4Encoder.EncoderMoofBox(otherNalus, package.Bodies.Length, package.Timestamp, package.LastIFrameInterval, flag);
                 var otherMdatBuffer = fMp4Encoder.EncoderMdatBox(otherNalus, package.Bodies.Length);
+                fileStream.Write(otherMoofBuffer);
                 fileStream.Write(otherMdatBuffer);
             }
             fileStream.Close();

@@ -29,5 +29,10 @@ namespace JT1078.SignalR.Test.Services
         {
             sessions.TryRemove(connectionId,out _);
         }
+
+        public List<string> GetAll()
+        {
+            return sessions.Keys.ToList();
+        }
     }
 }

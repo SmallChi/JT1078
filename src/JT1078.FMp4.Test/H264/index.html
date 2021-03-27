@@ -96,28 +96,28 @@
             // otherwise insert it to queue
             var memview = new Uint8Array(arr);
             if (verbose) { console.log("got", arr.byteLength, "bytes.  Values=", memview[0], memview[1], memview[2], memview[3], memview[4]); }
-            res = getBox(memview, 0);
-            main_length = res[0]; name = res[1]; // this boxes length and name
-            if ((name == "ftyp") && (pass == 0)) {
-                pass = pass + 1;
-                console.log("got ftyp");
-            }
-            else if ((name == "moov") && (pass == 1)) {
-                pass = pass + 1;
-                console.log("got moov");
-            }
-            else if ((name == "moof") && (pass == 2)) {
-                if (hasFirstSampleFlag(memview)) {
-                    pass = pass + 1;
-                    console.log("got that special moof");
-                }
-                else {
-                    return;
-                }
-            }
-            else if (pass < 3) {
-                return;
-            }
+            //res = getBox(memview, 0);
+            //main_length = res[0]; name = res[1]; // this boxes length and name
+            //if ((name == "ftyp") && (pass == 0)) {
+            //    pass = pass + 1;
+            //    console.log("got ftyp");
+            //}
+            //else if ((name == "moov") && (pass == 1)) {
+            //    pass = pass + 1;
+            //    console.log("got moov");
+            //}
+            //else if ((name == "moof") && (pass == 2)) {
+            //    if (hasFirstSampleFlag(memview)) {
+            //        pass = pass + 1;
+            //        console.log("got that special moof");
+            //    }
+            //    else {
+            //        return;
+            //    }
+            //}
+            //else if (pass < 3) {
+            //    return;
+            //}
             // keep the latency to minimum
             let latest = stream_live.duration;
             if ((stream_live.duration >= buffering_sec) &&
@@ -132,8 +132,9 @@
             data = arr;
             if (!stream_started) {
                 if (verbose) { console.log("Streaming started: ", memview[0], memview[1], memview[2], memview[3], memview[4]); }
-                source_buffer.appendBuffer(data);
                 stream_started = true;
+                source_buffer.appendBuffer(data);
+                
                 cc = cc + 1;
                 return;
             }
@@ -173,7 +174,7 @@
                            .build();
             ws.on("video", (message) => {
                 var buff=base64ToArrayBuffer(message);
-                console.log(buff);
+                //console.log(buff);
                 putPacket(buff);
             });
             ws.start().catch(err => console.error(err));

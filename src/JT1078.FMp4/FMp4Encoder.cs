@@ -37,6 +37,31 @@ namespace JT1078.FMp4
             h264Decoder = new H264Decoder();
         }
 
+        public byte[] EncoderStypBox()
+        {
+            byte[] buffer = FMp4ArrayPool.Rent(4096);
+            FMp4MessagePackWriter writer = new FMp4MessagePackWriter(buffer);
+            try
+            {
+                //styp
+                SegmentTypeBox stypTypeBox = new SegmentTypeBox();
+                stypTypeBox.MajorBrand = "msdh";
+                stypTypeBox.MinorVersion = "\0\0\0\0";
+                stypTypeBox.CompatibleBrands.Add("isom");
+                stypTypeBox.CompatibleBrands.Add("mp42");
+                stypTypeBox.CompatibleBrands.Add("msdh");
+                stypTypeBox.CompatibleBrands.Add("nsix");
+                stypTypeBox.CompatibleBrands.Add("iso5");
+                stypTypeBox.CompatibleBrands.Add("iso6");
+                stypTypeBox.ToBuffer(ref writer);
+                var data = writer.FlushAndGetArray();
+                return data;
+            }
+            finally
+            {
+                FMp4ArrayPool.Return(buffer);
+            }
+        }
 
         /// <summary>
         /// 编码ftyp盒子
@@ -50,14 +75,22 @@ namespace JT1078.FMp4
             {
                 //ftyp
                 FileTypeBox fileTypeBox = new FileTypeBox();
-                fileTypeBox.MajorBrand = "msdh";
-                fileTypeBox.MinorVersion = "\0\0\0\0";
+                fileTypeBox.MajorBrand = "isom";
+                fileTypeBox.MinorVersion = "\0\0\u0002\0";
                 fileTypeBox.CompatibleBrands.Add("isom");
-                fileTypeBox.CompatibleBrands.Add("mp42");
-                fileTypeBox.CompatibleBrands.Add("msdh");
-                fileTypeBox.CompatibleBrands.Add("nsix");
+                fileTypeBox.CompatibleBrands.Add("iso2");
+                fileTypeBox.CompatibleBrands.Add("avc1");
+                fileTypeBox.CompatibleBrands.Add("mp41");
                 fileTypeBox.CompatibleBrands.Add("iso5");
-                fileTypeBox.CompatibleBrands.Add("iso6");
+
+                //FileTypeBox fileTypeBox = new FileTypeBox();
+                //fileTypeBox.MajorBrand = "iso5";
+                //fileTypeBox.MinorVersion = "\0\0\u0002\0";
+                //fileTypeBox.CompatibleBrands.Add("iso5");
+                //fileTypeBox.CompatibleBrands.Add("iso6");
+                //fileTypeBox.CompatibleBrands.Add("mp41");
+                //fileTypeBox.ToBuffer(ref writer);
+
                 fileTypeBox.ToBuffer(ref writer);
                 var data = writer.FlushAndGetArray();
                 return data;
@@ -132,35 +165,35 @@ namespace JT1078.FMp4
                 avc1.AVCConfigurationBox.SPSs = new List<byte[]>() { spsNALU.RawData };
                 movieBox.TrackBox.MediaBox.MediaInformationBox.SampleTableBox.SampleDescriptionBox.SampleEntries.Add(avc1);
                 movieBox.TrackBox.MediaBox.MediaInformationBox.SampleTableBox.TimeToSampleBox = new TimeToSampleBox() { 
-                     TimeToSampleInfos=new List<TimeToSampleBox.TimeToSampleInfo>
-                     {
-                         new TimeToSampleBox.TimeToSampleInfo
-                         {
-                              SampleCount=0,
-                              SampleDelta=0
-                         }
-                     }
+                     //TimeToSampleInfos=new List<TimeToSampleBox.TimeToSampleInfo>
+                     //{
+                     //    new TimeToSampleBox.TimeToSampleInfo
+                     //    {
+                     //         SampleCount=0,
+                     //         SampleDelta=0
+                     //    }
+                     //}
                 };
                 movieBox.TrackBox.MediaBox.MediaInformationBox.SampleTableBox.SampleToChunkBox = new SampleToChunkBox() { 
-                     SampleToChunkInfos=new List<SampleToChunkBox.SampleToChunkInfo>()
-                     {
-                          new SampleToChunkBox.SampleToChunkInfo
-                          {
+                     //SampleToChunkInfos=new List<SampleToChunkBox.SampleToChunkInfo>()
+                     //{
+                     //     new SampleToChunkBox.SampleToChunkInfo
+                     //     {
                                 
-                          }
-                     }
+                     //     }
+                     //}
                 };
                 movieBox.TrackBox.MediaBox.MediaInformationBox.SampleTableBox.SampleSizeBox = new SampleSizeBox() {
-                    EntrySize = new List<uint>()
-                    { 
-                        0
-                    }
+                    //EntrySize = new List<uint>()
+                    //{ 
+                    //    0
+                    //}
                 };
                 movieBox.TrackBox.MediaBox.MediaInformationBox.SampleTableBox.ChunkOffsetBox = new ChunkOffsetBox() { 
-                     ChunkOffset=new List<uint>()
-                     {
-                         0
-                     }
+                     //ChunkOffset=new List<uint>()
+                     //{
+                     //    0
+                     //}
                 };
                 movieBox.MovieExtendsBox = new MovieExtendsBox();
                 movieBox.MovieExtendsBox.TrackExtendsBoxs = new List<TrackExtendsBox>();
@@ -186,7 +219,7 @@ namespace JT1078.FMp4
         /// 编码Moof盒子
         /// </summary>
         /// <returns></returns>
-        public byte[] EncoderMoofBox(List<H264NALU> nalus, int naluLength,ulong timestamp, uint keyframeFlag,uint moofOffset=0)
+        public byte[] EncoderMoofBox(List<H264NALU> nalus, int naluLength,ulong timestamp,uint frameInterval, uint keyframeFlag,int moofOffset=0)
         {
             byte[] buffer = FMp4ArrayPool.Rent(naluLength + 4096);
             FMp4MessagePackWriter writer = new FMp4MessagePackWriter(buffer);
@@ -198,37 +231,60 @@ namespace JT1078.FMp4
                 movieFragmentBox.TrackFragmentBox = new TrackFragmentBox();
                 //0x39 写文件
                 //0x02 分段
-                movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox = new TrackFragmentHeaderBox(2);
+                movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox = new TrackFragmentHeaderBox(0x20038);
                 movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.TrackID = 1;
                 movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleDuration = 48000;
                 movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleSize = (uint)naluLength;
                 movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleFlags = 0x1010000;
                 movieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox = new TrackFragmentBaseMediaDecodeTimeBox();
+                //movieFragmentBox.TrackFragmentBox.SampleDependencyTypeBox = new SampleDependencyTypeBox()
+                //{
+                //    SampleDependencyTypes = new List<SampleDependencyTypeBox.SampleDependencyType>()
+                //};
                 //trun
                 //0x39 写文件
                 //0x02 分段
-                uint flag = 0u;
+                //uint flag = 0x000200 | 0x000800 | 0x000400 | 0x000100;
+                uint flag = 4u;
+
+                //var sdtp = new SampleDependencyTypeBox.SampleDependencyType();
+                //if (keyframeFlag==1)
+                //{
+                //    sdtp.SampleDependsOn = 2;
+                //    sdtp.SampleIsDependedOn = 1;
+                //}
+                //else
+                //{
+                //    sdtp.SampleDependsOn = 1;
+                //    sdtp.SampleIsDependedOn = 0;
+                //}
+
                 if (!first)
                 {
-                    flag = 4u;
+                    //sdtp.IsLeading = 1;
+                    //flag = 4u;
                     movieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox.BaseMediaDecodeTime = 0;
-                    movieFragmentBox.TrackFragmentBox.TrackRunBox = new TrackRunBox(flags: flag);
+                    movieFragmentBox.TrackFragmentBox.TrackRunBox = new TrackRunBox(flags: 0x205);
                     first = true;
                 }
                 else
                 {
-                    flag = 0x000400;
-                    movieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox.BaseMediaDecodeTime = timestamp * 1000;
-                    movieFragmentBox.TrackFragmentBox.TrackRunBox = new TrackRunBox(flags: flag);
+                    //flag = 0x000400;
+                    movieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox.BaseMediaDecodeTime = BaseMediaDecodeTime;
+                    movieFragmentBox.TrackFragmentBox.TrackRunBox = new TrackRunBox(flags: 0x205);
+                    BaseMediaDecodeTime += BaseMediaDecodeTime;
                 }
-                movieFragmentBox.TrackFragmentBox.TrackRunBox.FirstSampleFlags = 0;
+                //movieFragmentBox.TrackFragmentBox.SampleDependencyTypeBox.SampleDependencyTypes.Add(sdtp);
+
+                movieFragmentBox.TrackFragmentBox.TrackRunBox.FirstSampleFlags = 33554432;
                 movieFragmentBox.TrackFragmentBox.TrackRunBox.TrackRunInfos = new List<TrackRunBox.TrackRunInfo>();
-                movieFragmentBox.TrackFragmentBox.TrackRunBox.TrackRunInfos.Add(new TrackRunBox.TrackRunInfo());
-         
+
+                //movieFragmentBox.TrackFragmentBox.TrackRunBox.TrackRunInfos.Add(new TrackRunBox.TrackRunInfo());
                 movieFragmentBox.TrackFragmentBox.TrackRunBox.TrackRunInfos.Add(new TrackRunBox.TrackRunInfo()
                 {
+                    SampleDuration= frameInterval,
                     SampleSize = (uint)naluLength,
-                    //SampleCompositionTimeOffset = package.Label3.DataType == JT1078DataType.视频I帧 ? package.LastIFrameInterval : package.LastFrameInterval,
+                    SampleCompositionTimeOffset = frameInterval,
                     SampleFlags = flag
                 });
                 
@@ -365,6 +421,8 @@ namespace JT1078.FMp4
         uint sn = 1;
 
         bool first = false;
+
+        ulong BaseMediaDecodeTime = 2160000;
 
         /// <summary>
         /// 编码其他视频数据盒子

@@ -46,7 +46,7 @@ namespace JT1078.SignalR.Test.Services
             this.wsSession = wsSession;
         }
 
-        public Queue<byte[]> q = new Queue<byte[]>();
+        public List<byte[]> q = new List<byte[]>();
 
         public void a()
         {
@@ -65,22 +65,39 @@ namespace JT1078.SignalR.Test.Services
                     packages.Add(packageMerge);
                 }
             }
+            List<byte[]> first = new List<byte[]>();
+            //var styp = fMp4Encoder.EncoderStypBox();
+            //first.Add(styp);
+            //q.Enqueue(styp);
             var ftyp = fMp4Encoder.EncoderFtypBox();
-            q.Enqueue(ftyp);
+            //q.Enqueue(ftyp);
+            first.Add(ftyp);
             var package1 = packages[0];
             var nalus1 = h264Decoder.ParseNALU(package1);
             var moov = fMp4Encoder.EncoderMoovBox(nalus1, package1.Bodies.Length);
-            q.Enqueue(moov);
-            var flag = package1.Label3.DataType == Protocol.Enums.JT1078DataType.视频I帧 ? 1u : 0u;
-            var moofBuffer = fMp4Encoder.EncoderMoofBox(nalus1, package1.Bodies.Length, package1.Timestamp, flag);
-            q.Enqueue(moofBuffer);
+            //q.Enqueue(moov);
+            first.Add(moov);
+            q.Add(first.SelectMany(s=>s).ToArray());
+            List<int> filter = new List<int>() { 6,7,8};
             foreach (var package in packages)
             {
+                List<byte[]> other = new List<byte[]>();
                 var otherNalus = h264Decoder.ParseNALU(package);
-                var otherMdatBuffer = fMp4Encoder.EncoderMdatBox(otherNalus, package.Bodies.Length);
-                q.Enqueue(otherMdatBuffer);
+                var filterNalus = otherNalus.Where(w => !filter.Contains(w.NALUHeader.NalUnitType)).ToList();
+                var flag = package.Label3.DataType == Protocol.Enums.JT1078DataType.视频I帧 ? 1u : 0u;
+                var len = filterNalus.Sum(s => s.RawData.Length);
+                var len1 = otherNalus.Sum(s => s.RawData.Length);
+                var moofBuffer = fMp4Encoder.EncoderMoofBox(filterNalus, len, package.Timestamp, package.LastIFrameInterval, flag);
+                //q.Enqueue(moofBuffer);
+                other.Add(moofBuffer);
+                var otherMdatBuffer = fMp4Encoder.EncoderMdatBox(filterNalus, len);
+                //q.Enqueue(otherMdatBuffer);
+                other.Add(otherMdatBuffer);
+                q.Add(other.SelectMany(s => s).ToArray());
             }
         }
+
+        public Dictionary<string,int> flag = new Dictionary<string, int>();
 
         protected async override Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -89,11 +106,22 @@ namespace JT1078.SignalR.Test.Services
             {
                 try
                 {
-                    if (wsSession.GetCount() > 0)
+                    foreach(var session in wsSession.GetAll())
                     {
-                        if (q.Count > 0)
+                        if (flag.ContainsKey(session))
                         {
-                            await _hubContext.Clients.All.SendAsync("video", q.Dequeue(), stoppingToken);
+                            var len = flag[session];
+                            if (q.Count < len)
+                            {
+                                break;
+                            }
+                            await _hubContext.Clients.Client(session).SendAsync("video", q[len], stoppingToken);
+                            flag[session] = ++len;
+                        }
+                        else
+                        {
+                            await _hubContext.Clients.Client(session).SendAsync("video", q[0], stoppingToken);
+                            flag.Add(session, 1);
                         }
                     }
                 }
