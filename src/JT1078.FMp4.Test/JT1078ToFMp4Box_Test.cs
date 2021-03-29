@@ -71,7 +71,7 @@ namespace JT1078.FMp4.Test
             movieBox.TrackBox.MediaBox.MediaInformationBox.DataInformationBox.DataReferenceBox.DataEntryBoxes = new List<DataEntryBox>();
             movieBox.TrackBox.MediaBox.MediaInformationBox.DataInformationBox.DataReferenceBox.DataEntryBoxes.Add(new DataEntryUrlBox(1));
             movieBox.TrackBox.MediaBox.MediaInformationBox.SampleTableBox = new SampleTableBox();
-            movieBox.TrackBox.MediaBox.MediaInformationBox.SampleTableBox.SampleDescriptionBox = new SampleDescriptionBox(movieBox.TrackBox.MediaBox.HandlerBox.HandlerType);
+            movieBox.TrackBox.MediaBox.MediaInformationBox.SampleTableBox.SampleDescriptionBox = new SampleDescriptionBox();
             movieBox.TrackBox.MediaBox.MediaInformationBox.SampleTableBox.SampleDescriptionBox.SampleEntries = new List<SampleEntry>();
             AVC1SampleEntry avc1 = new AVC1SampleEntry();
             avc1.AVCConfigurationBox = new AVCConfigurationBox();
@@ -224,7 +224,7 @@ namespace JT1078.FMp4.Test
             movieBox.TrackBox.MediaBox.MediaInformationBox.DataInformationBox.DataReferenceBox.DataEntryBoxes = new List<DataEntryBox>();
             movieBox.TrackBox.MediaBox.MediaInformationBox.DataInformationBox.DataReferenceBox.DataEntryBoxes.Add(new DataEntryUrlBox(1));
             movieBox.TrackBox.MediaBox.MediaInformationBox.SampleTableBox = new SampleTableBox();
-            movieBox.TrackBox.MediaBox.MediaInformationBox.SampleTableBox.SampleDescriptionBox = new SampleDescriptionBox(movieBox.TrackBox.MediaBox.HandlerBox.HandlerType);
+            movieBox.TrackBox.MediaBox.MediaInformationBox.SampleTableBox.SampleDescriptionBox = new SampleDescriptionBox();
             movieBox.TrackBox.MediaBox.MediaInformationBox.SampleTableBox.SampleDescriptionBox.SampleEntries = new List<SampleEntry>();
             AVC1SampleEntry avc1 = new AVC1SampleEntry();
             avc1.AVCConfigurationBox = new AVCConfigurationBox();
@@ -373,7 +373,7 @@ namespace JT1078.FMp4.Test
             movieBox.TrackBox.MediaBox.MediaInformationBox.DataInformationBox.DataReferenceBox.DataEntryBoxes = new List<DataEntryBox>();
             movieBox.TrackBox.MediaBox.MediaInformationBox.DataInformationBox.DataReferenceBox.DataEntryBoxes.Add(new DataEntryUrlBox(1));
             movieBox.TrackBox.MediaBox.MediaInformationBox.SampleTableBox = new SampleTableBox();
-            movieBox.TrackBox.MediaBox.MediaInformationBox.SampleTableBox.SampleDescriptionBox = new SampleDescriptionBox(movieBox.TrackBox.MediaBox.HandlerBox.HandlerType);
+            movieBox.TrackBox.MediaBox.MediaInformationBox.SampleTableBox.SampleDescriptionBox = new SampleDescriptionBox();
             movieBox.TrackBox.MediaBox.MediaInformationBox.SampleTableBox.SampleDescriptionBox.SampleEntries = new List<SampleEntry>();
             AVC1SampleEntry avc1 = new AVC1SampleEntry();
             avc1.AVCConfigurationBox = new AVCConfigurationBox();
@@ -453,12 +453,17 @@ namespace JT1078.FMp4.Test
             fileStream.Write(moov);
             foreach (var package in packages)
             {
+                var otherStypBuffer = fMp4Encoder.EncoderStypBox();
+                fileStream.Write(otherStypBuffer);
+                var otherSidxBuffer = fMp4Encoder.EncoderSidxBox(package.Timestamp, package.LastIFrameInterval);
+                fileStream.Write(otherSidxBuffer);
                 var otherNalus = h264Decoder.ParseNALU(package);
                 var flag = package.Label3.DataType == Protocol.Enums.JT1078DataType.视频I帧 ? 1u : 0u;
                 var otherMoofBuffer = fMp4Encoder.EncoderMoofBox(otherNalus, package.Bodies.Length, package.Timestamp, package.LastIFrameInterval, flag);
                 var otherMdatBuffer = fMp4Encoder.EncoderMdatBox(otherNalus, package.Bodies.Length);
                 fileStream.Write(otherMoofBuffer);
                 fileStream.Write(otherMdatBuffer);
+
             }
             fileStream.Close();
         }

@@ -571,11 +571,10 @@
             stsd
             </summary>
         </member>
-        <member name="M:JT1078.FMp4.SampleDescriptionBox.#ctor(JT1078.FMp4.Enums.HandlerType,System.Byte,System.UInt32)">
+        <member name="M:JT1078.FMp4.SampleDescriptionBox.#ctor(System.Byte,System.UInt32)">
             <summary>
             stsd
             </summary>
-            <param name="handlerType"></param>
             <param name="version"></param>
             <param name="flags"></param>
         </member>
@@ -620,6 +619,11 @@
         <member name="P:JT1078.FMp4.SampleTableBox.TimeToSampleBox">
             <summary>
             stts
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SampleTableBox.SyncSampleBox">
+            <summary>
+            stss
             </summary>
         </member>
         <member name="P:JT1078.FMp4.SampleTableBox.CompositionOffsetBox">
@@ -672,19 +676,43 @@
             </summary>
         </member>
         <!-- Badly formed XML comment ignored for member "P:JT1078.FMp4.SchemeTypeBox.SchemeUri" -->
-        <member name="P:JT1078.FMp4.SegmentIndexBox.EarliestPresentationTimeLarge">
+        <member name="T:JT1078.FMp4.SegmentIndexBox">
+            <summary>
+            sidx
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.SegmentIndexBox.#ctor(System.Byte,System.UInt32)">
+            <summary>
+            sidx
+            </summary>
+            <param name="version"></param>
+            <param name="flags"></param>
+        </member>
+        <member name="P:JT1078.FMp4.SegmentIndexBox.ReferenceID">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SegmentIndexBox.Timescale">
             <summary>
             
             </summary>
         </member>
         <member name="P:JT1078.FMp4.SegmentIndexBox.EarliestPresentationTime">
             <summary>
-            if(version==0)
+            if(version==0) 
+            version==0 32 bit
+            version>0 64 bit
             </summary>
         </member>
         <member name="P:JT1078.FMp4.SegmentIndexBox.FirstOffset">
             <summary>
-            if (version==0)
+            
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SegmentIndexBox.SegmentIndexs">
+            <summary>
+            
             </summary>
         </member>
         <member name="P:JT1078.FMp4.SegmentIndexBox.SegmentIndex.ReferenceType">
@@ -695,6 +723,11 @@
         <member name="P:JT1078.FMp4.SegmentIndexBox.SegmentIndex.ReferencedSize">
             <summary>
             4byte 32 - 31
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SegmentIndexBox.SegmentIndex.SubsegmentDuration">
+            <summary>
+            
             </summary>
         </member>
         <member name="P:JT1078.FMp4.SegmentIndexBox.SegmentIndex.StartsWithSAP">
@@ -797,6 +830,18 @@
             <summary>
             length:ItemCount
             </summary>
+        </member>
+        <member name="T:JT1078.FMp4.SyncSampleBox">
+            <summary>
+            stss
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.SyncSampleBox.#ctor(System.Byte,System.UInt32)">
+            <summary>
+            stss
+            </summary>
+            <param name="version"></param>
+            <param name="flags"></param>
         </member>
         <member name="T:JT1078.FMp4.TimeToSampleBox">
             <summary>
@@ -1006,9 +1051,25 @@
         <member name="M:JT1078.FMp4.TrackRunBox.#ctor(System.Byte,System.UInt32)">
             <summary>
             trun
+            201 205 1
+            201 0010 0000 0001
+            205 0010 0000 0101
+            1   0000 0000 0001
+            tr_flags 是用来表示下列 sample 相关的标识符是否应用到每个字段中：
+            0x000001-0000 0000 0001: data-offset-present，只应用 data-offset
+            0x000004-0000 0000 0100: 只对第一个 sample 应用对应的 flags。剩余 sample flags 就不管了。
+            0x000100-0001 0000 0000: 这个比较重要，表示每个 sample 都有自己的 duration，否则使用默认的
+            0x000200-0010 0000 0000: 每个 sample 有自己的 sample_size，否则使用默认的。
+            0x000400-0100 0000 0000: 对每个 sample 使用自己的 flags。否则，使用默认的。
+            0x000800-1000 0000 0000: 每个 sample 都有自己的 cts 值
             </summary>
             <param name="version"></param>
             <param name="flags"></param>
+        </member>
+        <member name="P:JT1078.FMp4.TrackRunBox.SampleCount">
+            <summary>
+            
+            </summary>
         </member>
         <member name="P:JT1078.FMp4.TrackRunBox.DataOffset">
             <summary>
@@ -1241,9 +1302,11 @@
             stream data 
             ftyp
             moov
+            styp 1
             moof 1
             mdat 1
             ...
+            styp n
             moof n
             mdat n
             mfra
@@ -1255,9 +1318,21 @@
             
             </summary>
         </member>
+        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderStypBox">
+            <summary>
+            styp
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:JT1078.FMp4.FMp4Encoder.EncoderFtypBox">
             <summary>
             编码ftyp盒子
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderSidxBox(System.UInt64,System.UInt32)">
+            <summary>
+            编码sidx盒子
             </summary>
             <returns></returns>
         </member>
