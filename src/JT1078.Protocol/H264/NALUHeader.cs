@@ -10,16 +10,33 @@ namespace JT1078.Protocol.H264
         {
             ForbiddenZeroBit = (value & 0x80) >> 7;
             NalRefIdc = (value & 0x60) >> 5;
-            NalUnitType = value & 0x1f;
+            NalUnitType = (NalUnitType)(value & 0x1f);
         }
         public NALUHeader(ReadOnlySpan<byte> value)
         {
             ForbiddenZeroBit = (value[0] & 0x80) >> 7;
             NalRefIdc = (value[0] & 0x60) >> 5;
-            NalUnitType = value[0] & 0x1f;
+            NalUnitType = (NalUnitType)(value[0] & 0x1f);
         }
         public int ForbiddenZeroBit { get; set; }
         public int NalRefIdc { get; set; }
-        public int NalUnitType { get; set; }
+        public NalUnitType NalUnitType { get; set; }
+    }
+
+    public enum NalUnitType : int
+    {
+        None=0,
+        SLICE = 1,
+        DPA = 2,
+        DPB = 3,
+        DPC = 4,
+        IDR = 5,
+        SEI = 6,
+        SPS = 7,
+        PPS = 8,
+        AUD = 9,
+        EOSEQ = 10,
+        EOSTREAM = 11,
+        FILL = 12,
     }
 }

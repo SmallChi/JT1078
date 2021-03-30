@@ -24,6 +24,7 @@ namespace JT1078.FMp4
         /// 0x000200-0010 0000 0000: 每个 sample 有自己的 sample_size，否则使用默认的。
         /// 0x000400-0100 0000 0000: 对每个 sample 使用自己的 flags。否则，使用默认的。
         /// 0x000800-1000 0000 0000: 每个 sample 都有自己的 cts 值
+        /// 0x000f01-1111 0000 0001
         /// </summary>
         /// <param name="version"></param>
         /// <param name="flags"></param>
@@ -101,11 +102,11 @@ namespace JT1078.FMp4
                     {
                         if (Version == 0)
                         {
-                            writer.WriteUInt32(trun.SampleCompositionTimeOffset);
+                            writer.WriteUInt32((uint)trun.SampleCompositionTimeOffset);
                         }
                         else
                         {
-                            writer.WriteInt32(trun.SignedSampleCompositionTimeOffset);
+                            writer.WriteInt32((int)trun.SampleCompositionTimeOffset);
                         }
                     }
                 }
@@ -120,9 +121,10 @@ namespace JT1078.FMp4
             public uint SampleFlags { get; set; }
             /// <summary>
             /// version == 0
+            ///  0:uint
+            /// >0:int
             /// </summary>
-            public uint SampleCompositionTimeOffset { get; set; }
-            public int SignedSampleCompositionTimeOffset { get; set; }
+            public long SampleCompositionTimeOffset { get; set; }
         }       
     }
 }

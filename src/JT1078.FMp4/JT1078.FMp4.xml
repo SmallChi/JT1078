@@ -700,6 +700,7 @@
         </member>
         <member name="P:JT1078.FMp4.SegmentIndexBox.EarliestPresentationTime">
             <summary>
+            pts
             if(version==0) 
             version==0 32 bit
             version>0 64 bit
@@ -723,6 +724,7 @@
         <member name="P:JT1078.FMp4.SegmentIndexBox.SegmentIndex.ReferencedSize">
             <summary>
             4byte 32 - 31
+            ReferencedSize=(moof size) + (mdat size)
             </summary>
         </member>
         <member name="P:JT1078.FMp4.SegmentIndexBox.SegmentIndex.SubsegmentDuration">
@@ -1062,6 +1064,7 @@
             0x000200-0010 0000 0000: 每个 sample 有自己的 sample_size，否则使用默认的。
             0x000400-0100 0000 0000: 对每个 sample 使用自己的 flags。否则，使用默认的。
             0x000800-1000 0000 0000: 每个 sample 都有自己的 cts 值
+            0x000f01-1111 0000 0001
             </summary>
             <param name="version"></param>
             <param name="flags"></param>
@@ -1092,6 +1095,8 @@
         <member name="P:JT1078.FMp4.TrackRunBox.TrackRunInfo.SampleCompositionTimeOffset">
             <summary>
             version == 0
+             0:uint
+            >0:int
             </summary>
         </member>
         <member name="T:JT1078.FMp4.URIBox">
@@ -1330,7 +1335,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderSidxBox(System.UInt64,System.UInt32)">
+        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderSidxBox(System.Int32,System.UInt64,System.UInt32)">
             <summary>
             编码sidx盒子
             </summary>

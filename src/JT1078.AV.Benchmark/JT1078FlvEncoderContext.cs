@@ -42,7 +42,7 @@ namespace JT1078.AV.Benchmark
                 Package = JT1078Serializer.Merge(package);
             }
             H264NALUs = h264Decoder.ParseNALU(Package);
-            SPSNALu = H264NALUs.FirstOrDefault(f => f.NALUHeader.NalUnitType == 7);
+            SPSNALu = H264NALUs.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.SPS);
             SPSNALu.RawData = h264Decoder.DiscardEmulationPreventionBytes(SPSNALu.RawData);
         }
 

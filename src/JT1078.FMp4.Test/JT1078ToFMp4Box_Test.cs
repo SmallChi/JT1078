@@ -24,10 +24,10 @@ namespace JT1078.FMp4.Test
             var jT1078Package = ParseNALUTest();
             H264Decoder decoder = new H264Decoder();
             var nalus = decoder.ParseNALU(jT1078Package);
-            var spsNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == 7);
+            var spsNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType ==  NalUnitType.SPS);
             //SPS
             spsNALU.RawData = decoder.DiscardEmulationPreventionBytes(spsNALU.RawData);
-            var ppsNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == 8);
+            var ppsNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == NalUnitType.PPS);
             ppsNALU.RawData = decoder.DiscardEmulationPreventionBytes(ppsNALU.RawData);
             //ftyp
             FileTypeBox fileTypeBox = new FileTypeBox();
@@ -176,10 +176,10 @@ namespace JT1078.FMp4.Test
             var jT1078Package = ParseNALUTest();
             H264Decoder decoder = new H264Decoder();
             var nalus = decoder.ParseNALU(jT1078Package);
-            var spsNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == 7);
+            var spsNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == NalUnitType.SPS);
             //SPS
             spsNALU.RawData = decoder.DiscardEmulationPreventionBytes(spsNALU.RawData);
-            var ppsNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == 8);
+            var ppsNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == NalUnitType.PPS);
             ppsNALU.RawData = decoder.DiscardEmulationPreventionBytes(ppsNALU.RawData);
             FMp4MessagePackWriter writer = new FMp4MessagePackWriter(new byte[65535]);
             //ftyp
@@ -324,10 +324,10 @@ namespace JT1078.FMp4.Test
             using var fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
             var jT1078Package = packages.FirstOrDefault();
             var nalus = decoder.ParseNALU(jT1078Package);
-            var spsNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == 7);
+            var spsNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == NalUnitType.SPS);
             //SPS
             spsNALU.RawData = decoder.DiscardEmulationPreventionBytes(spsNALU.RawData);
-            var ppsNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == 8);
+            var ppsNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == NalUnitType.PPS);
             ppsNALU.RawData = decoder.DiscardEmulationPreventionBytes(ppsNALU.RawData);
             ExpGolombReader h264GolombReader = new ExpGolombReader(spsNALU.RawData);
             var spsInfo = h264GolombReader.ReadSPS();
@@ -455,15 +455,16 @@ namespace JT1078.FMp4.Test
             {
                 var otherStypBuffer = fMp4Encoder.EncoderStypBox();
                 fileStream.Write(otherStypBuffer);
-                var otherSidxBuffer = fMp4Encoder.EncoderSidxBox(package.Timestamp, package.LastIFrameInterval);
-                fileStream.Write(otherSidxBuffer);
                 var otherNalus = h264Decoder.ParseNALU(package);
                 var flag = package.Label3.DataType == Protocol.Enums.JT1078DataType.视频I帧 ? 1u : 0u;
+
                 var otherMoofBuffer = fMp4Encoder.EncoderMoofBox(otherNalus, package.Bodies.Length, package.Timestamp, package.LastIFrameInterval, flag);
                 var otherMdatBuffer = fMp4Encoder.EncoderMdatBox(otherNalus, package.Bodies.Length);
+                var otherSidxBuffer = fMp4Encoder.EncoderSidxBox(otherMoofBuffer.Length + otherMdatBuffer.Length, package.Timestamp, package.LastIFrameInterval);
+
+                fileStream.Write(otherSidxBuffer);
                 fileStream.Write(otherMoofBuffer);
                 fileStream.Write(otherMdatBuffer);
-
             }
             fileStream.Close();
         }

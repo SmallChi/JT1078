@@ -14,7 +14,7 @@ namespace JT1078.Flv.Test.H264
             NALUHeader header = new NALUHeader(0xc0);
             Assert.Equal(1, header.ForbiddenZeroBit);
             Assert.Equal(2, header.NalRefIdc);
-            Assert.Equal(0, header.NalUnitType);
+            Assert.Equal(NalUnitType.None, header.NalUnitType);
         }
     }
 }

@@ -28,6 +28,7 @@ namespace JT1078.FMp4
         /// </summary>
         public uint Timescale { get; set; } = 1000;
         /// <summary>
+        /// pts
         /// if(version==0) 
         /// version==0 32 bit
         /// version>0 64 bit
@@ -100,6 +101,7 @@ namespace JT1078.FMp4
             public bool ReferenceType { get; set; } = false;
             /// <summary>
             /// 4byte 32 - 31
+            /// ReferencedSize=(moof size) + (mdat size)
             /// </summary>
             public uint ReferencedSize { get; set; } = 0;
             /// <summary>

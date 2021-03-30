@@ -31,6 +31,7 @@ namespace JT1078.FMp4
     public class FMp4Encoder
     {
         readonly H264Decoder h264Decoder;
+
         /// <summary>
         /// 
         /// </summary>
@@ -111,7 +112,7 @@ namespace JT1078.FMp4
         /// 编码sidx盒子
         /// </summary>
         /// <returns></returns>
-        public byte[] EncoderSidxBox(ulong timestamp, uint frameInterval)
+        public byte[] EncoderSidxBox(int moofAndMdatLength, ulong timestamp, uint frameInterval)
         {
             byte[] buffer = FMp4ArrayPool.Rent(4096);
             FMp4MessagePackWriter writer = new FMp4MessagePackWriter(buffer);
@@ -119,11 +120,12 @@ namespace JT1078.FMp4
             {
                 SegmentIndexBox segmentIndexBox = new SegmentIndexBox(1);
                 segmentIndexBox.ReferenceID = 1;
-                segmentIndexBox.EarliestPresentationTime = timestamp;
+                segmentIndexBox.EarliestPresentationTime = timestamp*1000;
                 segmentIndexBox.SegmentIndexs = new List<SegmentIndexBox.SegmentIndex>()
                 {
                      new SegmentIndexBox.SegmentIndex
                      {
+                          ReferencedSize=(uint)moofAndMdatLength,
                           SubsegmentDuration=frameInterval
                      }
                 };
@@ -147,10 +149,10 @@ namespace JT1078.FMp4
             FMp4MessagePackWriter writer = new FMp4MessagePackWriter(buffer);
             try
             {
-                var spsNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == 7);
+                var spsNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == NalUnitType.SPS);
                 //SPS
                 spsNALU.RawData = h264Decoder.DiscardEmulationPreventionBytes(spsNALU.RawData);
-                var ppsNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == 8);
+                var ppsNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == NalUnitType.PPS);
                 ppsNALU.RawData = h264Decoder.DiscardEmulationPreventionBytes(ppsNALU.RawData);
                 ExpGolombReader h264GolombReader = new ExpGolombReader(spsNALU.RawData);
                 var spsInfo = h264GolombReader.ReadSPS();
@@ -242,37 +244,29 @@ namespace JT1078.FMp4
                 //0x02 分段
                 movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox = new TrackFragmentHeaderBox(0x20038);
                 movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.TrackID = 1;
-                movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleDuration = 48000;
+                movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleDuration = frameInterval;
                 movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleSize = (uint)naluLength;
                 movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleFlags = 0x1010000;
                 movieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox = new TrackFragmentBaseMediaDecodeTimeBox();
+                movieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox.BaseMediaDecodeTime = timestamp*1000;
                 //trun
                 //0x39 写文件
                 //0x02 分段
+                //0x205
                 //uint flag = 0x000200 | 0x000800 | 0x000400 | 0x000100;
-                uint flag = 4u;
-                if (!first)
-                {
-                    //sdtp.IsLeading = 1;
-                    //flag = 4u;
-                    movieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox.BaseMediaDecodeTime = 0;
-                    movieFragmentBox.TrackFragmentBox.TrackRunBox = new TrackRunBox(flags: 5);
-                    first = true;
-                }
-                else
-                {
-                    //flag = 0x000400;
-                    movieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox.BaseMediaDecodeTime = timestamp*1000;
-                    movieFragmentBox.TrackFragmentBox.TrackRunBox = new TrackRunBox(flags: 5);
-                }
+                movieFragmentBox.TrackFragmentBox.TrackRunBox = new TrackRunBox();
                 movieFragmentBox.TrackFragmentBox.TrackRunBox.FirstSampleFlags = 33554432;
                 movieFragmentBox.TrackFragmentBox.TrackRunBox.TrackRunInfos = new List<TrackRunBox.TrackRunInfo>();
+                if (frameIntervalCache == 0)
+                {
+                    frameIntervalCache += frameInterval;
+                }
                 movieFragmentBox.TrackFragmentBox.TrackRunBox.TrackRunInfos.Add(new TrackRunBox.TrackRunInfo()
                 {
-                    SampleDuration= frameInterval,
+                    SampleDuration= frameIntervalCache,
                     SampleSize = (uint)naluLength,
-                    SampleCompositionTimeOffset = frameInterval,
-                    SampleFlags = flag
+                    SampleCompositionTimeOffset = (long)timestamp ,
+                    SampleFlags = movieFragmentBox.TrackFragmentBox.TrackRunBox.Flags
                 });
                 movieFragmentBox.ToBuffer(ref writer);
                 var data = writer.FlushAndGetArray();
@@ -318,10 +312,10 @@ namespace JT1078.FMp4
             try
             {
                 var nalus = h264Decoder.ParseNALU(package);
-                var spsNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == 7);
+                var spsNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == NalUnitType.SPS);
                 //SPS
                 spsNALU.RawData = h264Decoder.DiscardEmulationPreventionBytes(spsNALU.RawData);
-                var ppsNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == 8);
+                var ppsNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == NalUnitType.PPS);
                 ppsNALU.RawData = h264Decoder.DiscardEmulationPreventionBytes(ppsNALU.RawData);
                 ExpGolombReader h264GolombReader = new ExpGolombReader(spsNALU.RawData);
                 var spsInfo = h264GolombReader.ReadSPS();
@@ -405,7 +399,7 @@ namespace JT1078.FMp4
         }
 
         uint sn = 1;
-
+        uint frameIntervalCache = 0;
         bool first = false;
 
         /// <summary>

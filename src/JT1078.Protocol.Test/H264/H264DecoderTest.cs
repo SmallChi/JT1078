@@ -26,7 +26,7 @@ namespace JT1078.Protocol.Test.H264
             var nalu = nalus[0];
             Assert.Equal(0, nalu.NALUHeader.ForbiddenZeroBit);
             Assert.Equal(3, nalu.NALUHeader.NalRefIdc);
-            Assert.Equal(1, nalu.NALUHeader.NalUnitType);
+            Assert.Equal(NalUnitType.SLICE, nalu.NALUHeader.NalUnitType);
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace JT1078.Protocol.Test.H264
             Assert.Equal(4, nalus.Count);
 
             //SPS -> 7
-            var spsNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == 7);
+            var spsNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == NalUnitType.SPS);
             Assert.NotNull(spsNALU);
             spsNALU.RawData = decoder.DiscardEmulationPreventionBytes(spsNALU.RawData);
             //"Z00AFJWoWCWQ"
@@ -63,15 +63,15 @@ namespace JT1078.Protocol.Test.H264
             Assert.Equal(352, spsInfo.width);
 
             //PPS -> 8
-            var ppsNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == 8);
+            var ppsNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == NalUnitType.PPS);
             Assert.NotNull(ppsNALU);
 
             //IDR -> 5  关键帧
-            var idrNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == 5);
+            var idrNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == NalUnitType.IDR);
             Assert.NotNull(idrNALU);
 
             //SEI -> 6  
-            var seiNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == 6);
+            var seiNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == NalUnitType.SEI);
             Assert.NotNull(seiNALU);
         }
 

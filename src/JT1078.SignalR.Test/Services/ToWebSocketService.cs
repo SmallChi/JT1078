@@ -17,6 +17,7 @@ using JT1078.Protocol;
 using System.IO;
 using JT1078.Protocol.Extensions;
 using JT1078.Protocol.H264;
+using System.Net.WebSockets;
 
 namespace JT1078.SignalR.Test.Services
 {
@@ -78,7 +79,7 @@ namespace JT1078.SignalR.Test.Services
             //q.Enqueue(moov);
             first.Add(moov);
             q.Add(first.SelectMany(s=>s).ToArray());
-            List<int> filter = new List<int>() { 6,7,8};
+            List<NalUnitType> filter = new List<NalUnitType>() { NalUnitType.SEI,NalUnitType.SPS,NalUnitType.PPS};
             foreach (var package in packages)
             {
                 List<byte[]> other = new List<byte[]>();
@@ -96,6 +97,7 @@ namespace JT1078.SignalR.Test.Services
                 q.Add(other.SelectMany(s => s).ToArray());
             }
         }
+
 
         public Dictionary<string,int> flag = new Dictionary<string, int>();
 
