@@ -451,17 +451,36 @@ namespace JT1078.FMp4.Test
             var nalus1 = h264Decoder.ParseNALU(package1);
             var moov = fMp4Encoder.EncoderMoovBox(nalus1, package1.Bodies.Length);
             fileStream.Write(moov);
+            List<NalUnitType> filter = new List<NalUnitType>() { 
+                NalUnitType.SPS,
+                NalUnitType.PPS, 
+                NalUnitType.AUD};
+            int i = 0;
             foreach (var package in packages)
             {
                 var otherStypBuffer = fMp4Encoder.EncoderStypBox();
                 fileStream.Write(otherStypBuffer);
                 var otherNalus = h264Decoder.ParseNALU(package);
-                var flag = package.Label3.DataType == Protocol.Enums.JT1078DataType.视频I帧 ? 1u : 0u;
+                //var filterOtherNalus = otherNalus.Where(w => !filter.Contains(w.NALUHeader.NalUnitType)).ToList();
+                //if (filterOtherNalus.Count <= 0)
+                //{
+                //    continue;
+                //}
+                //int length = filterOtherNalus.Sum(s => s.RawData.Length);
+                foreach(var nalu in otherNalus)
+                {
+                    //H264 NALU slice first_mb_in_slice
+                    if ((nalu.RawData[1] & 0x80) == 0x80)
+                    {
 
-                var otherMoofBuffer = fMp4Encoder.EncoderMoofBox(otherNalus, package.Bodies.Length, package.Timestamp, package.LastIFrameInterval, flag);
+                    }
+                }
+                var flag = package.Label3.DataType == Protocol.Enums.JT1078DataType.视频I帧 ? 1u : 0u;        
+                var otherMoofBuffer = fMp4Encoder.EncoderMoofBox(otherNalus, package.Bodies.Length, package.Timestamp, package.LastFrameInterval, package.LastIFrameInterval, flag);
                 var otherMdatBuffer = fMp4Encoder.EncoderMdatBox(otherNalus, package.Bodies.Length);
-                var otherSidxBuffer = fMp4Encoder.EncoderSidxBox(otherMoofBuffer.Length + otherMdatBuffer.Length, package.Timestamp, package.LastIFrameInterval);
-
+                //var otherMoofBuffer = fMp4Encoder.EncoderMoofBox(filterOtherNalus, length, package.Timestamp, package.LastFrameInterval, package.LastIFrameInterval, flag);
+                //var otherMdatBuffer = fMp4Encoder.EncoderMdatBox(filterOtherNalus, length);
+                var otherSidxBuffer = fMp4Encoder.EncoderSidxBox(otherMoofBuffer.Length + otherMdatBuffer.Length, package.Timestamp, package.LastIFrameInterval, package.LastFrameInterval);
                 fileStream.Write(otherSidxBuffer);
                 fileStream.Write(otherMoofBuffer);
                 fileStream.Write(otherMdatBuffer);

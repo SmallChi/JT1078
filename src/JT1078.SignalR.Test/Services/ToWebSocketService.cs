@@ -79,20 +79,19 @@ namespace JT1078.SignalR.Test.Services
             //q.Enqueue(moov);
             first.Add(moov);
             q.Add(first.SelectMany(s=>s).ToArray());
-            List<NalUnitType> filter = new List<NalUnitType>() { NalUnitType.SEI,NalUnitType.SPS,NalUnitType.PPS};
+            List<NalUnitType> filter = new List<NalUnitType>() { NalUnitType.SEI,NalUnitType.SPS,NalUnitType.PPS,NalUnitType.AUD};
             foreach (var package in packages)
             {
                 List<byte[]> other = new List<byte[]>();
+                var otherStypBuffer = fMp4Encoder.EncoderStypBox();
+                other.Add(otherStypBuffer);
                 var otherNalus = h264Decoder.ParseNALU(package);
-                var filterNalus = otherNalus.Where(w => !filter.Contains(w.NALUHeader.NalUnitType)).ToList();
                 var flag = package.Label3.DataType == Protocol.Enums.JT1078DataType.视频I帧 ? 1u : 0u;
-                var len = filterNalus.Sum(s => s.RawData.Length);
-                var len1 = otherNalus.Sum(s => s.RawData.Length);
-                var moofBuffer = fMp4Encoder.EncoderMoofBox(filterNalus, len, package.Timestamp, package.LastIFrameInterval, flag);
-                //q.Enqueue(moofBuffer);
-                other.Add(moofBuffer);
-                var otherMdatBuffer = fMp4Encoder.EncoderMdatBox(filterNalus, len);
-                //q.Enqueue(otherMdatBuffer);
+                var otherMoofBuffer = fMp4Encoder.EncoderMoofBox(otherNalus, package.Bodies.Length, package.Timestamp, package.LastFrameInterval, package.LastIFrameInterval, flag);
+                var otherMdatBuffer = fMp4Encoder.EncoderMdatBox(otherNalus, package.Bodies.Length);
+                var otherSidxBuffer = fMp4Encoder.EncoderSidxBox(otherMoofBuffer.Length + otherMdatBuffer.Length, package.Timestamp, package.LastIFrameInterval, package.LastFrameInterval);
+                other.Add(otherSidxBuffer);
+                other.Add(otherMoofBuffer);
                 other.Add(otherMdatBuffer);
                 q.Add(other.SelectMany(s => s).ToArray());
             }

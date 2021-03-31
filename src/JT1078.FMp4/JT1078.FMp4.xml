@@ -983,6 +983,7 @@
         <member name="P:JT1078.FMp4.TrackFragmentHeaderBox.DefaultSampleFlags">
             <summary>
             TFHD_FLAG_DEFAULT_FLAGS
+            MOV_AUDIO == handler_type ? 0x02000000 : (0x00010000| 0x01000000);
             </summary>
         </member>
         <member name="T:JT1078.FMp4.TrackFragmentRandomAccessBox">
@@ -1335,7 +1336,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderSidxBox(System.Int32,System.UInt64,System.UInt32)">
+        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderSidxBox(System.Int32,System.UInt64,System.UInt32,System.UInt32)">
             <summary>
             编码sidx盒子
             </summary>
@@ -1347,7 +1348,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderMoofBox(System.Collections.Generic.List{JT1078.Protocol.H264.H264NALU},System.Int32,System.UInt64,System.UInt32,System.UInt32,System.Int32)">
+        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderMoofBox(System.Collections.Generic.List{JT1078.Protocol.H264.H264NALU},System.Int32,System.UInt64,System.UInt32,System.UInt32,System.UInt32)">
             <summary>
             编码Moof盒子
             </summary>

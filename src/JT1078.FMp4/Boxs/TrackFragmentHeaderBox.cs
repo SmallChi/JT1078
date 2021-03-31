@@ -49,6 +49,7 @@ namespace JT1078.FMp4
         public uint DefaultSampleSize { get; set; }
         /// <summary>
         /// TFHD_FLAG_DEFAULT_FLAGS
+        /// MOV_AUDIO == handler_type ? 0x02000000 : (0x00010000| 0x01000000);
         /// </summary>
         public uint DefaultSampleFlags { get; set; }
         #endregion
