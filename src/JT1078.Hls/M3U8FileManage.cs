@@ -37,7 +37,6 @@ namespace JT1078.Hls
             string key = jt1078Package.GetKey();
             string hlsFileDirectory = m3U8Option.HlsFileDirectory;
             string m3u8FileName = Path.Combine(hlsFileDirectory, key, m3U8Option.M3U8FileName);
-            if (!File.Exists(m3u8FileName)) File.Create(m3u8FileName);//创建m3u8文件
             var buff = TSArrayPool.Rent(jt1078Package.Bodies.Length + 1024);
             TSMessagePackWriter tSMessagePackWriter = new TSMessagePackWriter(buff);
             try
@@ -50,7 +49,7 @@ namespace JT1078.Hls
                     CreateTsFile(curTsFileInfo.FileName,key, tSMessagePackWriter.FlushAndGetArray());
                     curTsFileInfo.Duration = (jt1078Package.Timestamp - curTsFileInfo.TsFirst1078PackageTimeStamp) / 1000.0;
                     //按设定的时间（默认为10秒）切分ts文件
-                    if (curTsFileInfo.Duration > m3U8Option.TsFileMaxSecond)
+                    if (curTsFileInfo.Duration > (m3U8Option.TsFileMaxSecond-1))
                     {
                         var tsFileInfoQueue = ManageTsFileInfo(key, curTsFileInfo);
                         CreateM3U8File(curTsFileInfo, tsFileInfoQueue);
@@ -92,7 +91,7 @@ namespace JT1078.Hls
                 if (tsFileInfoQueue.Count >= m3U8Option.TsFileCapacity)
                 {
                     var deleteTsFileInfo = tsFileInfoQueue.Dequeue();
-                    var deleteTsFileName = Path.Combine(m3U8Option.HlsFileDirectory, deleteTsFileInfo.FileName);
+                    var deleteTsFileName = Path.Combine(m3U8Option.HlsFileDirectory, key, deleteTsFileInfo.FileName);
                     if (File.Exists(deleteTsFileName)) File.Delete(deleteTsFileName);
                 }
                 tsFileInfoQueue.Enqueue(curTsFileInfo);
@@ -124,9 +123,10 @@ namespace JT1078.Hls
             {
                 var tsFileInfo = tsFileInfoQueue.ElementAt(i);
                 sb.AppendLine($"#EXTINF:{tsFileInfo.Duration},");
-                sb.AppendLine(tsFileInfo.FileName);
+                sb.AppendLine($"{tsFileInfo.FileName}?sim={tsFileInfo.Sim}&channelNo={tsFileInfo.ChannelNo}");
             }
-            using (FileStream fs = new FileStream(m3U8Option.M3U8FileName, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
+            string m3u8FileName = Path.Combine(m3U8Option.HlsFileDirectory,$"{curTsFileInfo.Sim}_{curTsFileInfo.ChannelNo}", m3U8Option.M3U8FileName);
+            using (FileStream fs = new FileStream(m3u8FileName, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
             {
                 var buffer = Encoding.UTF8.GetBytes(sb.ToString());
                 fs.Write(buffer,0, buffer.Length);
@@ -142,8 +142,16 @@ namespace JT1078.Hls
         {
             if (!curTsFileInfoDic.TryGetValue(key, out var curTsFileInfo))
             {
-                curTsFileInfo = new TsFileInfo();
+                curTsFileInfo = new TsFileInfo()
+                {
+                    Sim = key.Split('_')[0],
+                    ChannelNo = key.Split('_')[1]
+                };
                 curTsFileInfoDic.TryAdd(key, curTsFileInfo);
+            }
+            else {
+                curTsFileInfo.Sim = key.Split('_')[0];
+                curTsFileInfo.ChannelNo = key.Split('_')[1];
             }
             return curTsFileInfo;
         }
@@ -193,6 +201,14 @@ namespace JT1078.Hls
         /// </summary>
         internal class TsFileInfo
         {
+            /// <summary>
+            /// 设备手机号
+            /// </summary>
+            public string Sim { get; set; }
+            /// <summary>
+            /// 设备逻辑通道号
+            /// </summary>
+            public string ChannelNo { get; set; }
             /// <summary>
             /// ts文件名
             /// </summary>

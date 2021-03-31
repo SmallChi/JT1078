@@ -144,6 +144,16 @@
             TS文件信息
             </summary>
         </member>
+        <member name="P:JT1078.Hls.M3U8FileManage.TsFileInfo.Sim">
+            <summary>
+            设备手机号
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.M3U8FileManage.TsFileInfo.ChannelNo">
+            <summary>
+            设备逻辑通道号
+            </summary>
+        </member>
         <member name="P:JT1078.Hls.M3U8FileManage.TsFileInfo.FileName">
             <summary>
             ts文件名

@@ -24,6 +24,6 @@ namespace JT1078.Hls.Options
         /// <summary>
         /// hls文件路径（包括m3u8路径，ts路径）
         /// </summary>
-        public string HlsFileDirectory { get; set; }
+        public string HlsFileDirectory { get; set; } = "wwwroot";
     }
 }
