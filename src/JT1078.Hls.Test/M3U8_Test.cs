@@ -5,11 +5,45 @@ using System.IO;
 using System.Text;
 using Xunit;
 using JT1078.Protocol.Extensions;
-
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
+using System.Net.Sockets;
+using System.Threading;
 namespace JT1078.Hls.Test
 {
     public class M3U8_Test
     {
+        /// <summary>
+        /// 模拟发送视频数据
+        /// </summary>
+        [Fact]
+        public void Test1()
+        {
+            try
+            {
+                var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "1078视频数据.txt"));
+                Socket clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                clientSocket.Connect("127.0.0.1",1078);
+                long lasttime = 0;
+                foreach (var line in lines)
+                {
+                    var temp = line.Split(',');
+                    if (lasttime == 0)
+                    {
+                        lasttime = long.Parse(temp[0]);
+                    }
+                    else {
+                        Thread.Sleep(TimeSpan.FromSeconds(long.Parse(temp[0]) - lasttime));
+                        lasttime = long.Parse(temp[0]);
+                    }
+                    var data= temp[1].ToHexBytes();
+                    clientSocket.Send(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                //Assert.Throws<Exception>(() => { });
+            }
+        }
         /// <summary>
         /// 生成m3u8索引文件
         /// </summary>
