@@ -38,7 +38,7 @@ namespace JT1078.FMp4
                 MovieFragmentRandomAccessOffsetBox.ToBuffer(ref writer);
             }
             End(ref writer);
-            var mfraSizePosition = writer.GetMfraSizePositionn();
+            var mfraSizePosition = writer.GetMfraSizePosition();
             if (mfraSizePosition > 0)
             {
                 writer.WriteInt32Return(writer.GetCurrentPosition() - SizePosition, mfraSizePosition);

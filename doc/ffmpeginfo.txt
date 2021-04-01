@@ -10,4 +10,6 @@ ffmpeg -i ipc.264 -vcodec copy -f mp4 -movflags frag_keyframe+empty_moov ipc_fra
 
 ffmpeg -i jt1078_3.h264 -c:v copy -f mp4 -movflags empty_moov+default_base_moof+frag_keyframe fragmented_base_moof_demo.mp4
 
+ffprobe -of json -show_frames jt1078_3.h264 > jt1078_3.json
+
 chrome://media-internals/

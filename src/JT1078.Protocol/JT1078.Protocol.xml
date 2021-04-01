@@ -122,6 +122,16 @@
             <param name="key"></param>
             <returns></returns>
         </member>
+        <member name="M:JT1078.Protocol.H264.H264Decoder.ParseNALU(JT1078.Protocol.JT1078Package,System.Collections.Generic.List{JT1078.Protocol.H264.H264NALU},System.String)">
+            <summary>
+            
+            <see cref="!:https://github.com/samirkumardas/jmuxer/blob/master/src/parsers/h264.js"/>
+            </summary>
+            <param name="package"></param>
+            <param name="h264NALUs"></param>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
         <member name="M:JT1078.Protocol.H264.H264Decoder.DiscardEmulationPreventionBytes(System.ReadOnlySpan{System.Byte})">
             <summary>
             Expunge any "Emulation Prevention" bytes from a "Raw Byte Sequence Payload"
@@ -164,6 +174,11 @@
             时间戳
             标识此RTP数据包当前帧的相对时间，单位毫秒（ms）。
             当数据类型为01000时，则没有该字段
+            </summary>
+        </member>
+        <member name="P:JT1078.Protocol.H264.H264NALU.Slice">
+            <summary>
+            是否切片 0x80
             </summary>
         </member>
         <member name="P:JT1078.Protocol.H264.H264NALU.RawData">

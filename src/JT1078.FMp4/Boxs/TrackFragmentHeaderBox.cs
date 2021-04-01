@@ -60,7 +60,16 @@ namespace JT1078.FMp4
             writer.WriteUInt32(TrackID);
             if ((FMp4Constants.TFHD_FLAG_BASE_DATA_OFFSET & Flags) > 0)
             {
-                writer.WriteUInt64(BaseDataOffset);
+                if (BaseDataOffset > 0)
+                {
+                    writer.WriteUInt64(BaseDataOffset);
+                }
+                else
+                {
+                    //程序自动计算
+                    writer.CreateMoofOffsetPosition();
+                    writer.Skip(8, out _);
+                }
             }
             if ((FMp4Constants.TFHD_FLAG_SAMPLE_DESCRIPTION_INDEX & Flags) > 0)
             {
