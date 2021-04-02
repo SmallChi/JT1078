@@ -108,15 +108,11 @@ namespace JT1078.FMp4
             }
         }
 
-        ulong IframeIntervalCache = 259960;
-
-        ulong cts = 0;
-
         /// <summary>
         /// 编码sidx盒子
         /// </summary>
         /// <returns></returns>
-        public byte[] EncoderSidxBox(int moofAndMdatLength, ulong timestamp, uint IframeInterval, uint frameInterval)
+        public byte[] EncoderSidxBox(int moofAndMdatLength, ulong timestamp,uint frameInterval, uint IframeInterval)
         {
             byte[] buffer = FMp4ArrayPool.Rent(4096);
             FMp4MessagePackWriter writer = new FMp4MessagePackWriter(buffer);
@@ -124,9 +120,8 @@ namespace JT1078.FMp4
             {
                 SegmentIndexBox segmentIndexBox = new SegmentIndexBox(1);
                 segmentIndexBox.ReferenceID = 1;
-                cts = cts == 0 ? 2160000 : (cts + cts);
-                segmentIndexBox.EarliestPresentationTime = cts;
-                IframeIntervalCache += frameInterval;
+                segmentIndexBox.EarliestPresentationTime = timestampCache;
+                //segmentIndexBox.EarliestPresentationTime = IframeInterval * 1000*90;
                 segmentIndexBox.SegmentIndexs = new List<SegmentIndexBox.SegmentIndex>()
                 {
                      new SegmentIndexBox.SegmentIndex
@@ -337,7 +332,8 @@ namespace JT1078.FMp4
                 movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleSize = (uint)naluLength;
                 movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleFlags = 0x1010000;
                 movieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox = new TrackFragmentBaseMediaDecodeTimeBox();
-                movieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox.BaseMediaDecodeTime = timestamp*1000;
+                movieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox.BaseMediaDecodeTime = timestamp;
+                //movieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox.BaseMediaDecodeTime = timestamp*1000;
                 //trun
                 //0x39 写文件
                 //0x02 分段
@@ -369,6 +365,8 @@ namespace JT1078.FMp4
             }
         }
 
+        public ulong timestampCache = 0;
+
         /// <summary>
         /// 编码Moof盒子
         /// </summary>
@@ -389,12 +387,12 @@ namespace JT1078.FMp4
                 movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox = new TrackFragmentHeaderBox(0x2003a);
                 movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.TrackID = 1;
                 movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.SampleDescriptionIndex = 1;
-                movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleDuration = frameInterval;
-                //movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleDuration = 48000;
+                //movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleDuration = frameInterval;
+                movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleDuration = 48000;
                 movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleSize = (uint)naluSzies[0];
                 movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleFlags = 0x1010000;
                 movieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox = new TrackFragmentBaseMediaDecodeTimeBox();
-                movieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox.BaseMediaDecodeTime = cts;
+                movieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox.BaseMediaDecodeTime = timestampCache;
                 //trun
                 //0x39 写文件
                 //0x02 分段

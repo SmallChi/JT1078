@@ -123,6 +123,7 @@ namespace JT1078.FMp4
             /// version == 0
             ///  0:uint
             /// >0:int
+            /// cts
             /// </summary>
             public long SampleCompositionTimeOffset { get; set; }
         }       

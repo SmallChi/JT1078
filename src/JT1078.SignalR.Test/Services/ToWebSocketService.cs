@@ -89,7 +89,7 @@ namespace JT1078.SignalR.Test.Services
                 var flag = package.Label3.DataType == Protocol.Enums.JT1078DataType.视频I帧 ? 1u : 0u;
                 var otherMoofBuffer = fMp4Encoder.EncoderMoofBox(otherNalus, package.Bodies.Length, package.Timestamp, package.LastFrameInterval, package.LastIFrameInterval, flag);
                 var otherMdatBuffer = fMp4Encoder.EncoderMdatBox(otherNalus, package.Bodies.Length);
-                var otherSidxBuffer = fMp4Encoder.EncoderSidxBox(otherMoofBuffer.Length + otherMdatBuffer.Length, package.Timestamp, package.LastIFrameInterval, package.LastFrameInterval);
+                var otherSidxBuffer = fMp4Encoder.EncoderSidxBox(otherMoofBuffer.Length + otherMdatBuffer.Length, package.Timestamp,package.LastFrameInterval, package.LastIFrameInterval);
                 other.Add(otherSidxBuffer);
                 other.Add(otherMoofBuffer);
                 other.Add(otherMdatBuffer);
