@@ -75,25 +75,35 @@ namespace JT1078.SignalR.Test.Services
             first.Add(ftyp);
             var package1 = packages[0];
             var nalus1 = h264Decoder.ParseNALU(package1);
-            var moov = fMp4Encoder.EncoderMoovBox(nalus1, package1.Bodies.Length);
+            var moov = fMp4Encoder.EncoderMoovBox(
+              nalus1.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.SPS),
+              nalus1.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.PPS));
             //q.Enqueue(moov);
             first.Add(moov);
             q.Add(first.SelectMany(s=>s).ToArray());
             List<NalUnitType> filter = new List<NalUnitType>() { NalUnitType.SEI,NalUnitType.SPS,NalUnitType.PPS,NalUnitType.AUD};
+            List<H264NALU> nalus = new List<H264NALU>();
             foreach (var package in packages)
             {
-                List<byte[]> other = new List<byte[]>();
-                var otherStypBuffer = fMp4Encoder.EncoderStypBox();
-                other.Add(otherStypBuffer);
-                var otherNalus = h264Decoder.ParseNALU(package);
-                var flag = package.Label3.DataType == Protocol.Enums.JT1078DataType.视频I帧 ? 1u : 0u;
-                var otherMoofBuffer = fMp4Encoder.EncoderMoofBox(otherNalus, package.Bodies.Length, package.Timestamp, package.LastFrameInterval, package.LastIFrameInterval, flag);
-                var otherMdatBuffer = fMp4Encoder.EncoderMdatBox(otherNalus, package.Bodies.Length);
-                var otherSidxBuffer = fMp4Encoder.EncoderSidxBox(otherMoofBuffer.Length + otherMdatBuffer.Length, package.Timestamp,package.LastFrameInterval, package.LastIFrameInterval);
-                other.Add(otherSidxBuffer);
-                other.Add(otherMoofBuffer);
-                other.Add(otherMdatBuffer);
-                q.Add(other.SelectMany(s => s).ToArray());
+                List<H264NALU> h264NALUs = h264Decoder.ParseNALU(package);
+                foreach (var nalu in h264NALUs)
+                {
+                    if (nalu.Slice)
+                    {
+                        //H264 NALU slice first_mb_in_slice
+                        nalus.Add(nalu);
+                    }
+                    else
+                    {
+                        if (nalus.Count > 0)
+                        {
+                            var otherBuffer = fMp4Encoder.EncoderOtherVideoBox(nalus);
+                            q.Add(otherBuffer);
+                            nalus.Clear();
+                        }
+                        nalus.Add(nalu);
+                    }
+                }
             }
         }
 

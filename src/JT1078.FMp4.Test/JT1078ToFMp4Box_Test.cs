@@ -439,54 +439,6 @@ namespace JT1078.FMp4.Test
             FMp4Encoder fMp4Encoder = new FMp4Encoder();
             H264Decoder h264Decoder = new H264Decoder();
             var packages = ParseNALUTests();
-            var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_4.mp4");
-            if (File.Exists(filepath))
-            {
-                File.Delete(filepath);
-            }
-            using var fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
-            var ftyp = fMp4Encoder.EncoderFtypBox();
-            fileStream.Write(ftyp);
-            var package1 = packages[0];
-            var nalus1 = h264Decoder.ParseNALU(package1);
-            var moov = fMp4Encoder.EncoderMoovBox(nalus1, package1.Bodies.Length);
-            fileStream.Write(moov);
-            List<NalUnitType> filter = new List<NalUnitType>() { 
-                NalUnitType.SPS,
-                NalUnitType.PPS, 
-                NalUnitType.AUD};
-            int i = 0;
-            List<H264NALU> h264NALUs = new List<H264NALU>();
-            foreach (var package in packages)
-            {
-                var otherStypBuffer = fMp4Encoder.EncoderStypBox();
-                fileStream.Write(otherStypBuffer);
-                var otherNalus = h264Decoder.ParseNALU(package);
-                //var filterOtherNalus = otherNalus.Where(w => !filter.Contains(w.NALUHeader.NalUnitType)).ToList();
-                //if (filterOtherNalus.Count <= 0)
-                //{
-                //    continue;
-                //}
-                //int length = filterOtherNalus.Sum(s => s.RawData.Length);
-                var flag = package.Label3.DataType == Protocol.Enums.JT1078DataType.视频I帧 ? 1u : 0u;        
-                var otherMoofBuffer = fMp4Encoder.EncoderMoofBox(otherNalus, package.Bodies.Length, package.Timestamp, package.LastFrameInterval, package.LastIFrameInterval, flag);
-                var otherMdatBuffer = fMp4Encoder.EncoderMdatBox(otherNalus, package.Bodies.Length);
-                //var otherMoofBuffer = fMp4Encoder.EncoderMoofBox(filterOtherNalus, length, package.Timestamp, package.LastFrameInterval, package.LastIFrameInterval, flag);
-                //var otherMdatBuffer = fMp4Encoder.EncoderMdatBox(filterOtherNalus, length);
-                var otherSidxBuffer = fMp4Encoder.EncoderSidxBox(otherMoofBuffer.Length + otherMdatBuffer.Length, package.Timestamp, package.LastFrameInterval, package.LastIFrameInterval);
-                fileStream.Write(otherSidxBuffer);
-                fileStream.Write(otherMoofBuffer);
-                fileStream.Write(otherMdatBuffer);
-            }
-            fileStream.Close();
-        }
-
-        [Fact]
-        public void Test5()
-        {
-            FMp4Encoder fMp4Encoder = new FMp4Encoder();
-            H264Decoder h264Decoder = new H264Decoder();
-            var packages = ParseNALUTests();
             var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_5.mp4");
             if (File.Exists(filepath))
             {
@@ -500,13 +452,12 @@ namespace JT1078.FMp4.Test
                 NalUnitType.PPS,
                 NalUnitType.AUD
             };
-            var iNalus=h264Decoder.ParseNALU(packages[0]);
+            var iNalus = h264Decoder.ParseNALU(packages[0]);
             //判断第一帧是否关键帧
             var moov = fMp4Encoder.EncoderMoovBox(
-                iNalus.FirstOrDefault(f=>f.NALUHeader.NalUnitType== NalUnitType.SPS),
+                iNalus.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.SPS),
                 iNalus.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.PPS));
             fileStream.Write(moov);
-
             List<H264NALU> nalus = new List<H264NALU>();
             foreach (var package in packages)
             {
@@ -515,32 +466,14 @@ namespace JT1078.FMp4.Test
                 {
                     if (nalu.Slice)
                     {
-                        //H264 NALU slice first_mb_in_slice
                         nalus.Add(nalu);
                     }
                     else
                     {
                         if (nalus.Count > 0)
                         {
-                            var iStypBuffer = fMp4Encoder.EncoderStypBox();
-                            fileStream.Write(iStypBuffer);
-                            var firstNalu = nalus[0];
-                            var lastNalu = nalus[nalus.Count-1];
-                            var flag = firstNalu.DataType == Protocol.Enums.JT1078DataType.视频I帧 ? 1u : 0u;
-                            int iSize = nalus.Where(w => w.DataType == Protocol.Enums.JT1078DataType.视频I帧)
-                                            .Sum(s => s.RawData.Length + s.StartCodePrefix.Length);
-                            List<int> sizes = new List<int>();
-                            sizes.Add(iSize);
-                            sizes = sizes.Concat(nalus.Where(w => w.DataType != Protocol.Enums.JT1078DataType.视频I帧)
-                                                .Select(s => s.RawData.Length + s.StartCodePrefix.Length).ToList())
-                                                .ToList();
-                            var iMoofBuffer = fMp4Encoder.EncoderMoofBox(sizes, (uint)(nalus.Count * 48000), (uint)(lastNalu.LastIFrameInterval), firstNalu.LastIFrameInterval, flag);
-                            var iMdatBuffer = fMp4Encoder.EncoderMdatBox(nalus.Select(s => s.RawData).ToList());
-                            var iSidxBuffer = fMp4Encoder.EncoderSidxBox(iMoofBuffer.Length + iMdatBuffer.Length, (uint)(nalus.Count*48000), (uint)(lastNalu.LastIFrameInterval), firstNalu.LastIFrameInterval);
-                            fMp4Encoder.timestampCache += (uint)(sizes.Count * 48000+ lastNalu.LastFrameInterval);
-                            fileStream.Write(iSidxBuffer);
-                            fileStream.Write(iMoofBuffer);
-                            fileStream.Write(iMdatBuffer);
+                            var otherBuffer = fMp4Encoder.EncoderOtherVideoBox(nalus);
+                            fileStream.Write(otherBuffer);
                             nalus.Clear();
                         }
                         nalus.Add(nalu);
@@ -548,7 +481,7 @@ namespace JT1078.FMp4.Test
                 }
             }
             fileStream.Close();
-       }
+        }
 
         [Fact]
         public void tkhd_width_height_test()

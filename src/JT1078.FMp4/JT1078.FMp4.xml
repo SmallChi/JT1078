@@ -1095,10 +1095,10 @@
         </member>
         <member name="P:JT1078.FMp4.TrackRunBox.TrackRunInfo.SampleCompositionTimeOffset">
             <summary>
+            cts
             version == 0
              0:uint
             >0:int
-            cts
             </summary>
         </member>
         <member name="T:JT1078.FMp4.URIBox">
@@ -1337,45 +1337,9 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderSidxBox(System.Int32,System.UInt64,System.UInt32,System.UInt32)">
-            <summary>
-            编码sidx盒子
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderMoovBox(System.Collections.Generic.List{JT1078.Protocol.H264.H264NALU},System.Int32)">
-            <summary>
-            编码moov盒子
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:JT1078.FMp4.FMp4Encoder.EncoderMoovBox(JT1078.Protocol.H264.H264NALU@,JT1078.Protocol.H264.H264NALU@)">
             <summary>
             编码moov盒子
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderMoofBox(System.Collections.Generic.List{JT1078.Protocol.H264.H264NALU},System.Int32,System.UInt64,System.UInt32,System.UInt32,System.UInt32)">
-            <summary>
-            编码Moof盒子
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderMoofBox(System.Collections.Generic.List{System.Int32},System.UInt64,System.UInt32,System.UInt32,System.UInt32)">
-            <summary>
-            编码Moof盒子
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderMdatBox(System.Collections.Generic.List{JT1078.Protocol.H264.H264NALU},System.Int32)">
-            <summary>
-            编码Mdat盒子
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderMdatBox(System.Collections.Generic.List{System.Byte[]})">
-            <summary>
-            编码Mdat盒子
             </summary>
             <returns></returns>
         </member>
@@ -1386,12 +1350,10 @@
             <param name="package">jt1078完整包</param>
             <returns></returns>
         </member>
-        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderOtherVideoBox(JT1078.Protocol.JT1078Package,System.UInt64)">
+        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderOtherVideoBox(System.Collections.Generic.List{JT1078.Protocol.H264.H264NALU})">
             <summary>
             编码其他视频数据盒子
             </summary>
-            <param name="package">jt1078完整包</param>
-            <param name="moofOffset">moof位置</param>
             <returns></returns>
         </member>
         <member name="P:JT1078.FMp4.FullBox.Version">

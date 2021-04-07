@@ -120,10 +120,10 @@ namespace JT1078.FMp4
             public uint SampleSize { get; set; }
             public uint SampleFlags { get; set; }
             /// <summary>
+            /// cts
             /// version == 0
             ///  0:uint
             /// >0:int
-            /// cts
             /// </summary>
             public long SampleCompositionTimeOffset { get; set; }
         }       

@@ -43,6 +43,7 @@ namespace JT1078.Protocol.H264
 
         /// <summary>
         /// 是否切片 0x80
+        /// H264 NALU slice first_mb_in_slice
         /// </summary>
         public bool Slice { get; set; }
         /// <summary>

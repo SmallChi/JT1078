@@ -179,6 +179,7 @@
         <member name="P:JT1078.Protocol.H264.H264NALU.Slice">
             <summary>
             是否切片 0x80
+            H264 NALU slice first_mb_in_slice
             </summary>
         </member>
         <member name="P:JT1078.Protocol.H264.H264NALU.RawData">

@@ -18,6 +18,7 @@ namespace JT1078.FMp4
         /// <param name="flags"></param>
         public SegmentIndexBox(byte version, uint flags=0) : base("sidx", version, flags)
         {
+            ReferencedSizePositions = new List<int>();
         }
         /// <summary>
         /// 
@@ -45,6 +46,8 @@ namespace JT1078.FMp4
         /// </summary>
         public List<SegmentIndex> SegmentIndexs { get; set; }
 
+        public List<int> ReferencedSizePositions { get; set; }
+
         public void ToBuffer(ref FMp4MessagePackWriter writer)
         {
             Start(ref writer);
@@ -69,10 +72,12 @@ namespace JT1078.FMp4
                 {
                     if (si.ReferenceType)
                     {
+                        ReferencedSizePositions.Add(writer.GetCurrentPosition());
                         writer.WriteUInt32(si.ReferencedSize | 0x80000000);
                     }
                     else
                     {
+                        ReferencedSizePositions.Add(writer.GetCurrentPosition());
                         writer.WriteUInt32(si.ReferencedSize);
                     }
                     writer.WriteUInt32(si.SubsegmentDuration);
