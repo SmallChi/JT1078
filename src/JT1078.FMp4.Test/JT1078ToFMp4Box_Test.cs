@@ -466,6 +466,7 @@ namespace JT1078.FMp4.Test
                 {
                     if (nalu.Slice)
                     {
+                        //H264 NALU slice first_mb_in_slice
                         nalus.Add(nalu);
                     }
                     else

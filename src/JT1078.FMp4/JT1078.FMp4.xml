@@ -1320,17 +1320,6 @@
             ref: https://www.w3.org/TR/mse-byte-stream-format-isobmff/#movie-fragment-relative-addressing
             </summary>
         </member>
-        <member name="M:JT1078.FMp4.FMp4Encoder.#ctor">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderStypBox">
-            <summary>
-            styp
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:JT1078.FMp4.FMp4Encoder.EncoderFtypBox">
             <summary>
             编码ftyp盒子
@@ -1341,13 +1330,6 @@
             <summary>
             编码moov盒子
             </summary>
-            <returns></returns>
-        </member>
-        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderFirstVideoBox(JT1078.Protocol.JT1078Package)">
-            <summary>
-            编码首个视频盒子
-            </summary>
-            <param name="package">jt1078完整包</param>
             <returns></returns>
         </member>
         <member name="M:JT1078.FMp4.FMp4Encoder.EncoderOtherVideoBox(System.Collections.Generic.List{JT1078.Protocol.H264.H264NALU})">
