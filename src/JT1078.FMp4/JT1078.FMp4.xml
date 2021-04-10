@@ -1338,6 +1338,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderOtherVideoBox(System.Collections.Generic.List{JT1078.Protocol.H264.H264NALU},System.Collections.Generic.List{System.Byte[]},System.Collections.Generic.List{System.UInt32},System.UInt32,System.UInt64)">
+            <summary>
+            编码其他视频数据盒子
+            </summary>
+            <returns></returns>
+        </member>
         <member name="P:JT1078.FMp4.FullBox.Version">
             <summary>
             unsigned int(8)

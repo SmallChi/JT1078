@@ -41,21 +41,13 @@ namespace JT1078.FMp4
             try
             {
                 //ftyp
-                //FileTypeBox fileTypeBox = new FileTypeBox();
-                //fileTypeBox.MajorBrand = "isom";
-                //fileTypeBox.MinorVersion = "\0\0\u0002\0";
-                //fileTypeBox.CompatibleBrands.Add("isom");
-                //fileTypeBox.CompatibleBrands.Add("iso2");
-                //fileTypeBox.CompatibleBrands.Add("avc1");
-                //fileTypeBox.CompatibleBrands.Add("mp41");
-                //fileTypeBox.CompatibleBrands.Add("iso5");
                 FileTypeBox fileTypeBox = new FileTypeBox();
-                fileTypeBox.MajorBrand = "msdh";
-                fileTypeBox.MinorVersion = "\0\0\0\0";
+                fileTypeBox.MajorBrand = "isom";
+                fileTypeBox.MinorVersion = "\0\0\u0002\0";
                 fileTypeBox.CompatibleBrands.Add("isom");
-                fileTypeBox.CompatibleBrands.Add("mp42");
-                fileTypeBox.CompatibleBrands.Add("msdh");
-                fileTypeBox.CompatibleBrands.Add("msix");
+                fileTypeBox.CompatibleBrands.Add("iso2");
+                fileTypeBox.CompatibleBrands.Add("avc1");
+                fileTypeBox.CompatibleBrands.Add("mp41");
                 fileTypeBox.CompatibleBrands.Add("iso5");
                 fileTypeBox.CompatibleBrands.Add("iso6");
                 fileTypeBox.ToBuffer(ref writer);
@@ -152,8 +144,6 @@ namespace JT1078.FMp4
 
         uint sn = 1;
 
-        public ulong timestampCache = 0;
-
         /// <summary>
         /// 编码其他视频数据盒子
         /// </summary>
@@ -164,41 +154,90 @@ namespace JT1078.FMp4
             FMp4MessagePackWriter writer = new FMp4MessagePackWriter(buffer);
             try
             {
-                SegmentTypeBox stypTypeBox = new SegmentTypeBox();
-                stypTypeBox.MajorBrand = "msdh";
-                stypTypeBox.MinorVersion = "\0\0\0\0";
-                stypTypeBox.CompatibleBrands.Add("isom");
-                stypTypeBox.CompatibleBrands.Add("mp42");
-                stypTypeBox.CompatibleBrands.Add("msdh");
-                stypTypeBox.CompatibleBrands.Add("msix");
-                stypTypeBox.CompatibleBrands.Add("iso5");
-                stypTypeBox.CompatibleBrands.Add("iso6");
-                stypTypeBox.ToBuffer(ref writer);
+                var truns = new List<TrackRunBox.TrackRunInfo>();
+                List<byte[]> rawdatas = new List<byte[]>();
+                uint iSize = 0;
+                ulong lastTimestamp = 0;
+                for (var i=0; i<nalus.Count;i++ )
+                {
+                    var nalu = nalus[i];
+                    rawdatas.Add(nalu.RawData);
+                    if (nalu.DataType == Protocol.Enums.JT1078DataType.视频I帧)
+                    {
+                        iSize += (uint)(nalu.RawData.Length + nalu.StartCodePrefix.Length);
+                    }
+                    else
+                    {
+                        if (iSize > 0)
+                        {
+                            truns.Add(new TrackRunBox.TrackRunInfo()
+                            {
+                                SampleSize = iSize,
+                            });
+                            iSize = 0;
+                        }
+                        truns.Add(new TrackRunBox.TrackRunInfo()
+                        {
+                            SampleSize = (uint)(nalu.RawData.Length + nalu.StartCodePrefix.Length),
+                        });
+                    }
+                    if(i== (nalus.Count - 1))
+                    {
+                        lastTimestamp = nalu.Timestamp;
+                    }
+                }
 
-                var firstNalu = nalus[0];
-                var lastNalu = nalus[nalus.Count - 1];
-                uint interval = (uint)(lastNalu.Timestamp - firstNalu.Timestamp);
+                var movieFragmentBox = new MovieFragmentBox();
+                movieFragmentBox.MovieFragmentHeaderBox = new MovieFragmentHeaderBox();
+                //todo:SequenceNumber
+                movieFragmentBox.MovieFragmentHeaderBox.SequenceNumber = sn++;
+                movieFragmentBox.TrackFragmentBox = new TrackFragmentBox();
+                movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox = new TrackFragmentHeaderBox(0x2003a);
+                movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.TrackID = 1;
+                movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.SampleDescriptionIndex = 1;
+                movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleDuration = 48000;
+                movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleSize = truns[0].SampleSize;
+                movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleFlags = 0x1010000;
+                movieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox = new TrackFragmentBaseMediaDecodeTimeBox();
+                movieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox.BaseMediaDecodeTime = lastTimestamp * 1000;
+          
+                //trun
+                movieFragmentBox.TrackFragmentBox.TrackRunBox = new TrackRunBox(flags: 0x205);
+                movieFragmentBox.TrackFragmentBox.TrackRunBox.FirstSampleFlags = 33554432;
+                movieFragmentBox.TrackFragmentBox.TrackRunBox.TrackRunInfos = truns;
+                movieFragmentBox.ToBuffer(ref writer);
+  
+                var mediaDataBox = new MediaDataBox();
+                mediaDataBox.Data = rawdatas;
+                mediaDataBox.ToBuffer(ref writer);
+
+                var data = writer.FlushAndGetArray();
+                return data;
+            }
+            finally
+            {
+                FMp4ArrayPool.Return(buffer);
+            }
+        }
+
+        /// <summary>
+        /// 编码其他视频数据盒子
+        /// </summary>
+        /// <returns></returns>
+        public byte[] EncoderOtherVideoBox(List<H264NALU> nalus,List<byte[]>samples, List<uint> sampleSizes,uint firstSize,ulong lastTimestamp)
+        {
+            byte[] buffer = FMp4ArrayPool.Rent(nalus.Sum(s => s.RawData.Length + s.StartCodePrefix.Length) + 4096);
+            FMp4MessagePackWriter writer = new FMp4MessagePackWriter(buffer);
+            try
+            {
+                var lastNalu = nalus.Last();
                 int iSize = nalus.Where(w => w.DataType == Protocol.Enums.JT1078DataType.视频I帧)
                     .Sum(s => s.RawData.Length + s.StartCodePrefix.Length);
-
                 List<int> sizes = new List<int>();
                 sizes.Add(iSize);
                 sizes = sizes.Concat(nalus.Where(w => w.DataType != Protocol.Enums.JT1078DataType.视频I帧)
                             .Select(s => s.RawData.Length + s.StartCodePrefix.Length).ToList())
                             .ToList();
-                SegmentIndexBox segmentIndexBox = new SegmentIndexBox(1);
-                segmentIndexBox.ReferenceID = 1;
-                segmentIndexBox.EarliestPresentationTime = timestampCache;
-                segmentIndexBox.SegmentIndexs = new List<SegmentIndexBox.SegmentIndex>()
-                {
-                     new SegmentIndexBox.SegmentIndex
-                     {
-                          SubsegmentDuration=interval
-                     }
-                };
-                segmentIndexBox.ToBuffer(ref writer);
-
-                var current1 = writer.GetCurrentPosition();
 
                 var movieFragmentBox = new MovieFragmentBox();
                 movieFragmentBox.MovieFragmentHeaderBox = new MovieFragmentHeaderBox();
@@ -208,10 +247,10 @@ namespace JT1078.FMp4
                 movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.TrackID = 1;
                 movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.SampleDescriptionIndex = 1;
                 movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleDuration = 48000;
-                movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleSize = (uint)iSize;
+                movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleSize = firstSize;
                 movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleFlags = 0x1010000;
                 movieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox = new TrackFragmentBaseMediaDecodeTimeBox();
-                movieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox.BaseMediaDecodeTime = timestampCache;
+                movieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox.BaseMediaDecodeTime = lastTimestamp * 1000;
 
                 //trun
                 movieFragmentBox.TrackFragmentBox.TrackRunBox = new TrackRunBox(flags: 0x205);
@@ -227,17 +266,11 @@ namespace JT1078.FMp4
                 }
 
                 movieFragmentBox.ToBuffer(ref writer);
-                timestampCache += (uint)(sizes.Count * 48000);
 
                 var mediaDataBox = new MediaDataBox();
                 mediaDataBox.Data = nalus.Select(s => s.RawData).ToList();
                 mediaDataBox.ToBuffer(ref writer);
 
-                var current2 = writer.GetCurrentPosition();
-                foreach(var postion in segmentIndexBox.ReferencedSizePositions)
-                {
-                    writer.WriteUInt32Return((uint)(current2 - current1), postion);
-                }      
                 var data = writer.FlushAndGetArray();
                 return data;
             }
