@@ -36,12 +36,15 @@ namespace JT1078.Hls
         //todo:音频同步
         //private Dictionary<string, byte> AudioCounter = new Dictionary<string, byte>();
 
+      /// <summary>
+      /// 
+      /// </summary>
         public TSEncoder()
         {
             VideoCounter = new Dictionary<string, byte>(StringComparer.OrdinalIgnoreCase);
         }
 
-        public byte[] CreateSDT(JT1078Package jt1078Package, int minBufferSize = 188)
+        public byte[] CreateSDT(int minBufferSize = 188)
         {
             byte[] buffer = TSArrayPool.Rent(minBufferSize);
             try
@@ -85,7 +88,7 @@ namespace JT1078.Hls
                 TSArrayPool.Return(buffer);
             }
         }
-        public byte[] CreatePAT(JT1078Package jt1078Package, int minBufferSize = 188)
+        public byte[] CreatePAT(int minBufferSize = 188)
         {
             byte[] buffer = TSArrayPool.Rent(minBufferSize);
             try
@@ -111,7 +114,7 @@ namespace JT1078.Hls
                 TSArrayPool.Return(buffer);
             }
         }
-        public byte[] CreatePMT(JT1078Package jt1078Package, int minBufferSize = 188)
+        public byte[] CreatePMT(int minBufferSize = 188)
         {
             byte[] buffer = TSArrayPool.Rent(minBufferSize);
             try
@@ -139,7 +142,7 @@ namespace JT1078.Hls
                 TSArrayPool.Return(buffer);
             }
         }
-        public byte[] CreatePES(JT1078Package jt1078Package, int minBufferSize = 1024)
+        public byte[] CreatePES(in JT1078Package jt1078Package, int minBufferSize = 1024)
         {
             //将1078一帧的数据拆分成一小段一小段的PES包
             byte[] buffer = TSArrayPool.Rent(jt1078Package.Bodies.Length + minBufferSize);

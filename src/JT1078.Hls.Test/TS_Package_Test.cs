@@ -90,13 +90,13 @@ namespace JT1078.Hls.Test
                     JT1078Package fullpackage = JT1078Serializer.Merge(package);
                     if (fullpackage != null)
                     {
-                        var sdt = tSEncoder.CreateSDT(fullpackage);
+                        var sdt = tSEncoder.CreateSDT();
                         string sdtHEX = sdt.ToHexString();
                         fileStream.Write(sdt);
-                        var pat = tSEncoder.CreatePAT(fullpackage);
+                        var pat = tSEncoder.CreatePAT();
                         string patHEX = pat.ToHexString();
                         fileStream.Write(pat);
-                        var pmt = tSEncoder.CreatePMT(fullpackage);
+                        var pmt = tSEncoder.CreatePMT();
                         fileStream.Write(pmt);
                         var pes = tSEncoder.CreatePES(fullpackage);
                         fileStream.Write(pes);
@@ -139,13 +139,13 @@ namespace JT1078.Hls.Test
                     {
                         if (isNeedFirstHeadler)
                         {
-                            var sdt = tSEncoder.CreateSDT(fullpackage);
+                            var sdt = tSEncoder.CreateSDT();
                             string sdtHEX = sdt.ToHexString();
                             fileStream.Write(sdt);
-                            var pat = tSEncoder.CreatePAT(fullpackage);
+                            var pat = tSEncoder.CreatePAT();
                             string patHEX = pat.ToHexString();
                             fileStream.Write(pat);
-                            var pmt = tSEncoder.CreatePMT(fullpackage);
+                            var pmt = tSEncoder.CreatePMT();
                             fileStream.Write(pmt);
                             var pes = tSEncoder.CreatePES(fullpackage, 18888);
                             fileStream.Write(pes);

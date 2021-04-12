@@ -40,6 +40,9 @@ namespace JT1078.Flv
         readonly H264Decoder h264Decoder;
         readonly AudioCodecFactory audioCodecFactory;
         //public FlvEncoder(int sampleRate = 8000, int channels = 1, int sampleBit = 16, bool adts = false)
+        /// <summary>
+        /// 
+        /// </summary>
         public FlvEncoder()
         {
             audioCodecFactory = new AudioCodecFactory();

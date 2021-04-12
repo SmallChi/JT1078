@@ -483,53 +483,6 @@ namespace JT1078.FMp4.Test
          }
 
         [Fact]
-        public void Test5()
-        {
-            FMp4Encoder fMp4Encoder = new FMp4Encoder();
-            H264Decoder h264Decoder = new H264Decoder();
-            var packages = ParseNALUTests();
-            var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_6.mp4");
-            if (File.Exists(filepath))
-            {
-                File.Delete(filepath);
-            }
-            using var fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
-
-            var ftyp = fMp4Encoder.EncoderFtypBox();
-            fileStream.Write(ftyp);
-
-            var iNalus = h264Decoder.ParseNALU(packages[0]);
-            //判断第一帧是否关键帧
-            var moov = fMp4Encoder.EncoderMoovBox(
-                iNalus.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.SPS),
-                iNalus.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.PPS));
-            fileStream.Write(moov);
-
-            List<H264NALU> nalus = new List<H264NALU>();
-            foreach (var package in packages)
-            {
-                List<H264NALU> h264NALUs = h264Decoder.ParseNALU(package);
-                if(package.Label3.DataType== Protocol.Enums.JT1078DataType.视频I帧)
-                {
-                    if (nalus.Count > 0)
-                    {
-                        var otherBuffer = fMp4Encoder.EncoderOtherVideoBox(nalus);
-                        fileStream.Write(otherBuffer);
-                        nalus.Clear();
-                    }
-                }
-                nalus = nalus.Concat(h264NALUs).ToList();
-            }
-            if (nalus.Count > 0)
-            {
-                var otherBuffer = fMp4Encoder.EncoderOtherVideoBox(nalus);
-                fileStream.Write(otherBuffer);
-                nalus.Clear();
-            }
-            fileStream.Close();
-        }
-
-        [Fact]
         public void tkhd_width_height_test()
         {
             //01 60 00 00

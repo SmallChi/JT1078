@@ -12,9 +12,13 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\JT1078.Flv\JT1078.Flv.csproj" />
+    <ProjectReference Include="..\JT1078.FMp4\JT1078.FMp4.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\doc\video\jt1078_1.txt" Link="jt1078_1.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\doc\video\jt1078_3.txt" Link="jt1078_3.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -181,6 +181,11 @@
             4、<see cref="M:JT1078.Flv.FlvEncoder.EncoderAudioTag(JT1078.Protocol.JT1078Package,System.Boolean)"/>第二个参数传true
             </summary>
         </member>
+        <member name="M:JT1078.Flv.FlvEncoder.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="M:JT1078.Flv.FlvEncoder.EncoderFlvHeader(System.Boolean,System.Boolean)">
             <summary>
             编码flv头

@@ -19,15 +19,28 @@ namespace JT1078.Hls
     public class M3U8FileManage
     {
         private TSEncoder tSEncoder;
-        public readonly M3U8Option m3U8Option;
+        private M3U8Option m3U8Option;
         ConcurrentDictionary<string, TsFileInfo> curTsFileInfoDic = new ConcurrentDictionary<string, TsFileInfo>();//当前文件信息
         ConcurrentDictionary<string, Queue<TsFileInfo>> tsFileInfoQueueDic = new ConcurrentDictionary<string, Queue<TsFileInfo>>();
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="m3U8Option"></param>
+        public M3U8FileManage(M3U8Option m3U8Option):this(m3U8Option, new TSEncoder())
+        {
 
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="m3U8Option"></param>
+        /// <param name="tSEncoder"></param>
         public M3U8FileManage(M3U8Option m3U8Option, TSEncoder tSEncoder)
         {
             this.tSEncoder = tSEncoder;
             this.m3U8Option = m3U8Option;
         }
+
         /// <summary>
         /// 生成ts和m3u8文件
         /// </summary>
@@ -35,8 +48,8 @@ namespace JT1078.Hls
         public void CreateTsData(JT1078Package jt1078Package) 
         {         
             string key = jt1078Package.GetKey();
-            string hlsFileDirectory = m3U8Option.HlsFileDirectory;
-            string m3u8FileName = Path.Combine(hlsFileDirectory, key, m3U8Option.M3U8FileName);
+            //string hlsFileDirectory = m3U8Option.HlsFileDirectory;
+            //string m3u8FileName = Path.Combine(hlsFileDirectory, key, m3U8Option.M3U8FileName);
             var buff = TSArrayPool.Rent(jt1078Package.Bodies.Length + 1024);
             TSMessagePackWriter tSMessagePackWriter = new TSMessagePackWriter(buff);
             try
@@ -62,11 +75,11 @@ namespace JT1078.Hls
                     curTsFileInfo.IsCreateTsFile = false;
                     curTsFileInfo.TsFirst1078PackageTimeStamp = jt1078Package.Timestamp;
                     curTsFileInfo.FileName = $"{curTsFileInfo.TsFileSerialNo}.ts";
-                    var sdt = tSEncoder.CreateSDT(jt1078Package);
+                    var sdt = tSEncoder.CreateSDT();
                     tSMessagePackWriter.WriteArray(sdt);
-                    var pat = tSEncoder.CreatePAT(jt1078Package);
+                    var pat = tSEncoder.CreatePAT();
                     tSMessagePackWriter.WriteArray(pat);
-                    var pmt = tSEncoder.CreatePMT(jt1078Package);
+                    var pmt = tSEncoder.CreatePMT();
                     tSMessagePackWriter.WriteArray(pmt);
                     var pes = tSEncoder.CreatePES(jt1078Package);
                     tSMessagePackWriter.WriteArray(pes);
@@ -170,17 +183,17 @@ namespace JT1078.Hls
             }
         }
 
-        ///// <summary>
-        ///// 添加结束标识
-        ///// 直播流用不到
-        ///// </summary>
-        ///// <param name="filepath"></param>
-        ////public void AppendM3U8End()
-        ////{
-        ////    StringBuilder sb = new StringBuilder();
-        ////    sb.AppendLine("#EXT-X-ENDLIST"); //m3u8文件结束符 表示视频已经结束 有这个标志同时也说明当前流是一个非直播流
-        ////     //#EXT-X-PLAYLIST-TYPE:VOD/Live   //VOD表示当前视频流不是一个直播流，而是点播流(也就是视频的全部ts文件已经生成)
-        ////}
+        /// <summary>
+        /// 添加结束标识
+        /// 直播流用不到
+        /// </summary>
+        public void AppendM3U8End()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("#EXT-X-ENDLIST"); 
+            //m3u8文件结束符 表示视频已经结束 有这个标志同时也说明当前流是一个非直播流
+            //#EXT-X-PLAYLIST-TYPE:VOD/Live   //VOD表示当前视频流不是一个直播流，而是点播流(也就是视频的全部ts文件已经生成)
+        }
 
         /// <summary>
         /// 停止观看直播时清零数据
