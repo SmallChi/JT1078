@@ -2,7 +2,7 @@
 
 道路运输车辆卫星定位系统-视频通讯协议主要分为三大部分。
 
-1. [设备终端到平台的通信也就是JT808](#808Ext)
+1. [设备终端到平台的通信也就是JT808]
 2. [企业平台到政府监管的通信也就是JT809](#809Ext)
 3. [设备终端上传的实时音视频流数据也就是视频服务器](#1078)  
 3.1  [将1078的数据(h264)编码成FLV](#1078flv)  
@@ -20,7 +20,6 @@
 | Install-Package JT1078.Flv | ![JT1078.Flv](https://img.shields.io/nuget/v/JT1078.Flv.svg) | ![JT1078.Flv](https://img.shields.io/nuget/dt/JT1078.Flv.svg) |
 | Install-Package JT1078.Hls | ![JT1078.Hls](https://img.shields.io/nuget/v/JT1078.Hls.svg) | ![JT1078.Hls](https://img.shields.io/nuget/dt/JT1078.Hls.svg) |
 | Install-Package JT1078.FMp4 | ![JT1078.FMp4](https://img.shields.io/nuget/v/JT1078.FMp4.svg) | ![JT1078.FMp4](https://img.shields.io/nuget/dt/JT1078.FMp4.svg) |
-| Install-Package JT808.Protocol.Extensions.JT1078 | ![JT808.Protocol.Extensions.JT1078](https://img.shields.io/nuget/v/JT808.Protocol.Extensions.JT1078.svg) | ![JT808](https://img.shields.io/nuget/dt/JT808.Protocol.Extensions.JT1078.svg) |
 | Install-Package JT809.Protocol.Extensions.JT1078 | ![JT809.Protocol.Extensions.JT1078](https://img.shields.io/nuget/v/JT809.Protocol.Extensions.JT1078.svg) | ![JT809](https://img.shields.io/nuget/dt/JT809.Protocol.Extensions.JT1078.svg) |
 
 ## <span id="1078">基于JT1078音视频流数据的RTP协议</span>
@@ -214,52 +213,6 @@ Platform=AnyCpu  Server=False  Toolchain=.NET Core 3.1
 | **EXPGolombReader** | **100000** |    **11,687.72 us** |   **162.828 us** |   **152.309 us** |   **1515.6250** |         **-** |     **-** |       **9375 KB** |
 |     H264Decoder | 100000 | 1,192,549.87 us | 7,656.632 us | 7,162.018 us | 128000.0000 | 3000.0000 |     - |  786718.75 KB |
 |      FlvEncoder | 100000 |   216,951.31 us | 3,513.653 us | 2,934.059 us | 249333.3333 |         - |     - | 1528906.66 KB |
-
-## <span id="808ext">基于JT808扩展的JT1078消息协议</span>
-
-### JT808扩展协议消息对照表
-
-| 序号  | 消息ID        | 完成情况 | 测试情况 | 消息体名称                                     |
-| :---: | :-----------: | :------: | :------: | :----------------------------:              |
-| 1     | 0x0200_0x14        | √        | √        | 视频相关报警                            |
-| 2     | 0x0200_0x15        | √        | √        | 视频信号丢失报警状态                     |
-| 3     | 0x0200_0x16        | √        | √        | 视频信号遮挡报警状态                     |
-| 4     | 0x0200_0x17        | √        | √        | 存储器故障报警状态                       |
-| 5     | 0x0200_0x18        | √        | √        | 异常驾驶行为报警详细描述                  |
-| 6     | 0x8103_0x0075        | √        | √        | 音视频参数设置                   |
-| 7     | 0x8103_0x0076        | √        | √        | 音视频通道列表设置                       |
-| 8     | 0x8103_0x0077        | √        | √        | 单独视频通道参数设置                       |
-| 9     | 0x8103_0x0079        | √        | √        | 特殊报警录像参数设置                   |
-| 10     | 0x8103_0x007A        | √        | √        | 视频相关报警屏蔽字                       |
-| 11     | 0x8103_0x007B        | √        | √        | 图像分析报警参数设置                       |
-| 12     | 0x8103_0x007C        | √        | √        | 终端休眠模式唤醒设置                   |
-| 13     | 0x1003        | √        | √        | 终端上传音视频属性                            |
-| 14     | 0x1005        | √        | √        | 终端上传乘客流量                     |
-| 15     | 0x1205        | √        | √        | 终端上传音视频资源列表                     |
-| 16     | 0x1206        | √        | √        | 文件上传完成通知                       |
-| 17     | 0x9003        | √        | √        | 查询终端音视频属性                  |
-| 18     | 0x9101        | √        | √        | 实时音视频传输请求                   |
-| 19     | 0x9102        | √        | √        | 音视频实时传输控制                       |
-| 20     | 0x9105        | √        | √        | 实时音视频传输状态通知                       |
-| 21     | 0x9201        | √        | √        | 平台下发远程录像回放请求                   |
-| 22     | 0x9202        | √        | √        | 平台下发远程录像回放控制                       |
-| 23     | 0x9205        | √        | √        | 查询资源列表                       |
-| 24     | 0x9206        | √        | √        | 文件上传指令                   |
-| 25     | 0x9207        | √        | √        | 文件上传控制                            |
-| 26     | 0x9301        | √        | √        | 云台旋转                     |
-| 27     | 0x9302        | √        | √        | 云台调整焦距控制                     |
-| 28     | 0x9303        | √        | √        | 云台调整光圈控制                       |
-| 29     | 0x9304        | √        | √        | 云台雨刷控制                  |
-| 30     | 0x9305        | √        | √        | 红外补光控制                   |
-| 31     | 0x9306        | √        | √        | 云台变倍控制                       |
-
-### 使用方法
-
-```dotnet
-IServiceCollection serviceDescriptors1 = new ServiceCollection();
-serviceDescriptors1.AddJT808Configure()
-                   .AddJT1078Configure();
-```
 
 ## <span id="809ext">基于JT809扩展的JT1078消息协议</span>
 
