@@ -18,6 +18,14 @@ namespace JT1078.Hls.Options
         /// </summary>
         public int TsFileMaxSecond { get; set; } = 10;
         /// <summary>
+        /// ts路径sim参数名称
+        /// </summary>
+        public string TsPathSimParamName { get; set; } = "sim";
+        /// <summary>
+        /// ts路径通道参数名称
+        /// </summary>
+        public string TsPathChannelParamName { get; set; } = "channel";
+        /// <summary>
         /// m3u8文件
         /// </summary>
         public string M3U8FileName { get; set; } = "live.m3u8";

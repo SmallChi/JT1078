@@ -213,6 +213,16 @@
             每个ts文件的最大时长
             </summary>
         </member>
+        <member name="P:JT1078.Hls.Options.M3U8Option.TsPathSimParamName">
+            <summary>
+            ts路径sim参数名称
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.Options.M3U8Option.TsPathChannelParamName">
+            <summary>
+            ts路径通道参数名称
+            </summary>
+        </member>
         <member name="P:JT1078.Hls.Options.M3U8Option.M3U8FileName">
             <summary>
             m3u8文件

@@ -136,7 +136,7 @@ namespace JT1078.Hls
             {
                 var tsFileInfo = tsFileInfoQueue.ElementAt(i);
                 sb.AppendLine($"#EXTINF:{tsFileInfo.Duration},");
-                sb.AppendLine($"{tsFileInfo.FileName}?sim={tsFileInfo.Sim}&channelNo={tsFileInfo.ChannelNo}");
+                sb.AppendLine($"{tsFileInfo.FileName}?{m3U8Option.TsPathSimParamName}={tsFileInfo.Sim}&{m3U8Option.TsPathChannelParamName}={tsFileInfo.ChannelNo}");
             }
             string m3u8FileName = Path.Combine(m3U8Option.HlsFileDirectory,$"{curTsFileInfo.Sim}_{curTsFileInfo.ChannelNo}", m3U8Option.M3U8FileName);
             using (FileStream fs = new FileStream(m3u8FileName, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
