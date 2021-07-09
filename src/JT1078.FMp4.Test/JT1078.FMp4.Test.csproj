@@ -40,6 +40,9 @@
     <None Update="FMP4\fragmented_demo_trun.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>   
+    <None Update="H264\1078视频数据.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>   
     <None Update="H264\index.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

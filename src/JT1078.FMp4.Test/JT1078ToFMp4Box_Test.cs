@@ -434,6 +434,28 @@ namespace JT1078.FMp4.Test
         }
 
         [Fact]
+        public void Test3_1()
+        {
+            FMp4Encoder fMp4Encoder = new FMp4Encoder();
+            var packages = ParseNALUTests();      
+            var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_3.mp4");
+            if (File.Exists(filepath))
+            {
+                File.Delete(filepath);
+            }
+            using var fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write); 
+            //fragment moof n
+            bool flag = true;
+            foreach (var package in packages)
+            {
+               var buffer= fMp4Encoder.EncoderVideo(package, flag);
+                flag = false;
+                fileStream.Write(buffer);
+            } 
+            fileStream.Close();
+        }
+
+        [Fact]
         public void Test4()
         {
             FMp4Encoder fMp4Encoder = new FMp4Encoder();
@@ -471,6 +493,7 @@ namespace JT1078.FMp4.Test
                     {
                         if (nalus.Count > 0)
                         {
+
                             var otherBuffer = fMp4Encoder.EncoderOtherVideoBox(nalus);
                             fileStream.Write(otherBuffer);
                             nalus.Clear();
@@ -537,7 +560,7 @@ namespace JT1078.FMp4.Test
         public JT1078Package ParseNALUTest()
         {
             JT1078Package Package = null;
-            var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "jt1078_1.txt"));
+            var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "jt1078_3.txt"));
             int mergeBodyLength = 0;
             foreach (var line in lines)
             {
@@ -549,7 +572,6 @@ namespace JT1078.FMp4.Test
             }
             return Package;
         }
-
         public List<JT1078Package> ParseNALUTests()
         {
             List<JT1078Package> packages = new List<JT1078Package>();

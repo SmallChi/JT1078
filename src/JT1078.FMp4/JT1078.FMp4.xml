@@ -1337,10 +1337,18 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderOtherVideoBox(System.Collections.Generic.List{JT1078.Protocol.H264.H264NALU}@)">
+        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderOtherVideoBox(System.Collections.Generic.List{JT1078.Protocol.H264.H264NALU})">
             <summary>
             编码其他视频数据盒子
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderVideo(JT1078.Protocol.JT1078Package,System.Boolean)">
+            <summary>
+            编码mp4 视频
+            </summary>
+            <param name="package"></param>
+            <param name="needVideoHeader"></param>
             <returns></returns>
         </member>
         <member name="P:JT1078.FMp4.FullBox.Version">
