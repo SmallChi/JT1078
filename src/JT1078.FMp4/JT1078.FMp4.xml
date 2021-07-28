@@ -1337,19 +1337,34 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderOtherVideoBox(System.Collections.Generic.List{JT1078.Protocol.H264.H264NALU})">
+        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderOtherVideoBox(System.Collections.Generic.List{JT1078.Protocol.H264.H264NALU},JT1078.FMp4.FMp4EncoderInfo)">
             <summary>
             编码其他视频数据盒子
             </summary>
             <returns></returns>
         </member>
-        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderVideo(JT1078.Protocol.JT1078Package,System.Boolean)">
+        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderVideo(JT1078.Protocol.JT1078Package,JT1078.FMp4.FMp4EncoderInfo,System.Boolean)">
             <summary>
             编码mp4 视频
             </summary>
             <param name="package"></param>
             <param name="needVideoHeader"></param>
             <returns></returns>
+        </member>
+        <member name="T:JT1078.FMp4.FMp4EncoderInfo">
+            <summary>
+            编码信息
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.FMp4EncoderInfo.SampleSize">
+            <summary>
+            样本大小，即盒子大小
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.FMp4EncoderInfo.SequenceNumber">
+            <summary>
+            轨道序号
+            </summary>
         </member>
         <member name="P:JT1078.FMp4.FullBox.Version">
             <summary>

@@ -32,7 +32,9 @@ namespace JT1078.Hls.Test
                         lasttime = long.Parse(temp[0]);
                     }
                     else {
-                        Thread.Sleep(TimeSpan.FromSeconds(long.Parse(temp[0]) - lasttime));
+                        var ts = long.Parse(temp[0]) - lasttime;
+                        if (ts > 3) ts = 3;
+                        Thread.Sleep(TimeSpan.FromSeconds(ts));
                         lasttime = long.Parse(temp[0]);
                     }
                     var data= temp[1].ToHexBytes();
