@@ -19,8 +19,7 @@
         //var mimeCodec = 'video/mp4;codecs="avc1.4D0014, mp4a.40.2"';
         // *** USER PARAMETERS ***
         var verbose = true;
-        // var verbose = true; // enable for saturating the console ..
-        var buffering_sec = 1; // use some reasonable value
+        var buffering_sec = 3; // use some reasonable value
         var buffering_sec_seek = buffering_sec * 0.9;
         // ..seek the stream if it's this much away or
         // from the last available timestamp
@@ -119,45 +118,44 @@
             //    return;
             // }
             // keep the latency to minimum
-            let latest = stream_live.duration;
-            if ((stream_live.duration >= buffering_sec) &&
-                ((latest - stream_live.currentTime) > buffering_sec_seek)) {
-                console.log("seek from ", stream_live.currentTime, " to ", latest);
-                df = (stream_live.duration - stream_live.currentTime); // this much away from the last available frame
-                if ((df > buffering_sec_seek)) {
-                    seek_to = stream_live.duration - buffering_sec_seek_distance;
-                    stream_live.currentTime = seek_to;
-                }
-            }
-            data = arr;
-            if (!stream_started) {
+            // let latest = stream_live.duration;
+            // if ((stream_live.duration >= buffering_sec) && ((latest - stream_live.currentTime) > buffering_sec_seek)) {
+            //     console.log("seek from ", stream_live.currentTime, " to ", latest);
+            //     df = (stream_live.duration - stream_live.currentTime); // this much away from the last available frame
+            //     if ((df > buffering_sec_seek)) {
+            //         seek_to = stream_live.duration - buffering_sec_seek_distance;
+            //         stream_live.currentTime = seek_to;
+            //     }
+            // }
+            if (!source_buffer.updating) {
                 if (verbose) { console.log("Streaming started: ", memview[0], memview[1], memview[2], memview[3], memview[4]); }
                 stream_started = true;
-                source_buffer.appendBuffer(data);
-                
+                source_buffer.appendBuffer(arr);          
                 cc = cc + 1;
-                return;
+            }else{
+                queue.push(arr); // add to the end
             }
-            queue.push(data); // add to the end
             if (verbose) { console.log("queue push:", queue.length); }
         }
 
         function loadPacket() { // called when source_buffer is ready for more
             if (!source_buffer.updating) { // really, really ready
                 if (queue.length > 0) {
-                    inp = queue.shift(); // pop from the beginning
+                    var inp = queue.shift(); // pop from the beginning
                     if (verbose) { console.log("queue pop:", queue.length); }
                     var memview = new Uint8Array(inp);
                     if (verbose) { console.log(" ==> writing buffer with", memview[0], memview[1], memview[2], memview[3]); }
                     source_buffer.appendBuffer(inp);
                     cc = cc + 1;
                 }
-                else { // the queue runs empty, so the next packet is fed directly
-                    stream_started = false;
-                }
+                // else { // the queue runs empty, so the next packet is fed directly
+                //     stream_started = false;
+                // }
             }
-            else { // so it was not?
-            }
+            // else { 
+            //     // so it was not?
+
+            // }
         }
 
         function opened() { // MediaSource object is ready to go
@@ -175,7 +173,10 @@
             ws.on("video", (message) => {
                 var buff=base64ToArrayBuffer(message);
                 //console.log(buff);
-                putPacket(buff);
+                //putPacket(buff);
+                //先直接喂进去
+                //mvhd.duration 谷歌浏览器不会缓存
+                source_buffer.appendBuffer(buff);   
             });
             ws.start().catch(err => console.error(err));
         }

@@ -52,12 +52,16 @@ namespace JT1078.SignalR.Test.Services
         public void a()
         {
             List<JT1078Package> packages = new List<JT1078Package>();
-            var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "jt1078_3.txt"));
+            //var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "jt1078_3.txt"));
+            var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "jt1078_5.txt"));
             int mergeBodyLength = 0;
             foreach (var line in lines)
             {
                 var data = line.Split(',');
-                var bytes = data[6].ToHexBytes();
+                //jt1078_5
+                var bytes = data[1].ToHexBytes();
+                //jt1078_3
+                //var bytes = data[6].ToHexBytes();
                 JT1078Package package = JT1078Serializer.Deserialize(bytes);
                 mergeBodyLength += package.DataBodyLength;
                 var packageMerge = JT1078Serializer.Merge(package);

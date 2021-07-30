@@ -29,5 +29,8 @@
     <None Include="..\..\doc\video\jt1078_2.txt" Link="H264\jt1078_2.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="..\..\doc\video\jt1078_5.txt" Link="H264\jt1078_5.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

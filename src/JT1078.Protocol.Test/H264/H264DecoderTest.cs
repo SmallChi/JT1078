@@ -95,5 +95,26 @@ namespace JT1078.Protocol.Test.H264
             }
             fileStream.Close();
         }
+
+        [Fact]
+        public void ParseNALUTest4()
+        {
+            string file = "jt1078_5";
+            var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", $"{file}.txt"));
+            string filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", $"{file}.h264");
+            if (File.Exists(filepath))
+            {
+                File.Delete(filepath);
+            }
+            using var fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
+            foreach (var line in lines)
+            {
+                var data = line.Split(',');
+                var bytes = data[1].ToHexBytes();
+                JT1078Package package = JT1078Serializer.Deserialize(bytes);
+                fileStream.Write(package.Bodies);
+            }
+            fileStream.Close();
+        }
     }
 }

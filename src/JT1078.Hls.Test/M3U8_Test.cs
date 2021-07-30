@@ -20,7 +20,7 @@ namespace JT1078.Hls.Test
         {
             try
             {
-                var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "1078视频数据.txt"));
+                var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "jt1078_5.txt"));
                 Socket clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 clientSocket.Connect("127.0.0.1",1078);
                 long lasttime = 0;
