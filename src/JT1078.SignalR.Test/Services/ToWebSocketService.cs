@@ -126,12 +126,13 @@ namespace JT1078.SignalR.Test.Services
                         if (flag.ContainsKey(session))
                         {
                             var len = flag[session];
-                            if (q.Count < len)
+                            if (q.Count <= len)
                             {
                                 break;
                             }
                             await _hubContext.Clients.Client(session).SendAsync("video", q[len], stoppingToken);
-                            flag[session] = ++len;
+                            len++;
+                            flag[session] = len;
                         }
                         else
                         {

@@ -22,7 +22,7 @@ namespace JT1078.Hls.Test
             {
                 var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "jt1078_5.txt"));
                 Socket clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                clientSocket.Connect("127.0.0.1",1078);
+                clientSocket.Connect("127.0.0.1", 10888);
                 long lasttime = 0;
                 foreach (var line in lines)
                 {
@@ -31,10 +31,17 @@ namespace JT1078.Hls.Test
                     {
                         lasttime = long.Parse(temp[0]);
                     }
-                    else {
+                    else 
+                    {
                         var ts = long.Parse(temp[0]) - lasttime;
-                        if (ts > 3) ts = 3;
-                        Thread.Sleep(TimeSpan.FromSeconds(ts));
+                        if(ts>0)
+                        {
+                            Thread.Sleep(TimeSpan.FromMilliseconds(ts));
+                        }
+                        else if (ts == 0)
+                        {
+                           
+                        }
                         lasttime = long.Parse(temp[0]);
                     }
                     var data= temp[1].ToHexBytes();
