@@ -2,15 +2,18 @@
 using JT1078.FMp4.MessagePack;
 using JT1078.FMp4.Samples;
 using JT1078.Protocol;
+using JT1078.Protocol.Enums;
 using JT1078.Protocol.Extensions;
 using JT1078.Protocol.H264;
 using JT1078.Protocol.MessagePack;
 using System;
+using System.Buffers;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -530,6 +533,104 @@ namespace JT1078.FMp4.Test
         }
 
         [Fact]
+        public void Test6()
+        {
+            FMp4Encoder fMp4Encoder = new FMp4Encoder();
+            H264Decoder h264Decoder = new H264Decoder();
+            var packages = ParseNALUTests1();
+            var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_7.mp4");
+            if (File.Exists(filepath))
+            {
+                File.Delete(filepath);
+            }
+            using var fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
+
+            var ftyp = fMp4Encoder.EncoderFtypBox();
+            fileStream.Write(ftyp);
+
+            var iPackage = packages.FirstOrDefault(f => f.Label3.DataType == JT1078DataType.视频I帧);
+            var iNalus = h264Decoder.ParseNALU(iPackage);
+            //判断第一帧是否关键帧
+            var moov = fMp4Encoder.EncoderMoovBox(
+                iNalus.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.SPS),
+                iNalus.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.PPS));
+            fileStream.Write(moov);
+
+            List<H264NALU> nalus = new List<H264NALU>();
+            foreach (var package in packages)
+            {
+                List<H264NALU> h264NALUs = h264Decoder.ParseNALU(package);
+                if (package.Label3.DataType == Protocol.Enums.JT1078DataType.视频I帧)
+                {
+                    if (nalus.Count > 0)
+                    {
+                        var otherBuffer = fMp4Encoder.EncoderOtherVideoBox(nalus);
+                        fileStream.Write(otherBuffer);
+                        nalus.Clear();
+                    }
+                }
+                nalus = nalus.Concat(h264NALUs).ToList();
+            }
+            if (nalus.Count > 0)
+            {
+                var otherBuffer = fMp4Encoder.EncoderOtherVideoBox(nalus);
+                fileStream.Write(otherBuffer);
+                nalus.Clear();
+            }
+            fileStream.Close();
+        }
+
+        [Fact]
+        public void Test6_2()
+        {
+            var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_7.h264");
+            if (File.Exists(filepath))
+            {
+                File.Delete(filepath);
+            }
+            using var fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
+            List<JT1078Package> packages = new List<JT1078Package>();
+            var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "jt1078_6.txt"));
+            foreach (var line in lines)
+            {
+                var bytes = line.ToHexBytes();
+                JT1078Package package = JT1078Serializer.Deserialize(bytes);
+                fileStream.Write(package.Bodies);
+            }
+            fileStream.Close();
+        }
+
+        [Fact]
+        public void WebSocketMp4()
+        {
+            var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_8.mp4");
+            if (File.Exists(filepath))
+            {
+                File.Delete(filepath);
+            }
+            using var fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
+            System.Net.WebSockets.ClientWebSocket clientWebSocket = new System.Net.WebSockets.ClientWebSocket();
+            clientWebSocket.ConnectAsync(new Uri("ws://127.0.0.1:81/live/JT1078_7.live.mp4"), CancellationToken.None).GetAwaiter().GetResult();
+            Task.Run(async() => 
+            {
+                while (true)
+                {
+                    var buffer = new byte[4096];
+                    var result = await clientWebSocket.ReceiveAsync(buffer, CancellationToken.None);
+                    if (result.EndOfMessage)
+                    {
+                        await fileStream.WriteAsync(buffer.AsSpan(0, result.Count).ToArray());
+                    }
+                    else
+                    {
+                        await fileStream.WriteAsync(buffer);
+                    }
+                }
+            });
+            Thread.Sleep(100 * 1000);
+        }
+
+        [Fact]
         public void tkhd_width_height_test()
         {
             //01 60 00 00
@@ -606,6 +707,25 @@ namespace JT1078.FMp4.Test
             {
                 var data = line.Split(',');
                 var bytes = data[6].ToHexBytes();
+                JT1078Package package = JT1078Serializer.Deserialize(bytes);
+                mergeBodyLength += package.DataBodyLength;
+                var packageMerge = JT1078Serializer.Merge(package);
+                if (packageMerge != null)
+                {
+                    packages.Add(packageMerge);
+                }
+            }
+            return packages;
+        }
+
+        public List<JT1078Package> ParseNALUTests1()
+        {
+            List<JT1078Package> packages = new List<JT1078Package>();
+            var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "jt1078_6.txt"));
+            int mergeBodyLength = 0;
+            foreach (var line in lines)
+            {
+                var bytes = line.ToHexBytes();
                 JT1078Package package = JT1078Serializer.Deserialize(bytes);
                 mergeBodyLength += package.DataBodyLength;
                 var packageMerge = JT1078Serializer.Merge(package);

@@ -12,4 +12,8 @@ ffmpeg -i jt1078_3.h264 -c:v copy -f mp4 -movflags empty_moov+default_base_moof+
 
 ffprobe -of json -show_frames jt1078_3.h264 > jt1078_3.json
 
+ffmpeg -re -i JT1078_7.flv -acodec copy -vcodec copy -f flv rtmp://127.0.0.1:1935/live/JT1078_7
+
+ffmpeg -re -i JT1078_7.h264 -acodec copy -vcodec copy -f flv rtmp://127.0.0.1:1935/live/JT1078_7
+
 chrome://media-internals/

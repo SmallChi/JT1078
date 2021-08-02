@@ -7,15 +7,14 @@
     <Authors>SmallChi(Koike)</Authors>
     <PackageId>JT1078.Hls</PackageId>
     <Product>JT1078.Hls</Product>
-    <Description>基于JT1078的Hls视频编码器
-ts文件路径参数名改成可配置</Description>
+    <Description>基于JT1078的Hls视频编码器、ts文件路径参数名改成可配置</Description>
     <PackageReleaseNotes>基于JT1078的Hls视频编码器</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/SmallChi/JT1078</RepositoryUrl>
     <PackageProjectUrl>https://github.com/SmallChi/JT1078</PackageProjectUrl>
     <licenseUrl>https://github.com/SmallChi/JT1078/blob/master/LICENSE</licenseUrl>
     <license>https://github.com/SmallChi/JT1078/blob/master/LICENSE</license>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>1.1.0-preview3</Version>
+    <Version>1.1.0-preview4</Version>
     <SignAssembly>false</SignAssembly>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
