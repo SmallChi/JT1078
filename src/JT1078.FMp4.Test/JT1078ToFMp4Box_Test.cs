@@ -449,12 +449,12 @@ namespace JT1078.FMp4.Test
             }
 
             using var fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
-            var ftyp = fMp4Encoder.EncoderFtypBox();
+            var ftyp = fMp4Encoder.FtypBox();
             fileStream.Write(ftyp);
 
             var iNalus = h264Decoder.ParseNALU(packages[0]);
             //判断第一帧是否关键帧
-            var moov = fMp4Encoder.EncoderMoovBox(
+            var moov = fMp4Encoder.VideoMoovBox(
                 iNalus.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.SPS),
                 iNalus.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.PPS));
             fileStream.Write(moov);
@@ -474,7 +474,7 @@ namespace JT1078.FMp4.Test
                     {
                         if (nalus.Count > 0)
                         {
-                            var otherBuffer = fMp4Encoder.EncoderOtherVideoBox(nalus);
+                            var otherBuffer = fMp4Encoder.OtherVideoBox(nalus);
                             fileStream.Write(otherBuffer);
                             nalus.Clear();
                         }
@@ -498,12 +498,12 @@ namespace JT1078.FMp4.Test
             }
             using var fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
 
-            var ftyp = fMp4Encoder.EncoderFtypBox();
+            var ftyp = fMp4Encoder.FtypBox();
             fileStream.Write(ftyp);
 
             var iNalus = h264Decoder.ParseNALU(packages[0]);
             //判断第一帧是否关键帧
-            var moov = fMp4Encoder.EncoderMoovBox(
+            var moov = fMp4Encoder.VideoMoovBox(
                 iNalus.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.SPS),
                 iNalus.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.PPS));
             fileStream.Write(moov);
@@ -516,7 +516,7 @@ namespace JT1078.FMp4.Test
                 {
                     if (nalus.Count > 0)
                     {
-                        var otherBuffer = fMp4Encoder.EncoderOtherVideoBox(nalus);
+                        var otherBuffer = fMp4Encoder.OtherVideoBox(nalus);
                         fileStream.Write(otherBuffer);
                         nalus.Clear();
                     }
@@ -525,7 +525,7 @@ namespace JT1078.FMp4.Test
             }
             if (nalus.Count > 0)
             {
-                var otherBuffer = fMp4Encoder.EncoderOtherVideoBox(nalus);
+                var otherBuffer = fMp4Encoder.OtherVideoBox(nalus);
                 fileStream.Write(otherBuffer);
                 nalus.Clear();
             }
@@ -545,13 +545,13 @@ namespace JT1078.FMp4.Test
             }
             using var fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
 
-            var ftyp = fMp4Encoder.EncoderFtypBox();
+            var ftyp = fMp4Encoder.FtypBox();
             fileStream.Write(ftyp);
 
             var iPackage = packages.FirstOrDefault(f => f.Label3.DataType == JT1078DataType.视频I帧);
             var iNalus = h264Decoder.ParseNALU(iPackage);
             //判断第一帧是否关键帧
-            var moov = fMp4Encoder.EncoderMoovBox(
+            var moov = fMp4Encoder.VideoMoovBox(
                 iNalus.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.SPS),
                 iNalus.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.PPS));
             fileStream.Write(moov);
@@ -564,7 +564,8 @@ namespace JT1078.FMp4.Test
                 {
                     if (nalus.Count > 0)
                     {
-                        var otherBuffer = fMp4Encoder.EncoderOtherVideoBox(nalus);
+                        fileStream.Write(fMp4Encoder.StypBox());
+                        var otherBuffer = fMp4Encoder.OtherVideoBox(nalus);
                         fileStream.Write(otherBuffer);
                         nalus.Clear();
                     }
@@ -573,7 +574,7 @@ namespace JT1078.FMp4.Test
             }
             if (nalus.Count > 0)
             {
-                var otherBuffer = fMp4Encoder.EncoderOtherVideoBox(nalus);
+                var otherBuffer = fMp4Encoder.OtherVideoBox(nalus);
                 fileStream.Write(otherBuffer);
                 nalus.Clear();
             }

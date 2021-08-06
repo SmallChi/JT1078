@@ -116,5 +116,26 @@ namespace JT1078.Protocol.Test.H264
             }
             fileStream.Close();
         }
+
+        [Fact]
+        public void ParseNALUTest5()
+        {
+            string file = "jt1078_6";
+            var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", $"{file}.txt"));
+            List<H264NALU> nALUs = new List<H264NALU>();
+            H264Decoder decoder = new H264Decoder();
+            foreach (var line in lines)
+            {
+                var bytes = line.ToHexBytes();
+                JT1078Package package = JT1078Serializer.Deserialize(bytes);
+                var packageMerge = JT1078Serializer.Merge(package);
+                if (packageMerge != null)
+                {
+                    var nalus = decoder.ParseNALU(packageMerge);
+                    nALUs = nALUs.Concat(nalus).ToList();
+                }
+            }
+            var a = nALUs.Count(c => !c.Slice);
+        }
     }
 }

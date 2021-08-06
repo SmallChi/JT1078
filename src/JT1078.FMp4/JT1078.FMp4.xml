@@ -1325,19 +1325,25 @@
             
             </summary>
         </member>
-        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderFtypBox">
+        <member name="M:JT1078.FMp4.FMp4Encoder.FtypBox">
             <summary>
             编码ftyp盒子
             </summary>
             <returns></returns>
         </member>
-        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderMoovBox(JT1078.Protocol.H264.H264NALU@,JT1078.Protocol.H264.H264NALU@)">
+        <member name="M:JT1078.FMp4.FMp4Encoder.VideoMoovBox(JT1078.Protocol.H264.H264NALU@,JT1078.Protocol.H264.H264NALU@)">
             <summary>
             编码moov盒子
             </summary>
             <returns></returns>
         </member>
-        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderOtherVideoBox(System.Collections.Generic.List{JT1078.Protocol.H264.H264NALU}@)">
+        <member name="M:JT1078.FMp4.FMp4Encoder.StypBox">
+            <summary>
+            styp
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:JT1078.FMp4.FMp4Encoder.OtherVideoBox(System.Collections.Generic.List{JT1078.Protocol.H264.H264NALU}@)">
             <summary>
             编码其他视频数据盒子
             </summary>

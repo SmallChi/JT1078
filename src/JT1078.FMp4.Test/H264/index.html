@@ -173,10 +173,10 @@
             ws.on("video", (message) => {
                 var buff=base64ToArrayBuffer(message);
                 //console.log(buff);
-                //putPacket(buff);
+                putPacket(buff);
                 //先直接喂进去
                 //mvhd.duration 谷歌浏览器不会缓存
-                source_buffer.appendBuffer(buff);   
+                //source_buffer.appendBuffer(buff);   
             });
             ws.start().catch(err => console.error(err));
         }

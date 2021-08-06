@@ -117,7 +117,7 @@ namespace JT1078.AV.Benchmark
         {
             for (var i = 0; i < N; i++)
             {
-                var buffer = fmp4Encoder.EncoderOtherVideoBox(FMp4H264NALUs);
+                var buffer = fmp4Encoder.OtherVideoBox(FMp4H264NALUs);
             }
         }
     }

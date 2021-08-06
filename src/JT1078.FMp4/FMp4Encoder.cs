@@ -32,10 +32,11 @@ namespace JT1078.FMp4
     {
         Dictionary<string, TrackInfo> TrackInfos;
 
-        const uint DefaultSampleDuration = 48000u;
+        const uint DefaultSampleDuration = 40u;
         const uint DefaultSampleFlags = 0x1010000;
         const uint FirstSampleFlags = 33554432;
         const uint TfhdFlags = 0x2003a;
+        //const uint TrunFlags = 0x205;
         const uint TrunFlags = 0x205;
         const uint SampleDescriptionIndex = 1;
         const uint TrackID = 1;
@@ -52,7 +53,7 @@ namespace JT1078.FMp4
         /// 编码ftyp盒子
         /// </summary>
         /// <returns></returns>
-        public byte[] EncoderFtypBox()
+        public byte[] FtypBox()
         {
             byte[] buffer = FMp4ArrayPool.Rent(1024);
             FMp4MessagePackWriter writer = new FMp4MessagePackWriter(buffer);
@@ -82,7 +83,7 @@ namespace JT1078.FMp4
         /// 编码moov盒子
         /// </summary>
         /// <returns></returns>
-        public byte[] EncoderMoovBox(in H264NALU sps, in H264NALU pps)
+        public byte[] VideoMoovBox(in H264NALU sps, in H264NALU pps)
         {
             byte[] buffer = FMp4ArrayPool.Rent(sps.RawData.Length + pps.RawData.Length + 1024);
             FMp4MessagePackWriter writer = new FMp4MessagePackWriter(buffer);
@@ -111,7 +112,8 @@ namespace JT1078.FMp4
                 movieBox.TrackBox.MediaBox.MediaHeaderBox = new MediaHeaderBox();
                 movieBox.TrackBox.MediaBox.MediaHeaderBox.CreationTime = 0;
                 movieBox.TrackBox.MediaBox.MediaHeaderBox.ModificationTime = 0;
-                movieBox.TrackBox.MediaBox.MediaHeaderBox.Timescale = 1200000;
+                //movieBox.TrackBox.MediaBox.MediaHeaderBox.Timescale = 1200000;
+                movieBox.TrackBox.MediaBox.MediaHeaderBox.Timescale = 1000;
                 movieBox.TrackBox.MediaBox.MediaHeaderBox.Duration = 0;
                 movieBox.TrackBox.MediaBox.HandlerBox = new HandlerBox();
                 movieBox.TrackBox.MediaBox.HandlerBox.HandlerType = HandlerType.vide;
@@ -161,10 +163,39 @@ namespace JT1078.FMp4
         }
 
         /// <summary>
+        /// styp
+        /// </summary>
+        /// <returns></returns>
+        public byte[] StypBox()
+        {
+            byte[] buffer = FMp4ArrayPool.Rent(1024);
+            FMp4MessagePackWriter writer = new FMp4MessagePackWriter(buffer);
+            try
+            {
+                SegmentTypeBox stypTypeBox = new SegmentTypeBox();
+                stypTypeBox.MajorBrand = "isom";
+                stypTypeBox.MinorVersion = "\0\0\0\0";
+                stypTypeBox.CompatibleBrands.Add("isom");
+                stypTypeBox.CompatibleBrands.Add("mp42");
+                stypTypeBox.CompatibleBrands.Add("msdh");
+                stypTypeBox.CompatibleBrands.Add("msix");
+                stypTypeBox.CompatibleBrands.Add("iso5");
+                stypTypeBox.CompatibleBrands.Add("iso6");
+                stypTypeBox.ToBuffer(ref writer);
+                var data = writer.FlushAndGetArray();
+                return data;
+            }
+            finally
+            {
+                FMp4ArrayPool.Return(buffer);
+            }
+        }
+
+        /// <summary>
         /// 编码其他视频数据盒子
         /// </summary>
         /// <returns></returns>
-        public byte[] EncoderOtherVideoBox(in List<H264NALU> nalus)
+        public byte[] OtherVideoBox(in List<H264NALU> nalus)
         {
             byte[] buffer = FMp4ArrayPool.Rent(nalus.Sum(s => s.RawData.Length + s.StartCodePrefix.Length) + 4096);
             FMp4MessagePackWriter writer = new FMp4MessagePackWriter(buffer);
@@ -193,12 +224,14 @@ namespace JT1078.FMp4
                         {
                             truns.Add(new TrackRunBox.TrackRunInfo()
                             {
+                                SampleDuration=40,
                                 SampleSize = iSize,
                             });
                             iSize = 0;
                         }
                         truns.Add(new TrackRunBox.TrackRunInfo()
                         {
+                            SampleDuration = 40,
                             SampleSize = (uint)(nalu.RawData.Length + nalu.StartCodePrefix.Length),
                         });
                     }
