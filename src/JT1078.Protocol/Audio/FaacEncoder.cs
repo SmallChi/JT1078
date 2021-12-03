@@ -3,20 +3,71 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using System.Runtime.InteropServices;
+using JT1078.Protocol.Extensions;
 
 namespace JT1078.Protocol.Audio
 {
-    public interface IFaacEncoder:IDisposable
+    public interface IFaacEncoder : IDisposable
     {
+        public int frameSize { get; }
+
         byte[] Encode(byte[] bytes);
     }
+
+    public class FaacEncoder : IFaacEncoder
+    {
+        private IFaacEncoder encoder { get; }
+
+        public int frameSize => encoder.frameSize;
+
+        public FaacEncoder(int sampleRate, int channels, int sampleBit, bool adts = false)
+        {
+            switch (Environment.OSVersion.Platform)
+            {
+                case PlatformID.Win32NT:
+                case PlatformID.Win32S:
+                case PlatformID.Win32Windows:
+                case PlatformID.WinCE:
+                    if (Environment.Is64BitProcess)
+                    {
+                        encoder = new FaacEncoder_x64(sampleRate, channels, sampleBit, adts);
+                    }
+                    else
+                    {
+                        encoder = new FaacEncoder_x86(sampleRate, channels, sampleBit, adts);
+                    }
+                    break;
+
+                case PlatformID.MacOSX:
+                case PlatformID.Unix:
+                    //TODO: 适配linux
+                    break;
+
+                default:
+                    throw new ApplicationException("system not support.");
+                    break;
+            }
+        }
+
+        public void Dispose()
+        {
+            encoder.Dispose();
+        }
+
+        public byte[] Encode(byte[] bytes)
+        {
+            return encoder.Encode(bytes);
+        }
+    }
+
     public class FaacEncoder_x86 : IFaacEncoder
     {
         private IntPtr faacEncHandle = IntPtr.Zero;
         private readonly int inputSamples;
         private readonly int maxOutput;
-        public readonly int frameSize;
+        public int frameSize { get; }
         private List<byte> frameCache = new List<byte>();
+
         public FaacEncoder_x86(int sampleRate, int channels, int sampleBit, bool adts = false)
         {
             var inputSampleBytes = new byte[4];
@@ -65,42 +116,34 @@ namespace JT1078.Protocol.Audio
             }
         }
 
-        const string DLLFile = @"/nativelibs/x86/libfaac.dll";
+        private const string DLLFile = @"\nativelibs\x86\libfaac.dll";
 
         [DllImport(DLLFile, EntryPoint = "faacEncGetVersion", CallingConvention = CallingConvention.StdCall)]
-        //int FAACAPI faacEncGetVersion(char **faac_id_string, char **faac_copyright_string);
-        private extern static int FaacEncGetVersion(ref IntPtr faac_id_string, ref IntPtr faac_copyright_string);
+        private static extern int FaacEncGetVersion(ref IntPtr faac_id_string, ref IntPtr faac_copyright_string);
 
         [DllImport(DLLFile, EntryPoint = "faacEncGetCurrentConfiguration", CallingConvention = CallingConvention.StdCall)]
-        //faacEncConfigurationPtr FAACAPI faacEncGetCurrentConfiguration(faacEncHandle hEncoder);
-        private extern static IntPtr FaacEncGetCurrentConfiguration(IntPtr hEncoder);
-
+        private static extern IntPtr FaacEncGetCurrentConfiguration(IntPtr hEncoder);
 
         [DllImport(DLLFile, EntryPoint = "faacEncSetConfiguration", CallingConvention = CallingConvention.StdCall)]
-        //int FAACAPI faacEncSetConfiguration(faacEncHandle hEncoder,faacEncConfigurationPtr config);
-        private extern static int FaacEncSetConfiguration(IntPtr hEncoder, IntPtr config);
+        private static extern int FaacEncSetConfiguration(IntPtr hEncoder, IntPtr config);
 
         [DllImport(DLLFile, EntryPoint = "faacEncOpen", CallingConvention = CallingConvention.StdCall)]
-        //faacEncHandle FAACAPI faacEncOpen(unsigned long sampleRate, unsigned int numChannels, unsigned long *inputSamples, unsigned long *maxOutputBytes);
-        private extern static IntPtr FaacEncOpen(int sampleRate, int numChannels, byte[] inputSamples, byte[] maxOutputBytes);
-
+        private static extern IntPtr FaacEncOpen(int sampleRate, int numChannels, byte[] inputSamples, byte[] maxOutputBytes);
 
         [DllImport(DLLFile, EntryPoint = "faacEncGetDecoderSpecificInfo", CallingConvention = CallingConvention.StdCall)]
-        //int FAACAPI faacEncGetDecoderSpecificInfo(faacEncHandle hEncoder, unsigned char **ppBuffer,unsigned long *pSizeOfDecoderSpecificInfo);
-        private extern static IntPtr FaacEncGetDecoderSpecificInfo(IntPtr hEncoder, ref IntPtr ppBuffer, ref int pSizeOfDecoderSpecificInfo);
-
+        private static extern IntPtr FaacEncGetDecoderSpecificInfo(IntPtr hEncoder, ref IntPtr ppBuffer, ref int pSizeOfDecoderSpecificInfo);
 
         [DllImport(DLLFile, EntryPoint = "faacEncEncode", CallingConvention = CallingConvention.StdCall)]
-        //int FAACAPI faacEncEncode(faacEncHandle hEncoder, int32_t * inputBuffer, unsigned int samplesInput, unsigned char *outputBuffer, unsigned int bufferSize);
-        private extern static int FaacEncEncode(IntPtr hEncoder, IntPtr inputBuffer, int samplesInput, IntPtr outputBuffer, int bufferSize);
+        private static extern int FaacEncEncode(IntPtr hEncoder, IntPtr inputBuffer, int samplesInput, IntPtr outputBuffer, int bufferSize);
+
         [DllImport(DLLFile, EntryPoint = "faacEncEncode", CallingConvention = CallingConvention.StdCall)]
-        private extern static int FaacEncEncode(IntPtr hEncoder, byte[] inputBuffer, int samplesInput, byte[] outputBuffer, int bufferSize);
+        private static extern int FaacEncEncode(IntPtr hEncoder, byte[] inputBuffer, int samplesInput, byte[] outputBuffer, int bufferSize);
 
         [DllImport(DLLFile, EntryPoint = "faacEncClose", CallingConvention = CallingConvention.StdCall)]
-        //int FAACAPI faacEncClose(faacEncHandle hEncoder);
-        private extern static IntPtr FaacEncClose(IntPtr hEncoder);
+        private static extern IntPtr FaacEncClose(IntPtr hEncoder);
 
         #region 配置结构
+
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         private struct FaacEncConfiguration
         {
@@ -183,21 +226,24 @@ namespace JT1078.Protocol.Audio
                 WAVE 4.0		2, 0, 1, 3
                 WAVE 5.0		2, 0, 1, 3, 4
                 WAVE 5.1		2, 0, 1, 4, 5, 3
-                AIFF 5.1		2, 0, 3, 1, 4, 5 
+                AIFF 5.1		2, 0, 3, 1, 4, 5
             */
+
             [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.I4, SizeConst = 64)]
             public int[] channel_map;
-
         }
-        #endregion
+
+        #endregion 配置结构
     }
+
     public class FaacEncoder_x64 : IFaacEncoder
     {
         private IntPtr faacEncHandle = IntPtr.Zero;
         private readonly int inputSamples;
         private readonly int maxOutput;
-        public readonly int frameSize;
+        public int frameSize { get; }
         private List<byte> frameCache = new List<byte>();
+
         public FaacEncoder_x64(int sampleRate, int channels, int sampleBit, bool adts = false)
         {
             var inputSampleBytes = new byte[4];
@@ -246,41 +292,34 @@ namespace JT1078.Protocol.Audio
             }
         }
 
-        const string DLLFile = @"/nativelibs/x64/libfaac.dll";
+        private const string DLLFile = @"\nativelibs\x64\libfaac.dll";
 
         [DllImport(DLLFile, EntryPoint = "faacEncGetVersion", CallingConvention = CallingConvention.StdCall)]
-        //int FAACAPI faacEncGetVersion(char **faac_id_string, char **faac_copyright_string);
-        private extern static int FaacEncGetVersion(ref IntPtr faac_id_string, ref IntPtr faac_copyright_string);
+        private static extern int FaacEncGetVersion(ref IntPtr faac_id_string, ref IntPtr faac_copyright_string);
 
         [DllImport(DLLFile, EntryPoint = "faacEncGetCurrentConfiguration", CallingConvention = CallingConvention.StdCall)]
-        //faacEncConfigurationPtr FAACAPI faacEncGetCurrentConfiguration(faacEncHandle hEncoder);
-        private extern static IntPtr FaacEncGetCurrentConfiguration(IntPtr hEncoder);
+        private static extern IntPtr FaacEncGetCurrentConfiguration(IntPtr hEncoder);
 
         [DllImport(DLLFile, EntryPoint = "faacEncSetConfiguration", CallingConvention = CallingConvention.StdCall)]
-        //int FAACAPI faacEncSetConfiguration(faacEncHandle hEncoder,faacEncConfigurationPtr config);
-        private extern static int FaacEncSetConfiguration(IntPtr hEncoder, IntPtr config);
+        private static extern int FaacEncSetConfiguration(IntPtr hEncoder, IntPtr config);
 
         [DllImport(DLLFile, EntryPoint = "faacEncOpen", CallingConvention = CallingConvention.StdCall)]
-        //faacEncHandle FAACAPI faacEncOpen(unsigned long sampleRate, unsigned int numChannels, unsigned long *inputSamples, unsigned long *maxOutputBytes);
-        private extern static IntPtr FaacEncOpen(int sampleRate, int numChannels, byte[] inputSamples, byte[] maxOutputBytes);
-
+        private static extern IntPtr FaacEncOpen(int sampleRate, int numChannels, byte[] inputSamples, byte[] maxOutputBytes);
 
         [DllImport(DLLFile, EntryPoint = "faacEncGetDecoderSpecificInfo", CallingConvention = CallingConvention.StdCall)]
-        //int FAACAPI faacEncGetDecoderSpecificInfo(faacEncHandle hEncoder, unsigned char **ppBuffer,unsigned long *pSizeOfDecoderSpecificInfo);
-        private extern static IntPtr FaacEncGetDecoderSpecificInfo(IntPtr hEncoder, ref IntPtr ppBuffer, ref int pSizeOfDecoderSpecificInfo);
-
+        private static extern IntPtr FaacEncGetDecoderSpecificInfo(IntPtr hEncoder, ref IntPtr ppBuffer, ref int pSizeOfDecoderSpecificInfo);
 
         [DllImport(DLLFile, EntryPoint = "faacEncEncode", CallingConvention = CallingConvention.StdCall)]
-        //int FAACAPI faacEncEncode(faacEncHandle hEncoder, int32_t * inputBuffer, unsigned int samplesInput, unsigned char *outputBuffer, unsigned int bufferSize);
-        private extern static int FaacEncEncode(IntPtr hEncoder, IntPtr inputBuffer, int samplesInput, IntPtr outputBuffer, int bufferSize);
+        private static extern int FaacEncEncode(IntPtr hEncoder, IntPtr inputBuffer, int samplesInput, IntPtr outputBuffer, int bufferSize);
+
         [DllImport(DLLFile, EntryPoint = "faacEncEncode", CallingConvention = CallingConvention.StdCall)]
-        private extern static int FaacEncEncode(IntPtr hEncoder, byte[] inputBuffer, int samplesInput, byte[] outputBuffer, int bufferSize);
+        private static extern int FaacEncEncode(IntPtr hEncoder, byte[] inputBuffer, int samplesInput, byte[] outputBuffer, int bufferSize);
 
         [DllImport(DLLFile, EntryPoint = "faacEncClose", CallingConvention = CallingConvention.StdCall)]
-        //int FAACAPI faacEncClose(faacEncHandle hEncoder);
-        private extern static IntPtr FaacEncClose(IntPtr hEncoder);
+        private static extern IntPtr FaacEncClose(IntPtr hEncoder);
 
         #region 配置结构
+
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         private struct FaacEncConfiguration
         {
@@ -363,12 +402,13 @@ namespace JT1078.Protocol.Audio
                 WAVE 4.0		2, 0, 1, 3
                 WAVE 5.0		2, 0, 1, 3, 4
                 WAVE 5.1		2, 0, 1, 4, 5, 3
-                AIFF 5.1		2, 0, 3, 1, 4, 5 
+                AIFF 5.1		2, 0, 3, 1, 4, 5
             */
+
             [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.I4, SizeConst = 64)]
             public int[] channel_map;
-
         }
-        #endregion
+
+        #endregion 配置结构
     }
 }
