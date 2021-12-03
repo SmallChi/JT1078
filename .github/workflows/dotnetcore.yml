@@ -17,11 +17,3 @@ jobs:
       run: dotnet --info
     - name: dotnet restore
       run: dotnet restore ./src/JT1078.sln
-    - name: dotnet JT808.Protocol.Extensions.JT1078.Test build
-      run: dotnet build ./src/JT808.Protocol.Extensions.JT1078.Test/JT808.Protocol.Extensions.JT1078.Test.csproj
-    - name: dotnet JT808.Protocol.Extensions.JT1078.Test test
-      run: dotnet test ./src/JT808.Protocol.Extensions.JT1078.Test/JT808.Protocol.Extensions.JT1078.Test.csproj
-    - name: dotnet JT809.Protocol.Extensions.JT1078.Test build
-      run: dotnet build ./src/JT809.Protocol.Extensions.JT1078.Test/JT809.Protocol.Extensions.JT1078.Test.csproj
-    - name: dotnet JT809.Protocol.Extensions.JT1078.Test test
-      run: dotnet test ./src/JT809.Protocol.Extensions.JT1078.Test/JT809.Protocol.Extensions.JT1078.Test.csproj

@@ -40,6 +40,9 @@ namespace JT1078.Flv
         readonly H264Decoder h264Decoder;
         readonly AudioCodecFactory audioCodecFactory;
         //public FlvEncoder(int sampleRate = 8000, int channels = 1, int sampleBit = 16, bool adts = false)
+        /// <summary>
+        /// 
+        /// </summary>
         public FlvEncoder()
         {
             audioCodecFactory = new AudioCodecFactory();
@@ -207,9 +210,9 @@ namespace JT1078.Flv
             var nalus = h264Decoder.ParseNALU(package);
             if (nalus != null && nalus.Count > 0)
             {
-                var sei = nalus.FirstOrDefault(x => x.NALUHeader.NalUnitType == 6);
-                var sps = nalus.FirstOrDefault(x => x.NALUHeader.NalUnitType == 7);
-                var pps = nalus.FirstOrDefault(x => x.NALUHeader.NalUnitType == 8);
+                var sei = nalus.FirstOrDefault(x => x.NALUHeader.NalUnitType == NalUnitType.SEI);
+                var sps = nalus.FirstOrDefault(x => x.NALUHeader.NalUnitType == NalUnitType.SPS);
+                var pps = nalus.FirstOrDefault(x => x.NALUHeader.NalUnitType == NalUnitType.PPS);
                 nalus.Remove(sps);
                 nalus.Remove(pps);
                 nalus.Remove(sei);
@@ -297,7 +300,7 @@ namespace JT1078.Flv
                 //1: keyframe (for AVC, a seekable frame) —— 即H.264的IDR帧；
                 //2: inter frame(for AVC, a non - seekable frame) —— H.264的普通I帧；
                 //ref:https://www.cnblogs.com/chyingp/p/flv-getting-started.html
-                if (nALU.NALUHeader.NalUnitType == 5)
+                if (nALU.NALUHeader.NalUnitType == NalUnitType.IDR)
                 {
                     flvTags.VideoTagsData.FrameType = FrameType.KeyFrame;
                 }

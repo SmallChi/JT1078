@@ -96,6 +96,19 @@
             m3u8文件管理
             </summary>
         </member>
+        <member name="M:JT1078.Hls.M3U8FileManage.#ctor(JT1078.Hls.Options.M3U8Option)">
+            <summary>
+            
+            </summary>
+            <param name="m3U8Option"></param>
+        </member>
+        <member name="M:JT1078.Hls.M3U8FileManage.#ctor(JT1078.Hls.Options.M3U8Option,JT1078.Hls.TSEncoder)">
+            <summary>
+            
+            </summary>
+            <param name="m3U8Option"></param>
+            <param name="tSEncoder"></param>
+        </member>
         <member name="M:JT1078.Hls.M3U8FileManage.CreateTsData(JT1078.Protocol.JT1078Package)">
             <summary>
             生成ts和m3u8文件
@@ -132,6 +145,12 @@
             <param name="key">终端号_通道号（用作目录）</param>
             <param name="data">文件内容</param>
         </member>
+        <member name="M:JT1078.Hls.M3U8FileManage.AppendM3U8End">
+            <summary>
+            添加结束标识
+            直播流用不到
+            </summary>
+        </member>
         <member name="M:JT1078.Hls.M3U8FileManage.Clear(System.String,System.Int32)">
             <summary>
             停止观看直播时清零数据
@@ -142,6 +161,16 @@
         <member name="T:JT1078.Hls.M3U8FileManage.TsFileInfo">
             <summary>
             TS文件信息
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.M3U8FileManage.TsFileInfo.Sim">
+            <summary>
+            设备手机号
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.M3U8FileManage.TsFileInfo.ChannelNo">
+            <summary>
+            设备逻辑通道号
             </summary>
         </member>
         <member name="P:JT1078.Hls.M3U8FileManage.TsFileInfo.FileName">
@@ -182,6 +211,16 @@
         <member name="P:JT1078.Hls.Options.M3U8Option.TsFileMaxSecond">
             <summary>
             每个ts文件的最大时长
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.Options.M3U8Option.TsPathSimParamName">
+            <summary>
+            ts路径sim参数名称
+            </summary>
+        </member>
+        <member name="P:JT1078.Hls.Options.M3U8Option.TsPathChannelParamName">
+            <summary>
+            ts路径通道参数名称
             </summary>
         </member>
         <member name="P:JT1078.Hls.Options.M3U8Option.M3U8FileName">
@@ -261,6 +300,11 @@
             2.PAT
             3.PMT
             4.PES
+            </summary>
+        </member>
+        <member name="M:JT1078.Hls.TSEncoder.#ctor">
+            <summary>
+            
             </summary>
         </member>
         <member name="P:JT1078.Hls.TS_AdaptationInfo.PCRIncluded">

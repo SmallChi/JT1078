@@ -26,6 +26,10 @@ namespace JT1078.FMp4
         /// </summary>
         public TimeToSampleBox TimeToSampleBox { get; set; }
         /// <summary>
+        /// stss
+        /// </summary>
+        public SyncSampleBox SyncSampleBox { get; set; }
+        /// <summary>
         /// ctts
         /// </summary>
         public CompositionOffsetBox CompositionOffsetBox { get; set; }
@@ -44,7 +48,6 @@ namespace JT1078.FMp4
         /// </summary>
         public ChunkOffsetBox ChunkOffsetBox { get; set; }
         //public ChunkLargeOffsetBox ChunkLargeOffsetBox { get; set; }
-        //public SyncSampleBox SyncSampleBox { get; set; }
         //public ShadowSyncSampleBox ShadowSyncSampleBox { get; set; }
         //public PaddingBitsBox PaddingBitsBox { get; set; }
         //public DegradationPriorityBox DegradationPriorityBox { get; set; }
@@ -58,6 +61,10 @@ namespace JT1078.FMp4
             Start(ref writer);
             SampleDescriptionBox.ToBuffer(ref writer);
             TimeToSampleBox.ToBuffer(ref writer);
+            if (SyncSampleBox != null)
+            {
+                SyncSampleBox.ToBuffer(ref writer);
+            }
             if(CompositionOffsetBox!=null)
                 CompositionOffsetBox.ToBuffer(ref writer);
             SampleToChunkBox.ToBuffer(ref writer);

@@ -8,7 +8,7 @@ namespace JT1078.AV.Benchmark
     {
         static void Main(string[] args)
         {
-            Summary summary = BenchmarkRunner.Run<JT1078FlvEncoderContext>();
+            Summary summary = BenchmarkRunner.Run<JT1078AVEncoderContext>();
         }
     }
 }

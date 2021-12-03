@@ -26,7 +26,7 @@ namespace JT1078.Protocol.Test.H264
             var nalu = nalus[0];
             Assert.Equal(0, nalu.NALUHeader.ForbiddenZeroBit);
             Assert.Equal(3, nalu.NALUHeader.NalRefIdc);
-            Assert.Equal(1, nalu.NALUHeader.NalUnitType);
+            Assert.Equal(NalUnitType.SLICE, nalu.NALUHeader.NalUnitType);
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace JT1078.Protocol.Test.H264
             Assert.Equal(4, nalus.Count);
 
             //SPS -> 7
-            var spsNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == 7);
+            var spsNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == NalUnitType.SPS);
             Assert.NotNull(spsNALU);
             spsNALU.RawData = decoder.DiscardEmulationPreventionBytes(spsNALU.RawData);
             //"Z00AFJWoWCWQ"
@@ -63,15 +63,15 @@ namespace JT1078.Protocol.Test.H264
             Assert.Equal(352, spsInfo.width);
 
             //PPS -> 8
-            var ppsNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == 8);
+            var ppsNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == NalUnitType.PPS);
             Assert.NotNull(ppsNALU);
 
             //IDR -> 5  关键帧
-            var idrNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == 5);
+            var idrNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == NalUnitType.IDR);
             Assert.NotNull(idrNALU);
 
             //SEI -> 6  
-            var seiNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == 6);
+            var seiNALU = nalus.FirstOrDefault(n => n.NALUHeader.NalUnitType == NalUnitType.SEI);
             Assert.NotNull(seiNALU);
         }
 
@@ -94,6 +94,48 @@ namespace JT1078.Protocol.Test.H264
                 fileStream.Write(package.Bodies);
             }
             fileStream.Close();
+        }
+
+        [Fact]
+        public void ParseNALUTest4()
+        {
+            string file = "jt1078_5";
+            var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", $"{file}.txt"));
+            string filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", $"{file}.h264");
+            if (File.Exists(filepath))
+            {
+                File.Delete(filepath);
+            }
+            using var fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
+            foreach (var line in lines)
+            {
+                var data = line.Split(',');
+                var bytes = data[1].ToHexBytes();
+                JT1078Package package = JT1078Serializer.Deserialize(bytes);
+                fileStream.Write(package.Bodies);
+            }
+            fileStream.Close();
+        }
+
+        [Fact]
+        public void ParseNALUTest5()
+        {
+            string file = "jt1078_6";
+            var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", $"{file}.txt"));
+            List<H264NALU> nALUs = new List<H264NALU>();
+            H264Decoder decoder = new H264Decoder();
+            foreach (var line in lines)
+            {
+                var bytes = line.ToHexBytes();
+                JT1078Package package = JT1078Serializer.Deserialize(bytes);
+                var packageMerge = JT1078Serializer.Merge(package);
+                if (packageMerge != null)
+                {
+                    var nalus = decoder.ParseNALU(packageMerge);
+                    nALUs = nALUs.Concat(nalus).ToList();
+                }
+            }
+            var a = nALUs.Count(c => !c.Slice);
         }
     }
 }

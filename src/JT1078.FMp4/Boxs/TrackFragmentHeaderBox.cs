@@ -49,6 +49,7 @@ namespace JT1078.FMp4
         public uint DefaultSampleSize { get; set; }
         /// <summary>
         /// TFHD_FLAG_DEFAULT_FLAGS
+        /// MOV_AUDIO == handler_type ? 0x02000000 : (0x00010000| 0x01000000);
         /// </summary>
         public uint DefaultSampleFlags { get; set; }
         #endregion
@@ -59,7 +60,16 @@ namespace JT1078.FMp4
             writer.WriteUInt32(TrackID);
             if ((FMp4Constants.TFHD_FLAG_BASE_DATA_OFFSET & Flags) > 0)
             {
-                writer.WriteUInt64(BaseDataOffset);
+                if (BaseDataOffset > 0)
+                {
+                    writer.WriteUInt64(BaseDataOffset);
+                }
+                else
+                {
+                    //程序自动计算
+                    writer.CreateMoofOffsetPosition();
+                    writer.Skip(8, out _);
+                }
             }
             if ((FMp4Constants.TFHD_FLAG_SAMPLE_DESCRIPTION_INDEX & Flags) > 0)
             {

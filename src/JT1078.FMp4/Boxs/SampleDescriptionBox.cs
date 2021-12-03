@@ -16,15 +16,13 @@ namespace JT1078.FMp4
         /// <summary>
         /// stsd
         /// </summary>
-        /// <param name="handlerType"></param>
         /// <param name="version"></param>
         /// <param name="flags"></param>
-        public SampleDescriptionBox(HandlerType handlerType,byte version=0, uint flags=0) : base("stsd", version, flags)
+        public SampleDescriptionBox(byte version=0, uint flags=0) : base("stsd", version, flags)
         {
-            HandlerType = handlerType;
+
         }
-        public HandlerType HandlerType { get; set; }
-        public uint EntryCount { get; set; }
+        private uint EntryCount { get; set; }
         public List<SampleEntry> SampleEntries { get; set; }
         public void ToBuffer(ref FMp4MessagePackWriter writer)
         {

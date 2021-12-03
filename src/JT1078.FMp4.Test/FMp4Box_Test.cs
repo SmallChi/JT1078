@@ -172,7 +172,7 @@ namespace JT1078.FMp4.Test
             //stbl
             SampleTableBox sampleTableBox = new SampleTableBox();
             //stbl->stsd
-            SampleDescriptionBox sampleDescriptionBox = new SampleDescriptionBox(HandlerType.none);
+            SampleDescriptionBox sampleDescriptionBox = new SampleDescriptionBox();
             //stbl->stsd->avc1
             AVC1SampleEntry aVC1SampleEntry = new AVC1SampleEntry();
             aVC1SampleEntry.Width = 0x0220;

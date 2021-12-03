@@ -1,11 +1,19 @@
 ffmpeg -i demo.mp4 -c copy -f flv -vcodec h264 -acodec aac demo_flv.flv
 
-./ffmpeg -i JT1078_3.h264 -r 25 -c copy -f flv "D:\JT1078_3.flv"
+ffmpeg -i JT1078_3.h264 -c copy -f flv JT1078_3.flv
 
 ffmpeg -f dshow -i video="USB2.0 PC CAMERA" -t 60 -c copy -f h264 -vcodec h264 ipc.264
 
 ffmpeg -i demo.264 -vcodec copy -f mp4 -movflags frag_keyframe+empty_moov fragmented_demo.mp4
 
 ffmpeg -i ipc.264 -vcodec copy -f mp4 -movflags frag_keyframe+empty_moov ipc_fragmented_demo.mp4
+
+ffmpeg -i jt1078_3.h264 -c:v copy -f mp4 -movflags empty_moov+default_base_moof+frag_keyframe fragmented_base_moof_demo.mp4
+
+ffprobe -of json -show_frames jt1078_3.h264 > jt1078_3.json
+
+ffmpeg -re -i JT1078_7.flv -acodec copy -vcodec copy -f flv rtmp://127.0.0.1:1935/live/JT1078_7
+
+ffmpeg -re -i JT1078_7.h264 -acodec copy -vcodec copy -f flv rtmp://127.0.0.1:1935/live/JT1078_7
 
 chrome://media-internals/

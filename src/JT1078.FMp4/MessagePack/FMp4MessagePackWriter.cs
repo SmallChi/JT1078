@@ -13,12 +13,14 @@ namespace JT1078.FMp4.MessagePack
         private int TrunDataOffsetPosition;
 
         private int MfraSizePosition;
+        private int MoofOffsetPosition;
 
         public FMp4MessagePackWriter(Span<byte> buffer)
         {
             this.writer = new FMp4BufferWriter(buffer);
             TrunDataOffsetPosition = 0;
             MfraSizePosition = 0;
+            MoofOffsetPosition = 0;
         }
         public byte[] FlushAndGetArray()
         {
@@ -109,6 +111,10 @@ namespace JT1078.FMp4.MessagePack
         {
             BinaryPrimitives.WriteUInt32BigEndian(writer.Written.Slice(position, 4), value);
         }
+        public void WriteUInt64Return(ulong value, int position)
+        {
+            BinaryPrimitives.WriteUInt64BigEndian(writer.Written.Slice(position, 8), value);
+        }
         public void WriteByteReturn(byte value, int position)
         {
             writer.Written[position] = value;
@@ -139,7 +145,7 @@ namespace JT1078.FMp4.MessagePack
             MfraSizePosition = writer.WrittenCount;
         }
 
-        public int GetMfraSizePositionn()
+        public int GetMfraSizePosition()
         {
             return MfraSizePosition;
         }
@@ -148,6 +154,22 @@ namespace JT1078.FMp4.MessagePack
         {
             MfraSizePosition = 0;
         }
+
+        public void CreateMoofOffsetPosition()
+        {
+            MoofOffsetPosition = writer.WrittenCount;
+        }
+
+        public int GetMoofOffsetPosition()
+        {
+            return MoofOffsetPosition;
+        }
+
+        public void ClearMoofOffsetPosition()
+        {
+            MoofOffsetPosition = 0;
+        }
+
 
         /// <summary>
         /// ref

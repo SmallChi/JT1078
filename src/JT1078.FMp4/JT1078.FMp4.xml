@@ -571,11 +571,10 @@
             stsd
             </summary>
         </member>
-        <member name="M:JT1078.FMp4.SampleDescriptionBox.#ctor(JT1078.FMp4.Enums.HandlerType,System.Byte,System.UInt32)">
+        <member name="M:JT1078.FMp4.SampleDescriptionBox.#ctor(System.Byte,System.UInt32)">
             <summary>
             stsd
             </summary>
-            <param name="handlerType"></param>
             <param name="version"></param>
             <param name="flags"></param>
         </member>
@@ -620,6 +619,11 @@
         <member name="P:JT1078.FMp4.SampleTableBox.TimeToSampleBox">
             <summary>
             stts
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SampleTableBox.SyncSampleBox">
+            <summary>
+            stss
             </summary>
         </member>
         <member name="P:JT1078.FMp4.SampleTableBox.CompositionOffsetBox">
@@ -672,19 +676,44 @@
             </summary>
         </member>
         <!-- Badly formed XML comment ignored for member "P:JT1078.FMp4.SchemeTypeBox.SchemeUri" -->
-        <member name="P:JT1078.FMp4.SegmentIndexBox.EarliestPresentationTimeLarge">
+        <member name="T:JT1078.FMp4.SegmentIndexBox">
+            <summary>
+            sidx
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.SegmentIndexBox.#ctor(System.Byte,System.UInt32)">
+            <summary>
+            sidx
+            </summary>
+            <param name="version"></param>
+            <param name="flags"></param>
+        </member>
+        <member name="P:JT1078.FMp4.SegmentIndexBox.ReferenceID">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SegmentIndexBox.Timescale">
             <summary>
             
             </summary>
         </member>
         <member name="P:JT1078.FMp4.SegmentIndexBox.EarliestPresentationTime">
             <summary>
-            if(version==0)
+            pts
+            if(version==0) 
+            version==0 32 bit
+            version>0 64 bit
             </summary>
         </member>
         <member name="P:JT1078.FMp4.SegmentIndexBox.FirstOffset">
             <summary>
-            if (version==0)
+            
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SegmentIndexBox.SegmentIndexs">
+            <summary>
+            
             </summary>
         </member>
         <member name="P:JT1078.FMp4.SegmentIndexBox.SegmentIndex.ReferenceType">
@@ -695,6 +724,12 @@
         <member name="P:JT1078.FMp4.SegmentIndexBox.SegmentIndex.ReferencedSize">
             <summary>
             4byte 32 - 31
+            ReferencedSize=(moof size) + (mdat size)
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SegmentIndexBox.SegmentIndex.SubsegmentDuration">
+            <summary>
+            
             </summary>
         </member>
         <member name="P:JT1078.FMp4.SegmentIndexBox.SegmentIndex.StartsWithSAP">
@@ -710,6 +745,34 @@
         <member name="P:JT1078.FMp4.SegmentIndexBox.SegmentIndex.SAPDeltaTime">
             <summary>
             4byte 32 - 28
+            </summary>
+        </member>
+        <member name="T:JT1078.FMp4.SegmentTypeBox">
+            <summary>
+            styp
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.SegmentTypeBox.#ctor">
+            <summary>
+            styp
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SegmentTypeBox.MajorBrand">
+             <summary>
+            因为兼容性一般可以分为推荐兼容性和默认兼容性。这里 major_brand 就相当于是推荐兼容性。通常，在 Web 中解码，一般而言都是使用 isom 这个万金油即可。如果是需要特定的格式，可以自行定义。
+             4位
+             </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SegmentTypeBox.MinorVersion">
+            <summary>
+            最低兼容版本
+            4位
+            </summary>
+        </member>
+        <member name="P:JT1078.FMp4.SegmentTypeBox.CompatibleBrands">
+            <summary>
+            和MajorBrand类似，通常是针对 MP4 中包含的额外格式，比如，AVC，AAC 等相当于的音视频解码格式。
+            4位*n
             </summary>
         </member>
         <member name="P:JT1078.FMp4.StereoVideoBox.Reserved">
@@ -769,6 +832,18 @@
             <summary>
             length:ItemCount
             </summary>
+        </member>
+        <member name="T:JT1078.FMp4.SyncSampleBox">
+            <summary>
+            stss
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.SyncSampleBox.#ctor(System.Byte,System.UInt32)">
+            <summary>
+            stss
+            </summary>
+            <param name="version"></param>
+            <param name="flags"></param>
         </member>
         <member name="T:JT1078.FMp4.TimeToSampleBox">
             <summary>
@@ -908,6 +983,7 @@
         <member name="P:JT1078.FMp4.TrackFragmentHeaderBox.DefaultSampleFlags">
             <summary>
             TFHD_FLAG_DEFAULT_FLAGS
+            MOV_AUDIO == handler_type ? 0x02000000 : (0x00010000| 0x01000000);
             </summary>
         </member>
         <member name="T:JT1078.FMp4.TrackFragmentRandomAccessBox">
@@ -978,9 +1054,26 @@
         <member name="M:JT1078.FMp4.TrackRunBox.#ctor(System.Byte,System.UInt32)">
             <summary>
             trun
+            201 205 1
+            201 0010 0000 0001
+            205 0010 0000 0101
+            1   0000 0000 0001
+            tr_flags 是用来表示下列 sample 相关的标识符是否应用到每个字段中：
+            0x000001-0000 0000 0001: data-offset-present，只应用 data-offset
+            0x000004-0000 0000 0100: 只对第一个 sample 应用对应的 flags。剩余 sample flags 就不管了。
+            0x000100-0001 0000 0000: 这个比较重要，表示每个 sample 都有自己的 duration，否则使用默认的
+            0x000200-0010 0000 0000: 每个 sample 有自己的 sample_size，否则使用默认的。
+            0x000400-0100 0000 0000: 对每个 sample 使用自己的 flags。否则，使用默认的。
+            0x000800-1000 0000 0000: 每个 sample 都有自己的 cts 值
+            0x000f01-1111 0000 0001
             </summary>
             <param name="version"></param>
             <param name="flags"></param>
+        </member>
+        <member name="P:JT1078.FMp4.TrackRunBox.SampleCount">
+            <summary>
+            
+            </summary>
         </member>
         <member name="P:JT1078.FMp4.TrackRunBox.DataOffset">
             <summary>
@@ -1002,7 +1095,10 @@
         </member>
         <member name="P:JT1078.FMp4.TrackRunBox.TrackRunInfo.SampleCompositionTimeOffset">
             <summary>
+            cts
             version == 0
+             0:uint
+            >0:int
             </summary>
         </member>
         <member name="T:JT1078.FMp4.URIBox">
@@ -1213,12 +1309,15 @@
             stream data 
             ftyp
             moov
+            styp 1
             moof 1
             mdat 1
             ...
+            styp n
             moof n
             mdat n
             mfra
+            ref: https://www.w3.org/TR/mse-byte-stream-format-isobmff/#movie-fragment-relative-addressing
             </summary>
         </member>
         <member name="M:JT1078.FMp4.FMp4Encoder.#ctor">
@@ -1226,19 +1325,28 @@
             
             </summary>
         </member>
-        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderFirstVideoBox(JT1078.Protocol.JT1078Package)">
+        <member name="M:JT1078.FMp4.FMp4Encoder.FtypBox">
             <summary>
-            编码首个视频盒子
+            编码ftyp盒子
             </summary>
-            <param name="package">jt1078完整包</param>
             <returns></returns>
         </member>
-        <member name="M:JT1078.FMp4.FMp4Encoder.EncoderOtherVideoBox(JT1078.Protocol.JT1078Package,System.UInt64)">
+        <member name="M:JT1078.FMp4.FMp4Encoder.VideoMoovBox(JT1078.Protocol.H264.H264NALU@,JT1078.Protocol.H264.H264NALU@)">
+            <summary>
+            编码moov盒子
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:JT1078.FMp4.FMp4Encoder.StypBox">
+            <summary>
+            styp
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:JT1078.FMp4.FMp4Encoder.OtherVideoBox(System.Collections.Generic.List{JT1078.Protocol.H264.H264NALU}@)">
             <summary>
             编码其他视频数据盒子
             </summary>
-            <param name="package">jt1078完整包</param>
-            <param name="moofOffset">moof位置</param>
             <returns></returns>
         </member>
         <member name="P:JT1078.FMp4.FullBox.Version">

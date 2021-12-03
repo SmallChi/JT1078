@@ -18,7 +18,7 @@ namespace JT1078.Protocol.H264
         public List<H264NALU> ParseNALU(JT1078Package package, string key = null)
         {
             List<H264NALU> h264NALUs = new List<H264NALU>();
-            int i=0,state=0;
+            int i=0,state=0,laststate=0;
             int? lastIndex=null;
             int length = package.Bodies.Length;
             byte value;
@@ -45,9 +45,10 @@ namespace JT1078.Protocol.H264
                             if (lastIndex.HasValue)
                             {
                                 var tmp = buffer.Slice(lastIndex.Value, i - state - 1 - lastIndex.Value);
-                                h264NALUs.Add(Create(package, tmp, state));
+                                h264NALUs.Add(Create(package, tmp, state+1));
                             }
                             lastIndex = i;
+                            laststate = state+1;
                             state = 0;
                         }
                         else
@@ -61,9 +62,67 @@ namespace JT1078.Protocol.H264
             }
             if (lastIndex.HasValue)
             {
-                h264NALUs.Add(Create(package, buffer.Slice(lastIndex.Value), 4));
+                h264NALUs.Add(Create(package, buffer.Slice(lastIndex.Value), laststate));
             }
             return h264NALUs;
+        }
+
+        /// <summary>
+        /// 
+        /// <see cref="https://github.com/samirkumardas/jmuxer/blob/master/src/parsers/h264.js"/>
+        /// </summary>
+        /// <param name="package"></param>
+        /// <param name="h264NALUs"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public void ParseNALU(JT1078Package package, List<H264NALU> h264NALUs,string key = null)
+        {
+            int i = 0, state = 0, laststate = 0;
+            int? lastIndex = null;
+            int length = package.Bodies.Length;
+            byte value;
+            ReadOnlySpan<byte> buffer = package.Bodies;
+            while (i < length)
+            {
+                value = buffer[i++];
+                switch (state)
+                {
+                    case 0:
+                        if (value == 0) state = 1;
+                        break;
+                    case 1:
+                        state = value == 0 ? 2 : 0;
+                        break;
+                    case 2:
+                    case 3:
+                        if (value == 0)
+                        {
+                            state = 3;
+                        }
+                        else if (value == 1 && i < length)
+                        {
+                            if (lastIndex.HasValue)
+                            {
+                                var tmp = buffer.Slice(lastIndex.Value, i - state - 1 - lastIndex.Value);
+                                h264NALUs.Add(Create(package, tmp, lastIndex.Value));
+                            }
+                            lastIndex = i;
+                            laststate = state + 1;
+                            state = 0;
+                        }
+                        else
+                        {
+                            state = 0;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (lastIndex.HasValue)
+            {
+                h264NALUs.Add(Create(package, buffer.Slice(lastIndex.Value), laststate));              
+            }
         }
 
         private H264NALU Create(JT1078Package package,ReadOnlySpan<byte> nalu, int startCodePrefix)
@@ -75,6 +134,7 @@ namespace JT1078.Protocol.H264
             nALU.LastFrameInterval = package.LastFrameInterval;
             nALU.LastIFrameInterval = package.LastIFrameInterval;
             nALU.Timestamp = package.Timestamp;
+            nALU.Slice = (nalu[1] & 0x80)== 0x80;
             nALU.RawData = nalu.ToArray();
             if (startCodePrefix == 3)
             {

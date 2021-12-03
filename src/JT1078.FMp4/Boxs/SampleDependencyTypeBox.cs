@@ -30,15 +30,13 @@ namespace JT1078.FMp4
             WriterFullBoxToBuffer(ref writer);
             if(SampleDependencyTypes!=null && SampleDependencyTypes.Count > 0)
             {
-                foreach(var item in SampleDependencyTypes)
+                foreach (var item in SampleDependencyTypes)
                 {
-                    writer.WriteByte(item.IsLeading);
-                    writer.WriteByte(item.SampleDependsOn);
-                    writer.WriteByte(item.SampleIsDependedOn);
-                    writer.WriteByte(item.SampleHasRedundancy);
-                    writer.WriteByte(item.DegradPrio);
-                    writer.WriteByte(item.IsNonSync);
-                    writer.WriteByte(item.PaddingValue);
+                    writer.WriteByte((byte)(item.IsLeading<<2 | 
+                        item.SampleDependsOn | 
+                        item.SampleIsDependedOn <<6| 
+                        item.SampleHasRedundancy << 4 |
+                        item.IsNonSync));
                 }
             }
             End(ref writer);
@@ -50,9 +48,9 @@ namespace JT1078.FMp4
             public byte SampleDependsOn { get; set; }
             public byte SampleIsDependedOn { get; set; }
             public byte SampleHasRedundancy { get; set; }
-            public byte DegradPrio { get; set; }
+            //public byte DegradPrio { get; set; }
             public byte IsNonSync { get; set; }
-            public byte PaddingValue { get; set; }
+            //public byte PaddingValue { get; set; }
         }
     }
 }
