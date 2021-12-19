@@ -134,7 +134,6 @@ namespace JT1078.Protocol.H264
             nALU.LastFrameInterval = package.LastFrameInterval;
             nALU.LastIFrameInterval = package.LastIFrameInterval;
             nALU.Timestamp = package.Timestamp;
-            nALU.Slice = (nalu[1] & 0x80)== 0x80;
             nALU.RawData = nalu.ToArray();
             if (startCodePrefix == 3)
             {

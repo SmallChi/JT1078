@@ -72,24 +72,6 @@ namespace JT1078.AV.Benchmark
                     break;
                 }
                 List<H264NALU> h264NALUs = h264Decoder.ParseNALU(package);
-                foreach (var nalu in h264NALUs)
-                {
-                    if (nalu.Slice)
-                    {
-                        //H264 NALU slice first_mb_in_slice
-                        nalus.Add(nalu);
-                    }
-                    else
-                    {
-                        if (nalus.Count > 0)
-                        {
-                            FMp4H264NALUs = new List<H264NALU>(nalus);
-                            segmentFlag = true;
-                            nalus.Clear();
-                        }
-                        nalus.Add(nalu);
-                    }
-                }
             }
         }
 
@@ -117,7 +99,8 @@ namespace JT1078.AV.Benchmark
         {
             for (var i = 0; i < N; i++)
             {
-                var buffer = fmp4Encoder.OtherVideoBox(FMp4H264NALUs);
+                //todo:OtherVideoBox
+                //var buffer = fmp4Encoder.OtherVideoBox(FMp4H264NALUs);
             }
         }
     }
@@ -126,7 +109,7 @@ namespace JT1078.AV.Benchmark
     {
         public JT1078AVEncoderConfig()
         {
-            AddJob(Job.Default.WithGcServer(false).WithToolchain(CsProjCoreToolchain.NetCoreApp50).WithPlatform(Platform.AnyCpu));
+            AddJob(Job.Default.WithGcServer(false).WithToolchain(CsProjCoreToolchain.NetCoreApp60).WithPlatform(Platform.AnyCpu));
         }
     }
 }

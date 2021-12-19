@@ -983,7 +983,7 @@
         <member name="P:JT1078.FMp4.TrackFragmentHeaderBox.DefaultSampleFlags">
             <summary>
             TFHD_FLAG_DEFAULT_FLAGS
-            MOV_AUDIO == handler_type ? 0x02000000 : (0x00010000| 0x01000000);
+            MOV_AUDIO == handler_type ? TFHD_FLAG_AUDIO_TPYE : TFHD_FLAG_VIDEO_TPYE;
             </summary>
         </member>
         <member name="T:JT1078.FMp4.TrackFragmentRandomAccessBox">
@@ -1222,6 +1222,26 @@
             
             </summary>
         </member>
+        <member name="F:JT1078.FMp4.FMp4Constants.FLAG_SEGMENT">
+            <summary>
+            fmp4 FLAG_SEGMENT
+            </summary>
+        </member>
+        <member name="F:JT1078.FMp4.FMp4Constants.AV_FLAG_KEYFREAME">
+            <summary>
+            key frame
+            </summary>
+        </member>
+        <member name="F:JT1078.FMp4.FMp4Constants.TREX_FLAG_SAMPLE_DEPENDS_ON_I_PICTURE">
+            <summary>
+            I frame
+            </summary>
+        </member>
+        <member name="F:JT1078.FMp4.FMp4Constants.TREX_FLAG_SAMPLE_DEPENDS_ON_NOT_I_PICTURE">
+            <summary>
+            p b frame
+            </summary>
+        </member>
         <member name="F:JT1078.FMp4.FMp4Constants.TKHD_FLAG_ENABLED">
             <summary>
             TKHD_FLAG_ENABLED
@@ -1245,6 +1265,16 @@
         <member name="F:JT1078.FMp4.FMp4Constants.TFHD_FLAG_SAMPLE_DESCRIPTION_INDEX">
             <summary>
             TFHD_FLAG_SAMPLE_DESC
+            </summary>
+        </member>
+        <member name="F:JT1078.FMp4.FMp4Constants.TFHD_FLAG_AUDIO_TPYE">
+            <summary>
+            TFHD_FLAG_AUDIO_TPYE
+            </summary>
+        </member>
+        <member name="F:JT1078.FMp4.FMp4Constants.TFHD_FLAG_VIDEO_TPYE">
+            <summary>
+            TFHD_FLAG_VIDEO_TPYE
             </summary>
         </member>
         <member name="F:JT1078.FMp4.FMp4Constants.TFHD_FLAG_DEFAULT_DURATION">
@@ -1310,13 +1340,14 @@
             ftyp
             moov
             styp 1
+            sidx 1
             moof 1
             mdat 1
             ...
             styp n
+            sidx n
             moof n
             mdat n
-            mfra
             ref: https://www.w3.org/TR/mse-byte-stream-format-isobmff/#movie-fragment-relative-addressing
             </summary>
         </member>
@@ -1331,7 +1362,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:JT1078.FMp4.FMp4Encoder.VideoMoovBox(JT1078.Protocol.H264.H264NALU@,JT1078.Protocol.H264.H264NALU@)">
+        <member name="M:JT1078.FMp4.FMp4Encoder.MoovBox(JT1078.Protocol.H264.H264NALU@,JT1078.Protocol.H264.H264NALU@)">
             <summary>
             编码moov盒子
             </summary>
@@ -1343,9 +1374,13 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:JT1078.FMp4.FMp4Encoder.OtherVideoBox(System.Collections.Generic.List{JT1078.Protocol.H264.H264NALU}@)">
+        <member name="M:JT1078.FMp4.FMp4Encoder.OtherVideoBox(System.Collections.Generic.List{JT1078.Protocol.JT1078Package}@)">
             <summary>
             编码其他视频数据盒子
+            注意：固定I帧解析 
+            I P P P P I P P P P I P P P P
+            todo:50ms或者一个关键帧进行切片
+            todo:优化编码
             </summary>
             <returns></returns>
         </member>

@@ -135,7 +135,6 @@ namespace JT1078.Protocol.Test.H264
                     nALUs = nALUs.Concat(nalus).ToList();
                 }
             }
-            var a = nALUs.Count(c => !c.Slice);
         }
     }
 }

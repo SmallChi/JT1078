@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard2.1;net5.0;</TargetFrameworks>
-    <LangVersion>8.0</LangVersion>
+	<TargetFramework>net6.0</TargetFramework>
+    <LangVersion>10.0</LangVersion>
     <Copyright>Copyright 2019.</Copyright>
     <Authors>SmallChi(Koike)</Authors>
     <PackageId>JT1078.FMp4</PackageId>

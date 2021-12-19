@@ -50,6 +50,8 @@ namespace JT1078.SignalR.Test
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
             app.UseRouting();
             app.UseCors("CorsPolicy");
             app.UseAuthorization();

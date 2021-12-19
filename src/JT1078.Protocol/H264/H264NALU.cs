@@ -40,12 +40,6 @@ namespace JT1078.Protocol.H264
         /// 当数据类型为01000时，则没有该字段
         /// </summary>
         public ulong Timestamp { get; set; }
-
-        /// <summary>
-        /// 是否切片 0x80
-        /// H264 NALU slice first_mb_in_slice
-        /// </summary>
-        public bool Slice { get; set; }
         /// <summary>
         /// 数据体
         /// </summary>

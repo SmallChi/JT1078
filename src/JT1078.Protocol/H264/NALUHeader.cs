@@ -11,16 +11,19 @@ namespace JT1078.Protocol.H264
             ForbiddenZeroBit = (value & 0x80) >> 7;
             NalRefIdc = (value & 0x60) >> 5;
             NalUnitType = (NalUnitType)(value & 0x1f);
+            KeyFrame=NalUnitType== NalUnitType.IDR;
         }
         public NALUHeader(ReadOnlySpan<byte> value)
         {
             ForbiddenZeroBit = (value[0] & 0x80) >> 7;
             NalRefIdc = (value[0] & 0x60) >> 5;
             NalUnitType = (NalUnitType)(value[0] & 0x1f);
+            KeyFrame=NalUnitType== NalUnitType.IDR;
         }
         public int ForbiddenZeroBit { get; set; }
         public int NalRefIdc { get; set; }
         public NalUnitType NalUnitType { get; set; }
+        public bool KeyFrame { get; set; }
     }
 
     public enum NalUnitType : int

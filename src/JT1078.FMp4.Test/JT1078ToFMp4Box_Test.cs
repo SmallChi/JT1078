@@ -441,104 +441,8 @@ namespace JT1078.FMp4.Test
         {
             FMp4Encoder fMp4Encoder = new FMp4Encoder();
             H264Decoder h264Decoder = new H264Decoder();
-            var packages = ParseNALUTests();
-            var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_5.mp4");
-            if (File.Exists(filepath))
-            {
-                File.Delete(filepath);
-            }
-
-            using var fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
-            var ftyp = fMp4Encoder.FtypBox();
-            fileStream.Write(ftyp);
-
-            var iNalus = h264Decoder.ParseNALU(packages[0]);
-            //判断第一帧是否关键帧
-            var moov = fMp4Encoder.VideoMoovBox(
-                iNalus.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.SPS),
-                iNalus.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.PPS));
-            fileStream.Write(moov);
-
-            List<H264NALU> nalus = new List<H264NALU>();
-            foreach (var package in packages)
-            {
-                List<H264NALU> h264NALUs = h264Decoder.ParseNALU(package);
-                foreach (var nalu in h264NALUs)
-                {
-                    if (nalu.Slice)
-                    {
-                        //H264 NALU slice first_mb_in_slice
-                        nalus.Add(nalu);
-                    }
-                    else
-                    {
-                        if (nalus.Count > 0)
-                        {
-                            var otherBuffer = fMp4Encoder.OtherVideoBox(nalus);
-                            fileStream.Write(otherBuffer);
-                            nalus.Clear();
-                        }
-                        nalus.Add(nalu);
-                    }
-                }
-            }
-            fileStream.Close();
-        }
-
-        [Fact]
-        public void Test5()
-        {
-            FMp4Encoder fMp4Encoder = new FMp4Encoder();
-            H264Decoder h264Decoder = new H264Decoder();
-            var packages = ParseNALUTests();
-            var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_6.mp4");
-            if (File.Exists(filepath))
-            {
-                File.Delete(filepath);
-            }
-            using var fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
-
-            var ftyp = fMp4Encoder.FtypBox();
-            fileStream.Write(ftyp);
-
-            var iNalus = h264Decoder.ParseNALU(packages[0]);
-            //判断第一帧是否关键帧
-            var moov = fMp4Encoder.VideoMoovBox(
-                iNalus.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.SPS),
-                iNalus.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.PPS));
-            fileStream.Write(moov);
-
-            List<H264NALU> nalus = new List<H264NALU>();
-            foreach (var package in packages)
-            {
-                List<H264NALU> h264NALUs = h264Decoder.ParseNALU(package);
-                if (package.Label3.DataType == Protocol.Enums.JT1078DataType.视频I帧)
-                {
-                    if (nalus.Count > 0)
-                    {
-                        var otherBuffer = fMp4Encoder.OtherVideoBox(nalus);
-                        fileStream.Write(otherBuffer);
-                        nalus.Clear();
-                    }
-                }
-                nalus = nalus.Concat(h264NALUs).ToList();
-            }
-            if (nalus.Count > 0)
-            {
-                var otherBuffer = fMp4Encoder.OtherVideoBox(nalus);
-                fileStream.Write(otherBuffer);
-                nalus.Clear();
-            }
-            fileStream.Close();
-        }
-
-        [Fact]
-        public void Test6()
-        {
-            FMp4Encoder fMp4Encoder = new FMp4Encoder();
-            H264Decoder h264Decoder = new H264Decoder();
             var packages = ParseNALUTests1();
-            var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_7.mp4");
+            var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_7_3.mp4");
             if (File.Exists(filepath))
             {
                 File.Delete(filepath);
@@ -551,38 +455,30 @@ namespace JT1078.FMp4.Test
             var iPackage = packages.FirstOrDefault(f => f.Label3.DataType == JT1078DataType.视频I帧);
             var iNalus = h264Decoder.ParseNALU(iPackage);
             //判断第一帧是否关键帧
-            var moov = fMp4Encoder.VideoMoovBox(
+            var moov = fMp4Encoder.MoovBox(
                 iNalus.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.SPS),
                 iNalus.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.PPS));
             fileStream.Write(moov);
-
-            List<H264NALU> nalus = new List<H264NALU>();
+            List<JT1078Package> tmp = new List<JT1078Package>();
             foreach (var package in packages)
             {
-                List<H264NALU> h264NALUs = h264Decoder.ParseNALU(package);
                 if (package.Label3.DataType == Protocol.Enums.JT1078DataType.视频I帧)
                 {
-                    if (nalus.Count > 0)
+                    if (tmp.Count>0)
                     {
                         fileStream.Write(fMp4Encoder.StypBox());
-                        var otherBuffer = fMp4Encoder.OtherVideoBox(nalus);
+                        var otherBuffer = fMp4Encoder.OtherVideoBox(tmp);
                         fileStream.Write(otherBuffer);
-                        nalus.Clear();
+                        tmp.Clear();
                     }
                 }
-                nalus = nalus.Concat(h264NALUs).ToList();
-            }
-            if (nalus.Count > 0)
-            {
-                var otherBuffer = fMp4Encoder.OtherVideoBox(nalus);
-                fileStream.Write(otherBuffer);
-                nalus.Clear();
+                tmp.Add(package);
             }
             fileStream.Close();
         }
 
         [Fact]
-        public void Test6_2()
+        public void Test4_2()
         {
             var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_7.h264");
             if (File.Exists(filepath))

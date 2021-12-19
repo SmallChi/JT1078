@@ -18,6 +18,25 @@ namespace JT1078.FMp4
         /// </summary>
         public static readonly DateTime UTCBaseTime = new DateTime(1904, 1, 1);
         /// <summary>
+        /// fmp4 FLAG_SEGMENT
+        /// </summary>
+        public const int FLAG_SEGMENT = 0x00000002;
+        /// <summary>
+        /// key frame
+        /// </summary>
+
+        public const int AV_FLAG_KEYFREAME = 0x0001;
+        /// <summary>
+        /// I frame
+        /// </summary>
+
+        public const int TREX_FLAG_SAMPLE_DEPENDS_ON_I_PICTURE = 0x02000000;
+        /// <summary>
+        /// p b frame
+        /// </summary>
+
+        public const int TREX_FLAG_SAMPLE_DEPENDS_ON_NOT_I_PICTURE = 0x01000000;
+        /// <summary>
         /// TKHD_FLAG_ENABLED
         /// </summary>
         public const int TKHD_FLAG_ENABLED = 0x000001;
@@ -37,6 +56,14 @@ namespace JT1078.FMp4
         /// TFHD_FLAG_SAMPLE_DESC
         /// </summary>
         public const int TFHD_FLAG_SAMPLE_DESCRIPTION_INDEX = 0x00000002;
+        /// <summary>
+        /// TFHD_FLAG_AUDIO_TPYE
+        /// </summary>
+        public const int TFHD_FLAG_AUDIO_TPYE = 0x02000000;
+        /// <summary>
+        /// TFHD_FLAG_VIDEO_TPYE
+        /// </summary>
+        public const int TFHD_FLAG_VIDEO_TPYE = (0x00010000| 0x01000000);
         /// <summary>
         /// TFHD_FLAG_SAMPLE_DUR
         /// </summary>

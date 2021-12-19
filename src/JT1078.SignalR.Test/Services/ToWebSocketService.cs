@@ -52,20 +52,11 @@ namespace JT1078.SignalR.Test.Services
         public void a()
         {
             List<JT1078Package> packages = new List<JT1078Package>();
-            //var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "jt1078_3.txt"));
-            //var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "jt1078_5.txt"));
             var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "jt1078_6.txt"));
             int mergeBodyLength = 0;
             foreach (var line in lines)
             {
-                //var data = line.Split(',');
-                //jt1078_5
-                //var bytes = data[1].ToHexBytes();
-                //jt1078_3
-                //var bytes = data[6].ToHexBytes();
-                //jt1078_6
                 var bytes = line.ToHexBytes();
-
                 JT1078Package package = JT1078Serializer.Deserialize(bytes);
                 mergeBodyLength += package.DataBodyLength;
                 var packageMerge = JT1078Serializer.Merge(package);
@@ -75,61 +66,31 @@ namespace JT1078.SignalR.Test.Services
                 }
             }
             List<byte[]> first = new List<byte[]>();
-            //var styp = fMp4Encoder.EncoderStypBox();
-            //first.Add(styp);
-            //q.Enqueue(styp);
             var ftyp = fMp4Encoder.FtypBox();
-            //q.Enqueue(ftyp);
             first.Add(ftyp);
             var package1 = packages[0];
             var nalus1 = h264Decoder.ParseNALU(package1);
-            var moov = fMp4Encoder.VideoMoovBox(
+            var moov = fMp4Encoder.MoovBox(
               nalus1.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.SPS),
               nalus1.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.PPS));
-            //q.Enqueue(moov);
             first.Add(moov);
             q.Add(first.SelectMany(s=>s).ToArray());
-            List<NalUnitType> filter = new List<NalUnitType>() { NalUnitType.SEI,NalUnitType.SPS,NalUnitType.PPS,NalUnitType.AUD};
-            List<H264NALU> nalus = new List<H264NALU>();
+            List<JT1078Package> tmp = new List<JT1078Package>();
+            //缓存组包到下一个I帧
             foreach (var package in packages)
             {
-                List<H264NALU> h264NALUs = h264Decoder.ParseNALU(package);
-                //if(package.Label3.DataType== Protocol.Enums.JT1078DataType.视频I帧)
-                //{
-                //    if (nalus.Count > 0)
-                //    {
-                //        var otherBuffer = fMp4Encoder.OtherVideoBox(nalus);
-                //        q.Add(fMp4Encoder.StypBox().Concat(otherBuffer).ToArray());
-                //        nalus.Clear();
-                //    }
-                //    else
-                //    {
-                //        nalus = nalus.Concat(h264NALUs).ToList();
-                //    }
-                //}
-                //else
-                //{
-                //    nalus = nalus.Concat(h264NALUs).ToList();
-                //}
-                foreach (var nalu in h264NALUs)
+                if (package.Label3.DataType == Protocol.Enums.JT1078DataType.视频I帧)
                 {
-                    if (nalu.Slice)
+                    if (tmp.Count>0)
                     {
-                        //H264 NALU slice first_mb_in_slice
-                        nalus.Add(nalu);
-                    }
-                    else
-                    {
-                        if (nalus.Count > 0)
-                        {
-                            q.Add(fMp4Encoder.StypBox());
-                            var otherBuffer = fMp4Encoder.OtherVideoBox(nalus);
-                            q.Add(otherBuffer);
-                            nalus.Clear();
-                        }
-                        nalus.Add(nalu);
+                        List<byte[]> buffer = new List<byte[]>();
+                        buffer.Add(fMp4Encoder.StypBox());
+                        buffer.Add(fMp4Encoder.OtherVideoBox(tmp));
+                        q.Add(buffer.SelectMany(s => s).ToArray());
+                        tmp.Clear();
                     }
                 }
+                tmp.Add(package);
             }
         }
 
