@@ -30,12 +30,12 @@ namespace JT1078.FMp4
         /// I frame
         /// </summary>
 
-        public const int TREX_FLAG_SAMPLE_DEPENDS_ON_I_PICTURE = 0x02000000;
+        public const uint TREX_FLAG_SAMPLE_DEPENDS_ON_I_PICTURE = 0x02000000;
         /// <summary>
         /// p b frame
         /// </summary>
 
-        public const int TREX_FLAG_SAMPLE_DEPENDS_ON_NOT_I_PICTURE = 0x01000000;
+        public const uint TREX_FLAG_SAMPLE_DEPENDS_ON_NOT_I_PICTURE = 0x01000000;
         /// <summary>
         /// TKHD_FLAG_ENABLED
         /// </summary>

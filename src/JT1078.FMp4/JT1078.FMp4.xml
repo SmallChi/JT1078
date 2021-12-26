@@ -901,6 +901,17 @@
             <param name="version"></param>
             <param name="flags"></param>
         </member>
+        <member name="P:JT1078.FMp4.TrackFragmentBaseMediaDecodeTimeBox.BaseMediaDecodeTime">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:JT1078.FMp4.TrackFragmentBaseMediaDecodeTimeBox.ToBuffer(JT1078.FMp4.MessagePack.FMp4MessagePackWriter@)">
+            <summary>
+            
+            </summary>
+            <param name="writer"></param>
+        </member>
         <member name="T:JT1078.FMp4.TrackFragmentBox">
             <summary>
             traf
@@ -1339,14 +1350,23 @@
             stream data 
             ftyp
             moov
+                mvex
+                    trex    Video
+                    trex    Audio
             styp 1
-            sidx 1
+            sidx 1  Video
+            sidx 1  Audio
             moof 1
+             traf 1 Video
+             traf 1 Audio
             mdat 1
             ...
             styp n
-            sidx n
+            sidx 1  Video
+            sidx n  Audio
             moof n
+             traf n Video
+             traf n Audio
             mdat n
             ref: https://www.w3.org/TR/mse-byte-stream-format-isobmff/#movie-fragment-relative-addressing
             </summary>
@@ -1377,10 +1397,28 @@
         <member name="M:JT1078.FMp4.FMp4Encoder.OtherVideoBox(System.Collections.Generic.List{JT1078.Protocol.JT1078Package}@)">
             <summary>
             编码其他视频数据盒子
-            注意：固定I帧解析 
-            I P P P P I P P P P I P P P P
-            todo:50ms或者一个关键帧进行切片
-            todo:优化编码
+            注意：固定I帧解析,延迟一个I帧的时间
+            I P P P P
+            I P P P P 
+            I P P P P
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:JT1078.FMp4.FMp4Encoder.FirstVideoBox(JT1078.Protocol.H264.H264NALU@,JT1078.Protocol.H264.H264NALU@)">
+            <summary>
+            编码首帧
+            ftyp moov
+            </summary>
+            <param name="sps"></param>
+            <param name="pps"></param>
+            <returns></returns>
+        </member>
+        <member name="M:JT1078.FMp4.FMp4Encoder.OtherVideoBox(System.Collections.Generic.List{JT1078.Protocol.H264.H264NALU}@)">
+            <summary>
+            编码其他视频数据盒子
+            styp sidx moof mdat
+            ...
+            styp sidx moof mdat
             </summary>
             <returns></returns>
         </member>

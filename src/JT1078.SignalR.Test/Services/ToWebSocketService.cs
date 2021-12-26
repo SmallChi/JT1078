@@ -65,32 +65,53 @@ namespace JT1078.SignalR.Test.Services
                     packages.Add(packageMerge);
                 }
             }
-            List<byte[]> first = new List<byte[]>();
-            var ftyp = fMp4Encoder.FtypBox();
-            first.Add(ftyp);
-            var package1 = packages[0];
-            var nalus1 = h264Decoder.ParseNALU(package1);
-            var moov = fMp4Encoder.MoovBox(
-              nalus1.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.SPS),
-              nalus1.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.PPS));
-            first.Add(moov);
-            q.Add(first.SelectMany(s=>s).ToArray());
-            List<JT1078Package> tmp = new List<JT1078Package>();
-            //缓存组包到下一个I帧
+
+            var nalus1 = h264Decoder.ParseNALU(packages[0]);
+            q.Add(fMp4Encoder.FirstVideoBox(
+                nalus1.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.SPS), 
+                nalus1.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.PPS)));
+
+            List<H264NALU> stream = new List<H264NALU>();
+            List<NalUnitType> filter = new List<NalUnitType>();
+            filter.Add(NalUnitType.SEI);
+            filter.Add(NalUnitType.PPS);
+            filter.Add(NalUnitType.SPS);
+            filter.Add(NalUnitType.AUD);
             foreach (var package in packages)
             {
-                if (package.Label3.DataType == Protocol.Enums.JT1078DataType.视频I帧)
+                List<H264NALU> h264NALUs = h264Decoder.ParseNALU(package);
+                if (h264NALUs!=null && h264NALUs.Count>0)
+                {
+                    stream.AddRange(h264NALUs.Where(w => !filter.Contains(w.NALUHeader.NalUnitType)));
+                }
+            }
+
+            List<H264NALU> tmp = new List<H264NALU>();
+            H264NALU prevNalu = null;
+            foreach (var item in stream)
+            {
+                if (item.NALUHeader.KeyFrame)
                 {
                     if (tmp.Count>0)
                     {
-                        List<byte[]> buffer = new List<byte[]>();
-                        buffer.Add(fMp4Encoder.StypBox());
-                        buffer.Add(fMp4Encoder.OtherVideoBox(tmp));
-                        q.Add(buffer.SelectMany(s => s).ToArray());
+                        q.Add(fMp4Encoder.OtherVideoBox(tmp));
                         tmp.Clear();
                     }
+                    tmp.Add(item);
+                    q.Add(fMp4Encoder.OtherVideoBox(tmp));
+                    tmp.Clear();
+                    prevNalu=item;
+                    continue;
                 }
-                tmp.Add(package);
+                if (prevNalu!=null) //第一帧I帧
+                {
+                    if (tmp.Count>1)
+                    {
+                        q.Add(fMp4Encoder.OtherVideoBox(tmp));
+                        tmp.Clear();
+                    }
+                    tmp.Add(item);
+                }
             }
         }
 
@@ -128,7 +149,7 @@ namespace JT1078.SignalR.Test.Services
                 {
                     logger.LogError(ex,"");
                 }
-                await Task.Delay(1000);
+                await Task.Delay(80);
             }
         }
     }

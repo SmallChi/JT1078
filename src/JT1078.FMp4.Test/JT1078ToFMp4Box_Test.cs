@@ -496,6 +496,76 @@ namespace JT1078.FMp4.Test
             }
             fileStream.Close();
         }
+              
+        [Fact]
+        public void Test4_3()
+        {
+            FMp4Encoder fMp4Encoder = new FMp4Encoder();
+            H264Decoder h264Decoder = new H264Decoder();
+            var packages = ParseNALUTests1();
+            var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_7_4_3.mp4");
+            if (File.Exists(filepath))
+            {
+                File.Delete(filepath);
+            }
+            using var fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
+
+            var ftyp = fMp4Encoder.FtypBox();
+            fileStream.Write(ftyp);
+
+            var iPackage = packages.FirstOrDefault(f => f.Label3.DataType == JT1078DataType.视频I帧);
+            var iNalus = h264Decoder.ParseNALU(iPackage);
+            //判断第一帧是否关键帧
+            var moov = fMp4Encoder.MoovBox(
+                iNalus.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.SPS),
+                iNalus.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.PPS));
+            fileStream.Write(moov);
+            List<JT1078Package> tmp = new List<JT1078Package>();
+            List<H264NALU> stream = new List<H264NALU>();
+
+            List<NalUnitType> filter = new List<NalUnitType>();
+            filter.Add(NalUnitType.SEI);
+            filter.Add(NalUnitType.PPS);
+            filter.Add(NalUnitType.SPS);
+            filter.Add(NalUnitType.AUD);
+            foreach (var package in packages)
+            {
+                List<H264NALU> h264NALUs = h264Decoder.ParseNALU(package);
+                if (h264NALUs!=null && h264NALUs.Count>0)
+                {
+                    stream.AddRange(h264NALUs.Where(w=> !filter.Contains(w.NALUHeader.NalUnitType)));
+                }
+            }
+            List<H264NALU> tmp1 = new List<H264NALU>();
+            H264NALU prevNalu = null;
+            foreach (var item in stream)
+            {
+                if (item.NALUHeader.KeyFrame)
+                {
+                    if (tmp1.Count>0)
+                    {
+                        fileStream.Write(fMp4Encoder.OtherVideoBox(tmp1));
+                        tmp1.Clear();
+                    }
+                    tmp1.Add(item);
+                    fileStream.Write(fMp4Encoder.OtherVideoBox(tmp1));
+                    tmp1.Clear();
+                    prevNalu=item;
+                    continue;
+                }
+                if (prevNalu!=null) //第一帧I帧
+                {
+                    if (tmp1.Count>1)
+                    {
+                        fileStream.Write(fMp4Encoder.StypBox());
+                        fileStream.Write(fMp4Encoder.OtherVideoBox(tmp1));
+                        tmp1.Clear();
+                    }
+                    tmp1.Add(item);
+                }
+            }
+            fileStream.Close();
+        }        
 
         [Fact]
         public void WebSocketMp4()
@@ -512,7 +582,7 @@ namespace JT1078.FMp4.Test
             {
                 while (true)
                 {
-                    var buffer = new byte[4096];
+                    var buffer = new byte[1024*1024];
                     var result = await clientWebSocket.ReceiveAsync(buffer, CancellationToken.None);
                     if (result.EndOfMessage)
                     {

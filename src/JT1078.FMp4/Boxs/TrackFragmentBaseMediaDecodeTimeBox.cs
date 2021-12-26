@@ -16,11 +16,17 @@ namespace JT1078.FMp4
         /// </summary>
         /// <param name="version"></param>
         /// <param name="flags"></param>
-        public TrackFragmentBaseMediaDecodeTimeBox(byte version=1, uint flags=0) : base("tfdt", version, flags)
+        public TrackFragmentBaseMediaDecodeTimeBox(byte version=0, uint flags=0) : base("tfdt", version, flags)
         {
         }
+        /// <summary>
+        /// 
+        /// </summary>
         public ulong BaseMediaDecodeTime { get; set; }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="writer"></param>
         public void ToBuffer(ref FMp4MessagePackWriter writer)
         {
             Start(ref writer);

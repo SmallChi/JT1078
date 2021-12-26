@@ -64,7 +64,7 @@ namespace JT1078.FMp4
             {
                 writer.WriteUInt32(0);
             }
-            if((Flags & FMp4Constants.TRUN_FLAG_DATA_OFFSET_PRESENT) > 0)
+            if((Flags & FMp4Constants.TRUN_FLAG_DATA_OFFSET_PRESENT) == FMp4Constants.TRUN_FLAG_DATA_OFFSET_PRESENT)
             {
                 if (DataOffset > 0)
                 {
@@ -78,7 +78,7 @@ namespace JT1078.FMp4
                     writer.Skip(4, out _);
                 }
             }
-            if ((Flags & FMp4Constants.TRUN_FLAG_FIRST_SAMPLE_FLAGS_PRESENT) > 0)
+            if ((Flags & FMp4Constants.TRUN_FLAG_FIRST_SAMPLE_FLAGS_PRESENT) == FMp4Constants.TRUN_FLAG_FIRST_SAMPLE_FLAGS_PRESENT)
             {
                 writer.WriteUInt32(FirstSampleFlags);
             }
@@ -86,19 +86,19 @@ namespace JT1078.FMp4
             {
                 foreach(var trun in TrackRunInfos)
                 {
-                    if ((Flags & FMp4Constants.TRUN_FLAG_SAMPLE_DURATION_PRESENT) > 0)
+                    if ((Flags & FMp4Constants.TRUN_FLAG_SAMPLE_DURATION_PRESENT) == FMp4Constants.TRUN_FLAG_SAMPLE_DURATION_PRESENT)
                     {
                         writer.WriteUInt32(trun.SampleDuration);
                     }
-                    if ((Flags & FMp4Constants.TRUN_FLAG_SAMPLE_SIZE_PRESENT) > 0)
+                    if ((Flags & FMp4Constants.TRUN_FLAG_SAMPLE_SIZE_PRESENT) == FMp4Constants.TRUN_FLAG_SAMPLE_SIZE_PRESENT)
                     {
                         writer.WriteUInt32(trun.SampleSize);
                     }
-                    if ((Flags & FMp4Constants.TRUN_FLAG_SAMPLE_FLAGS_PRESENT) > 0)
+                    if ((Flags & FMp4Constants.TRUN_FLAG_SAMPLE_FLAGS_PRESENT) == FMp4Constants.TRUN_FLAG_SAMPLE_FLAGS_PRESENT)
                     {
                         writer.WriteUInt32(trun.SampleFlags);
                     }
-                    if ((Flags & FMp4Constants.TRUN_FLAG_SAMPLE_COMPOSITION_TIME_OFFSET_PRESENT) > 0)
+                    if ((Flags & FMp4Constants.TRUN_FLAG_SAMPLE_COMPOSITION_TIME_OFFSET_PRESENT) == FMp4Constants.TRUN_FLAG_SAMPLE_COMPOSITION_TIME_OFFSET_PRESENT)
                     {
                         if (Version == 0)
                         {

@@ -14,12 +14,12 @@
 
 ## NuGet安装
 
-| Package Name          | Version                                            | Downloads                                           |
-| --------------------- | -------------------------------------------------- | --------------------------------------------------- |
-| Install-Package JT1078 | ![JT1078](https://img.shields.io/nuget/v/JT1078.svg) | ![JT1078](https://img.shields.io/nuget/dt/JT1078.svg) |
-| Install-Package JT1078.Flv | ![JT1078.Flv](https://img.shields.io/nuget/v/JT1078.Flv.svg) | ![JT1078.Flv](https://img.shields.io/nuget/dt/JT1078.Flv.svg) |
-| Install-Package JT1078.Hls | ![JT1078.Hls](https://img.shields.io/nuget/v/JT1078.Hls.svg) | ![JT1078.Hls](https://img.shields.io/nuget/dt/JT1078.Hls.svg) |
-| Install-Package JT1078.FMp4 | ![JT1078.FMp4](https://img.shields.io/nuget/v/JT1078.FMp4.svg) | ![JT1078.FMp4](https://img.shields.io/nuget/dt/JT1078.FMp4.svg) |
+| Package Name| Version|Pre Version| Downloads|
+| --- |---| --- | --- |
+| Install-Package JT1078 | ![JT1078](https://img.shields.io/nuget/v/JT1078.svg) | ![JT1078](https://img.shields.io/nuget/vpre/JT1078.svg) |![JT1078](https://img.shields.io/nuget/dt/JT1078.svg) |
+| Install-Package JT1078.Flv | ![JT1078.Flv](https://img.shields.io/nuget/v/JT1078.Flv.svg) |  ![JT1078.Flv](https://img.shields.io/nuget/vpre/JT1078.Flv.svg) |![JT1078.Flv](https://img.shields.io/nuget/dt/JT1078.Flv.svg) |
+| Install-Package JT1078.Hls | ![JT1078.Hls](https://img.shields.io/nuget/v/JT1078.Hls.svg) | ![JT1078.Hls](https://img.shields.io/nuget/vpre/JT1078.Hls.svg) |![JT1078.Hls](https://img.shields.io/nuget/dt/JT1078.Hls.svg) |
+| Install-Package JT1078.FMp4 | ![JT1078.FMp4](https://img.shields.io/nuget/v/JT1078.FMp4.svg) | ![JT1078.FMp4](https://img.shields.io/nuget/vpre/JT1078.FMp4.svg) |![JT1078.FMp4](https://img.shields.io/nuget/dt/JT1078.FMp4.svg) |
 
 ## <span id="1078">基于JT1078音视频流数据的RTP协议</span>
 
