@@ -18,6 +18,7 @@ using System.IO;
 using JT1078.Protocol.Extensions;
 using JT1078.Protocol.H264;
 using System.Net.WebSockets;
+using JT1078.Protocol.Enums;
 
 namespace JT1078.SignalR.Test.Services
 {
@@ -49,7 +50,7 @@ namespace JT1078.SignalR.Test.Services
 
         public List<byte[]> q = new List<byte[]>();
 
-        public void a()
+        void Init()
         {
             List<JT1078Package> packages = new List<JT1078Package>();
             var lines = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "jt1078_6.txt"));
@@ -66,12 +67,10 @@ namespace JT1078.SignalR.Test.Services
                 }
             }
 
-            var nalus1 = h264Decoder.ParseNALU(packages[0]);
-            q.Add(fMp4Encoder.FirstVideoBox(
-                nalus1.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.SPS), 
-                nalus1.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.PPS)));
+            var avframe = h264Decoder.ParseAVFrame(packages[0]);
+            q.Add(fMp4Encoder.FirstVideoBox(avframe));
 
-            List<H264NALU> stream = new List<H264NALU>();
+            Queue<Mp4Frame> mp4Frames = new Queue<Mp4Frame>();
             List<NalUnitType> filter = new List<NalUnitType>();
             filter.Add(NalUnitType.SEI);
             filter.Add(NalUnitType.PPS);
@@ -80,47 +79,35 @@ namespace JT1078.SignalR.Test.Services
             foreach (var package in packages)
             {
                 List<H264NALU> h264NALUs = h264Decoder.ParseNALU(package);
-                if (h264NALUs!=null && h264NALUs.Count>0)
+                if (h264NALUs != null && h264NALUs.Count > 0)
                 {
-                    stream.AddRange(h264NALUs.Where(w => !filter.Contains(w.NALUHeader.NalUnitType)));
+                    Mp4Frame mp4Frame = new Mp4Frame
+                    {
+                        Key = package.GetKey(),
+                        KeyFrame = package.Label3.DataType == JT1078DataType.视频I帧
+                    };
+                    mp4Frame.NALUs = h264NALUs;
+                    mp4Frames.Enqueue(mp4Frame);
                 }
             }
-
-            List<H264NALU> tmp = new List<H264NALU>();
-            H264NALU prevNalu = null;
-            foreach (var item in stream)
+            while (mp4Frames.TryDequeue(out Mp4Frame frame))
             {
-                if (item.NALUHeader.KeyFrame)
-                {
-                    if (tmp.Count>0)
-                    {
-                        q.Add(fMp4Encoder.OtherVideoBox(tmp));
-                        tmp.Clear();
-                    }
-                    tmp.Add(item);
-                    q.Add(fMp4Encoder.OtherVideoBox(tmp));
-                    tmp.Clear();
-                    prevNalu=item;
-                    continue;
-                }
-                if (prevNalu!=null) //第一帧I帧
-                {
-                    if (tmp.Count>1)
-                    {
-                        q.Add(fMp4Encoder.OtherVideoBox(tmp));
-                        tmp.Clear();
-                    }
-                    tmp.Add(item);
-                }
+                q.Add(fMp4Encoder.OtherVideoBox(frame.NALUs, frame.Key, frame.KeyFrame));
             }
         }
 
+        class Mp4Frame
+        {
+            public string Key { get; set; }
+            public bool KeyFrame { get; set; }
+            public List<H264NALU> NALUs { get; set; }
+        }
 
         public Dictionary<string,int> flag = new Dictionary<string, int>();
 
         protected async override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            a();
+            Init();
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
@@ -149,7 +136,7 @@ namespace JT1078.SignalR.Test.Services
                 {
                     logger.LogError(ex,"");
                 }
-                await Task.Delay(80);
+                await Task.Delay(60);
             }
         }
     }

@@ -89,8 +89,8 @@ var hex = JT1078Serializer.Serialize(jT1078Package).ToHexString();
 
 2.拆解：
 30 31 63 64              --帧头表示
-81                       --‭Label1 =>10000001‬ V P X CC
-E2                       --Label2 =>‭11100010‬ M PT
+81                       --Label1 =>10000001 V P X CC
+E2                       --Label2 =>11100010 M PT
 10 88                    --SN 包序号
 01 12 34 56 78 10        --SIM卡号
 01                       --逻辑通道号

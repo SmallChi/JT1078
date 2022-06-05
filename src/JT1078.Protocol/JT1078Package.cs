@@ -4,7 +4,7 @@ using System.Text;
 
 namespace JT1078.Protocol
 {
-    public class JT1078Package
+    public class JT1078Package: IJT1078AVKey
     {
         /// <summary>
         /// 帧头标识
@@ -74,7 +74,7 @@ namespace JT1078.Protocol
         /// </summary>
         public ushort LastIFrameInterval { get; set; }
         /// <summary>
-        /// 该帧与上一个关键帧之间的时间间隔，单位毫秒(ms),
+        /// 该帧与上一帧之间的时间间隔，单位毫秒(ms),
         /// 当数据类型为非视频帧时，则没有该字段
         /// </summary>
         public ushort LastFrameInterval { get; set; }
@@ -87,7 +87,13 @@ namespace JT1078.Protocol
         /// </summary>
         public byte[] Bodies{ get; set; }
 
+        [Obsolete("use GetAVKey()")]
         public string GetKey()
+        {
+            return $"{SIM}_{LogicChannelNumber.ToString()}";
+        }
+
+        public string GetAVKey()
         {
             return $"{SIM}_{LogicChannelNumber.ToString()}";
         }

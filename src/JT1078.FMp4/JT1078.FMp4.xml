@@ -1348,26 +1348,6 @@
             FMp4编码
             fmp4
             stream data 
-            ftyp
-            moov
-                mvex
-                    trex    Video
-                    trex    Audio
-            styp 1
-            sidx 1  Video
-            sidx 1  Audio
-            moof 1
-             traf 1 Video
-             traf 1 Audio
-            mdat 1
-            ...
-            styp n
-            sidx 1  Video
-            sidx n  Audio
-            moof n
-             traf n Video
-             traf n Audio
-            mdat n
             ref: https://www.w3.org/TR/mse-byte-stream-format-isobmff/#movie-fragment-relative-addressing
             </summary>
         </member>
@@ -1404,16 +1384,15 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:JT1078.FMp4.FMp4Encoder.FirstVideoBox(JT1078.Protocol.H264.H264NALU@,JT1078.Protocol.H264.H264NALU@)">
+        <member name="M:JT1078.FMp4.FMp4Encoder.FirstVideoBox(JT1078.Protocol.JT1078AVFrame@)">
             <summary>
             编码首帧
             ftyp moov
             </summary>
-            <param name="sps"></param>
-            <param name="pps"></param>
+            <param name="avframe"></param>
             <returns></returns>
         </member>
-        <member name="M:JT1078.FMp4.FMp4Encoder.OtherVideoBox(System.Collections.Generic.List{JT1078.Protocol.H264.H264NALU}@)">
+        <member name="M:JT1078.FMp4.FMp4Encoder.OtherVideoBox(System.Collections.Generic.List{JT1078.Protocol.H264.H264NALU}@,System.String@,System.Boolean@)">
             <summary>
             编码其他视频数据盒子
             styp sidx moof mdat

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace JT1078.Protocol.H264
 {
-    public class H264NALU
+    public class H264NALU: IJT1078AVKey
     {
         public readonly static byte[] Start1 = new byte[3] { 0, 0, 1 };
         public readonly static byte[] Start2 = new byte[4] { 0, 0, 0, 1 };
@@ -44,6 +44,13 @@ namespace JT1078.Protocol.H264
         /// 数据体
         /// </summary>
         public byte[] RawData { get; set; }
+
+        public string GetAVKey()
+        {
+            return $"{SIM}_{LogicChannelNumber.ToString()}";
+        }
+
+        [Obsolete("use GetAVKey")]
         public string GetKey()
         {
             return $"{SIM}_{LogicChannelNumber.ToString()}";

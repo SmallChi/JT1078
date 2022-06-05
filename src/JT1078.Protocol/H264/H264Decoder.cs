@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JT1078.Protocol.MessagePack;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -65,6 +66,99 @@ namespace JT1078.Protocol.H264
                 h264NALUs.Add(Create(package, buffer.Slice(lastIndex.Value), laststate));
             }
             return h264NALUs;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="package"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public JT1078AVFrame ParseAVFrame(JT1078Package package, string key = null)
+        {
+            JT1078AVFrame jT1078AVFrame = new JT1078AVFrame();
+            jT1078AVFrame.LogicChannelNumber = package.LogicChannelNumber;
+            jT1078AVFrame.SIM = package.SIM;
+            jT1078AVFrame.Nalus = new List<H264NALU>();
+            int i = 0, state = 0, laststate = 0;
+            int? lastIndex = null;
+            int length = package.Bodies.Length;
+            byte value;
+            ReadOnlySpan<byte> buffer = package.Bodies;
+            while (i < length)
+            {
+                value = buffer[i++];
+                switch (state)
+                {
+                    case 0:
+                        if (value == 0) state = 1;
+                        break;
+                    case 1:
+                        state = value == 0 ? 2 : 0;
+                        break;
+                    case 2:
+                    case 3:
+                        if (value == 0)
+                        {
+                            state = 3;
+                        }
+                        else if (value == 1 && i < length)
+                        {
+                            if (lastIndex.HasValue)
+                            {
+                                var tmp = buffer.Slice(lastIndex.Value, i - state - 1 - lastIndex.Value);
+                                H264NALU nalu = Create(package, tmp, state + 1);
+                                if (nalu.NALUHeader.NalUnitType == NalUnitType.PPS)
+                                {
+                                    jT1078AVFrame.PPS = nalu;
+                                }
+                                else if (nalu.NALUHeader.NalUnitType == NalUnitType.SPS)
+                                {
+                                    jT1078AVFrame.SPS = nalu;
+                                    ExpGolombReader h264GolombReader = new ExpGolombReader(jT1078AVFrame.SPS.RawData);
+                                    var spsInfo = h264GolombReader.ReadSPS();
+                                    jT1078AVFrame.Width = spsInfo.width;
+                                    jT1078AVFrame.Height = spsInfo.height;
+                                    jT1078AVFrame.LevelIdc= spsInfo.levelIdc;
+                                    jT1078AVFrame.ProfileIdc=spsInfo.profileIdc;
+                                    jT1078AVFrame.ProfileCompat=(byte)spsInfo.profileCompat;
+                                }
+                                jT1078AVFrame.Nalus.Add(nalu);
+                            }
+                            lastIndex = i;
+                            laststate = state + 1;
+                            state = 0;
+                        }
+                        else
+                        {
+                            state = 0;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (lastIndex.HasValue)
+            {
+                H264NALU nalu = Create(package, buffer.Slice(lastIndex.Value), laststate);
+                if(nalu.NALUHeader.NalUnitType== NalUnitType.PPS)
+                {
+                    jT1078AVFrame.PPS = nalu;
+                }
+                else if(nalu.NALUHeader.NalUnitType == NalUnitType.SPS)
+                {
+                    jT1078AVFrame.SPS = nalu;
+                    ExpGolombReader h264GolombReader = new ExpGolombReader(jT1078AVFrame.SPS.RawData);
+                    var spsInfo = h264GolombReader.ReadSPS();
+                    jT1078AVFrame.Width = spsInfo.width;
+                    jT1078AVFrame.Height = spsInfo.height;
+                    jT1078AVFrame.LevelIdc = spsInfo.levelIdc;
+                    jT1078AVFrame.ProfileIdc = spsInfo.profileIdc;
+                    jT1078AVFrame.ProfileCompat = (byte)spsInfo.profileCompat;
+                }
+                jT1078AVFrame.Nalus.Add(nalu);
+            }
+            return jT1078AVFrame;
         }
 
         /// <summary>

@@ -12,6 +12,7 @@ using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -498,12 +499,15 @@ namespace JT1078.FMp4.Test
         }
               
         [Fact]
-        public void Test4_3()
+        public void Test4_4()
         {
+            uint a = uint.MaxValue;
+            var b = a + 1;
+
             FMp4Encoder fMp4Encoder = new FMp4Encoder();
             H264Decoder h264Decoder = new H264Decoder();
             var packages = ParseNALUTests1();
-            var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_7_4_3.mp4");
+            var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_7_4_4.mp4");
             if (File.Exists(filepath))
             {
                 File.Delete(filepath);
@@ -520,9 +524,8 @@ namespace JT1078.FMp4.Test
                 iNalus.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.SPS),
                 iNalus.FirstOrDefault(f => f.NALUHeader.NalUnitType == NalUnitType.PPS));
             fileStream.Write(moov);
-            List<JT1078Package> tmp = new List<JT1078Package>();
-            List<H264NALU> stream = new List<H264NALU>();
 
+            Queue<Mp4Frame> mp4Frames = new Queue<Mp4Frame>();
             List<NalUnitType> filter = new List<NalUnitType>();
             filter.Add(NalUnitType.SEI);
             filter.Add(NalUnitType.PPS);
@@ -531,53 +534,42 @@ namespace JT1078.FMp4.Test
             foreach (var package in packages)
             {
                 List<H264NALU> h264NALUs = h264Decoder.ParseNALU(package);
-                if (h264NALUs!=null && h264NALUs.Count>0)
+                if (h264NALUs != null && h264NALUs.Count > 0)
                 {
-                    stream.AddRange(h264NALUs.Where(w=> !filter.Contains(w.NALUHeader.NalUnitType)));
+                    Mp4Frame mp4Frame = new Mp4Frame
+                    {
+                        Key = package.GetKey(),
+                        KeyFrame = package.Label3.DataType == JT1078DataType.视频I帧
+                    };
+                    mp4Frame.NALUs = h264NALUs;
+                    mp4Frames.Enqueue(mp4Frame);
                 }
             }
-            List<H264NALU> tmp1 = new List<H264NALU>();
-            H264NALU prevNalu = null;
-            foreach (var item in stream)
+            while (mp4Frames.TryDequeue(out Mp4Frame frame))
             {
-                if (item.NALUHeader.KeyFrame)
-                {
-                    if (tmp1.Count>0)
-                    {
-                        fileStream.Write(fMp4Encoder.OtherVideoBox(tmp1));
-                        tmp1.Clear();
-                    }
-                    tmp1.Add(item);
-                    fileStream.Write(fMp4Encoder.OtherVideoBox(tmp1));
-                    tmp1.Clear();
-                    prevNalu=item;
-                    continue;
-                }
-                if (prevNalu!=null) //第一帧I帧
-                {
-                    if (tmp1.Count>1)
-                    {
-                        fileStream.Write(fMp4Encoder.StypBox());
-                        fileStream.Write(fMp4Encoder.OtherVideoBox(tmp1));
-                        tmp1.Clear();
-                    }
-                    tmp1.Add(item);
-                }
+                fileStream.Write(fMp4Encoder.OtherVideoBox(frame.NALUs, frame.Key, frame.KeyFrame)); 
             }
             fileStream.Close();
-        }        
+        }
+
+        class Mp4Frame
+        {
+            public string Key { get; set; }
+            public bool KeyFrame { get; set; }
+            public List<H264NALU> NALUs { get; set; }
+        }
 
         [Fact]
         public void WebSocketMp4()
         {
-            var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_8.mp4");
+            var filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "H264", "JT1078_10.mp4");
             if (File.Exists(filepath))
             {
                 File.Delete(filepath);
             }
             using var fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write);
             System.Net.WebSockets.ClientWebSocket clientWebSocket = new System.Net.WebSockets.ClientWebSocket();
-            clientWebSocket.ConnectAsync(new Uri("ws://127.0.0.1:81/live/JT1078_7.live.mp4"), CancellationToken.None).GetAwaiter().GetResult();
+            clientWebSocket.ConnectAsync(new Uri("ws://127.0.0.1:8080/live/JT1078_7.live.mp4"), CancellationToken.None).GetAwaiter().GetResult();
             Task.Run(async() => 
             {
                 while (true)

@@ -16,26 +16,6 @@ namespace JT1078.FMp4
     /// FMp4编码
     /// fmp4
     /// stream data 
-    /// ftyp
-    /// moov
-    ///     mvex
-    ///         trex    Video
-    ///         trex    Audio
-    /// styp 1
-    /// sidx 1  Video
-    /// sidx 1  Audio
-    /// moof 1
-    ///  traf 1 Video
-    ///  traf 1 Audio
-    /// mdat 1
-    /// ...
-    /// styp n
-    /// sidx 1  Video
-    /// sidx n  Audio
-    /// moof n
-    ///  traf n Video
-    ///  traf n Audio
-    /// mdat n
     /// ref: https://www.w3.org/TR/mse-byte-stream-format-isobmff/#movie-fragment-relative-addressing
     /// </summary>
     public class FMp4Encoder
@@ -49,7 +29,7 @@ namespace JT1078.FMp4
                                FMp4Constants.TFHD_FLAG_DEFAULT_FLAGS;
 
         const uint TrunFlags = FMp4Constants.TRUN_FLAG_DATA_OFFSET_PRESENT |
-                               FMp4Constants.TRUN_FLAG_SAMPLE_SIZE_PRESENT|
+                               FMp4Constants.TRUN_FLAG_SAMPLE_SIZE_PRESENT |
                                FMp4Constants.TRUN_FLAG_FIRST_SAMPLE_FLAGS_PRESENT;
 
         const uint SampleDescriptionIndex = 1;
@@ -325,10 +305,9 @@ namespace JT1078.FMp4
         /// 编码首帧
         /// ftyp moov
         /// </summary>
-        /// <param name="sps"></param>
-        /// <param name="pps"></param>
+        /// <param name="avframe"></param>
         /// <returns></returns>
-        public byte[] FirstVideoBox(in H264NALU sps, in H264NALU pps)
+        public byte[] FirstVideoBox(in JT1078AVFrame avframe)
         {
             byte[] buffer = FMp4ArrayPool.Rent(CacheSize);
             FMp4MessagePackWriter writer = new FMp4MessagePackWriter(buffer);
@@ -348,8 +327,6 @@ namespace JT1078.FMp4
                 fileTypeBox.CompatibleBrands.Add("iso6");
                 fileTypeBox.ToBuffer(ref writer);
 
-                ExpGolombReader h264GolombReader = new ExpGolombReader(sps.RawData);
-                var spsInfo = h264GolombReader.ReadSPS();
                 //moov
                 MovieBox movieBox = new MovieBox();
                 movieBox.MovieHeaderBox = new MovieHeaderBox(0, 2);
@@ -366,8 +343,8 @@ namespace JT1078.FMp4
                 movieBox.TrackBox.TrackHeaderBox.TrackID = VideoTrackID;
                 movieBox.TrackBox.TrackHeaderBox.Duration = 0;
                 movieBox.TrackBox.TrackHeaderBox.TrackIsAudio = false;
-                movieBox.TrackBox.TrackHeaderBox.Width = (uint)spsInfo.width;
-                movieBox.TrackBox.TrackHeaderBox.Height = (uint)spsInfo.height;
+                movieBox.TrackBox.TrackHeaderBox.Width = (uint)avframe.Width;
+                movieBox.TrackBox.TrackHeaderBox.Height = (uint)avframe.Height;
                 movieBox.TrackBox.MediaBox = new MediaBox();
                 movieBox.TrackBox.MediaBox.MediaHeaderBox = new MediaHeaderBox();
                 movieBox.TrackBox.MediaBox.MediaHeaderBox.CreationTime = 0;
@@ -386,16 +363,19 @@ namespace JT1078.FMp4
                 movieBox.TrackBox.MediaBox.MediaInformationBox.SampleTableBox = new SampleTableBox();
                 movieBox.TrackBox.MediaBox.MediaInformationBox.SampleTableBox.SampleDescriptionBox = new SampleDescriptionBox();
                 movieBox.TrackBox.MediaBox.MediaInformationBox.SampleTableBox.SampleDescriptionBox.SampleEntries = new List<SampleEntry>();
-                //h264
+                //h264 
+                //profileIdc profileCompat levelIdc
+                //0x64       0x00            0x1e
+                //avc1.64001e
                 AVC1SampleEntry avc1 = new AVC1SampleEntry();
                 avc1.AVCConfigurationBox = new AVCConfigurationBox();
                 avc1.Width = (ushort)movieBox.TrackBox.TrackHeaderBox.Width;
                 avc1.Height = (ushort)movieBox.TrackBox.TrackHeaderBox.Height;
-                avc1.AVCConfigurationBox.AVCLevelIndication = spsInfo.levelIdc;
-                avc1.AVCConfigurationBox.AVCProfileIndication = spsInfo.profileIdc;
-                avc1.AVCConfigurationBox.ProfileCompatibility = (byte)spsInfo.profileCompat;
-                avc1.AVCConfigurationBox.PPSs = new List<byte[]>() { pps.RawData };
-                avc1.AVCConfigurationBox.SPSs = new List<byte[]>() { sps.RawData };
+                avc1.AVCConfigurationBox.AVCLevelIndication    = avframe.LevelIdc;
+                avc1.AVCConfigurationBox.AVCProfileIndication  = avframe.ProfileIdc;
+                avc1.AVCConfigurationBox.ProfileCompatibility  = avframe.ProfileCompat;
+                avc1.AVCConfigurationBox.PPSs = new List<byte[]>() { avframe.PPS.RawData };
+                avc1.AVCConfigurationBox.SPSs = new List<byte[]>() { avframe.SPS.RawData };
                 movieBox.TrackBox.MediaBox.MediaInformationBox.SampleTableBox.SampleDescriptionBox.SampleEntries.Add(avc1);
                 movieBox.TrackBox.MediaBox.MediaInformationBox.SampleTableBox.TimeToSampleBox = new TimeToSampleBox();
                 movieBox.TrackBox.MediaBox.MediaInformationBox.SampleTableBox.SyncSampleBox = new SyncSampleBox();
@@ -430,7 +410,7 @@ namespace JT1078.FMp4
         /// styp sidx moof mdat
         /// </summary>
         /// <returns></returns>
-        public byte[] OtherVideoBox(in List<H264NALU> nalus)
+        public byte[] OtherVideoBox(in List<H264NALU> nalus, in string key,in bool keyframe)
         {
             byte[] buffer = FMp4ArrayPool.Rent(CacheSize);
             FMp4MessagePackWriter writer = new FMp4MessagePackWriter(buffer);
@@ -450,32 +430,25 @@ namespace JT1078.FMp4
 
                 //mdat
                 var mediaDataBox = new MediaDataBox();
-                mediaDataBox.Data=new List<byte[]>();
-
-                string key = string.Empty;
-                bool keyFrame = nalus[0].NALUHeader.KeyFrame;
+                mediaDataBox.Data = new List<byte[]>();
+                uint sampleSize = 0;
                 var truns = new List<TrackRunBox.TrackRunInfo>();
-                uint defaultSampleDuration = 0;
                 foreach (var n in nalus)
                 {
-                    if (key==string.Empty)
-                    {
-                        key=n.GetKey();
-                    }
-                    defaultSampleDuration+=DefaultSampleDuration;
-                    truns.Add(new TrackRunBox.TrackRunInfo()
-                    {
-                        SampleDuration = DefaultSampleDuration,
-                        SampleSize = (uint)(n.RawData.Length+n.StartCodePrefix.Length),
-                    });
+                    sampleSize += (uint)(n.RawData.Length + n.StartCodePrefix.Length);
                     mediaDataBox.Data.Add(n.RawData);
                 }
+                truns.Add(new TrackRunBox.TrackRunInfo()
+                {
+                    SampleDuration = DefaultSampleDuration,
+                    SampleSize = sampleSize,
+                });
                 if (!TrackInfos.TryGetValue(key, out TrackInfo trackInfo))
                 {
-                    trackInfo = new TrackInfo { SN = 1, SubsegmentDuration=0 };
+                    trackInfo = new TrackInfo { SN = 1, SubsegmentDuration = 0 };
                     TrackInfos.Add(key, trackInfo);
                 }
-                if (trackInfo.SN == uint.MaxValue)
+                if (trackInfo.SN == 0)
                 {
                     trackInfo.SN = 1;
                 }
@@ -487,7 +460,7 @@ namespace JT1078.FMp4
                 {
                      new SegmentIndexBox.SegmentIndex
                      {
-                          SubsegmentDuration=defaultSampleDuration
+                          SubsegmentDuration=DefaultSampleDuration
                      }
                 };
                 segmentIndexBox.ToBuffer(ref writer);
@@ -501,31 +474,36 @@ namespace JT1078.FMp4
                 movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox = new TrackFragmentHeaderBox(TfhdFlags);
                 movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.TrackID = VideoTrackID;
                 movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.SampleDescriptionIndex = SampleDescriptionIndex;
-                movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleSize = truns[0].SampleSize;
-                movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleDuration =  truns[0].SampleDuration;
+                movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleSize = sampleSize;
+                movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleDuration = DefaultSampleDuration;
                 movieFragmentBox.TrackFragmentBox.TrackFragmentHeaderBox.DefaultSampleFlags = FMp4Constants.TFHD_FLAG_VIDEO_TPYE;
                 movieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox = new TrackFragmentBaseMediaDecodeTimeBox();
                 movieFragmentBox.TrackFragmentBox.TrackFragmentBaseMediaDecodeTimeBox.BaseMediaDecodeTime = trackInfo.SubsegmentDuration;
                 //update trackInfo
-                trackInfo.SubsegmentDuration+=defaultSampleDuration;
+                trackInfo.SubsegmentDuration += DefaultSampleDuration;
                 trackInfo.SN++;
                 TrackInfos[key] = trackInfo;
                 //trun
-
-                movieFragmentBox.TrackFragmentBox.TrackRunBox = new TrackRunBox(1, flags: TrunFlags);
+                if (keyframe)
+                {
+                    movieFragmentBox.TrackFragmentBox.TrackRunBox = new TrackRunBox(1, flags:
+                                                            FMp4Constants.TRUN_FLAG_DATA_OFFSET_PRESENT |
+                                                            FMp4Constants.TRUN_FLAG_FIRST_SAMPLE_FLAGS_PRESENT);
+                }
+                else
+                {
+                    movieFragmentBox.TrackFragmentBox.TrackRunBox = new TrackRunBox(1, FMp4Constants.TRUN_FLAG_DATA_OFFSET_PRESENT);
+                }
                 movieFragmentBox.TrackFragmentBox.TrackRunBox.FirstSampleFlags = FMp4Constants.TREX_FLAG_SAMPLE_DEPENDS_ON_I_PICTURE;
                 movieFragmentBox.TrackFragmentBox.TrackRunBox.TrackRunInfos = truns;
                 movieFragmentBox.ToBuffer(ref writer);
-
                 //mdat
                 mediaDataBox.ToBuffer(ref writer);
-
                 var current2 = writer.GetCurrentPosition();
                 foreach (var postion in segmentIndexBox.ReferencedSizePositions)
                 {
                     writer.WriteUInt32Return((uint)(current2 - current1), postion);
                 }
-
                 var data = writer.FlushAndGetArray();
                 return data;
             }

@@ -68,6 +68,7 @@ namespace JT1078.Flv
         /// <param name="hasAudio">是否有音频</param>
         /// <param name="frameRate">帧率 默认25d 即每秒25帧</param>
         /// <returns></returns>
+        [Obsolete("use EncoderScriptTag(JT1078AVFrame avframe, bool hasAudio = false, double frameRate = 25d)")]
         public byte[] EncoderScriptTag(SPSInfo spsInfo, bool hasAudio = false, double frameRate = 25d)
         {
             byte[] buffer = FlvArrayPool.Rent(1024);
@@ -115,6 +116,60 @@ namespace JT1078.Flv
         }
 
         /// <summary>
+        /// 编码脚本Tag
+        /// </summary>
+        /// <param name="avframe">解析后的av信息</param>
+        /// <param name="hasAudio">是否有音频</param>
+        /// <param name="frameRate">帧率 默认25d 即每秒25帧</param>
+        /// <returns></returns>
+
+        public byte[] EncoderScriptTag(JT1078AVFrame avframe, bool hasAudio = false, double frameRate = 25d)
+        {
+            byte[] buffer = FlvArrayPool.Rent(1024);
+            try
+            {
+                FlvMessagePackWriter flvMessagePackWriter = new FlvMessagePackWriter(buffer);
+                //flv body script tag
+                //flv body tag header
+                FlvTags flvTags = new FlvTags
+                {
+                    Type = TagType.ScriptData,
+                    //flv body tag body
+                    DataTagsData = new Amf3
+                    {
+                        Amf3Metadatas = new List<IAmf3Metadata>
+                        {
+                            new Amf3Metadata_Duration{Value = 0d},
+                            new Amf3Metadata_VideoDataRate{Value = 0d},
+                            new Amf3Metadata_VideoCodecId{Value = 7d},
+                            new Amf3Metadata_FrameRate{Value = frameRate},
+                            new Amf3Metadata_Width(){
+                                Value=avframe.Width
+                            },
+                            new Amf3Metadata_Height(){
+                                Value=avframe.Height
+                            },
+                        }
+                    }
+                };
+                if (hasAudio)
+                {
+                    flvTags.DataTagsData.Amf3Metadatas.Add(new Amf3Metadata_AudioCodecId());
+                    flvTags.DataTagsData.Amf3Metadatas.Add(new Amf3Metadata_AudioSampleRate());
+                    flvTags.DataTagsData.Amf3Metadatas.Add(new Amf3Metadata_AudioSampleSize());
+                    flvTags.DataTagsData.Amf3Metadatas.Add(new Amf3Metadata_AudioStereo());
+                }
+                flvMessagePackWriter.WriteFlvTag(flvTags);
+                flvMessagePackWriter.WriteUInt32((uint)(flvTags.DataSize + 11));
+                return flvMessagePackWriter.FlushAndGetArray();
+            }
+            finally
+            {
+                FlvArrayPool.Return(buffer);
+            }
+        }
+
+        /// <summary>
         ///  编码首帧视频，即videoTag[0]
         /// </summary>
         /// <param name="spsInfo">sps 解析后的数据</param>
@@ -122,6 +177,7 @@ namespace JT1078.Flv
         /// <param name="pps"></param>
         /// <param name="sei"></param>
         /// <returns></returns>
+        [Obsolete("use EncoderFirstVideoTag(JT1078AVFrame avframe)")]
         public byte[] EncoderFirstVideoTag(SPSInfo spsInfo, H264NALU sps, H264NALU pps, H264NALU sei)
         {
             byte[] buffer = FlvArrayPool.Rent(4096);
@@ -153,6 +209,54 @@ namespace JT1078.Flv
                     NumOfPictureParameterSets = 1,
                     PPSBuffer = pps.RawData,
                     SPSBuffer = sps.RawData
+                };
+                flvTags.VideoTagsData.VideoData.AVCDecoderConfiguration = aVCDecoderConfigurationRecord;
+                flvMessagePackWriter.WriteFlvTag(flvTags);
+                flvMessagePackWriter.WriteUInt32((uint)(flvTags.DataSize + 11));
+                return flvMessagePackWriter.FlushAndGetArray();
+            }
+            finally
+            {
+                FlvArrayPool.Return(buffer);
+            }
+        }
+
+        /// <summary>
+        ///  编码首帧视频，即videoTag[0]
+        /// </summary>
+        /// <param name="avframe"></param>
+        /// <returns></returns>
+        public byte[] EncoderFirstVideoTag(JT1078AVFrame avframe)
+        {
+            byte[] buffer = FlvArrayPool.Rent(4096);
+            try
+            {
+                FlvMessagePackWriter flvMessagePackWriter = new FlvMessagePackWriter(buffer);
+                //flv body video tag
+                //flv body tag header
+                FlvTags flvTags = new FlvTags
+                {
+                    Type = TagType.Video,
+                    Timestamp = (uint)avframe.SPS.Timestamp,
+                    TimestampExt = 0,
+                    StreamId = 0,
+                    //flv body tag body
+                    VideoTagsData = new VideoTags()
+                };
+                flvTags.VideoTagsData.FrameType = FrameType.KeyFrame;
+                flvTags.VideoTagsData.VideoData = new AvcVideoPacke
+                {
+                    AvcPacketType = AvcPacketType.SequenceHeader,
+                    CompositionTime = 0
+                };
+                AVCDecoderConfigurationRecord aVCDecoderConfigurationRecord = new AVCDecoderConfigurationRecord
+                {
+                    AVCProfileIndication = avframe.ProfileIdc,
+                    ProfileCompatibility = avframe.ProfileCompat,
+                    AVCLevelIndication = avframe.LevelIdc,
+                    NumOfPictureParameterSets = 1,
+                    PPSBuffer = avframe.PPS.RawData,
+                    SPSBuffer = avframe.SPS.RawData
                 };
                 flvTags.VideoTagsData.VideoData.AVCDecoderConfiguration = aVCDecoderConfigurationRecord;
                 flvMessagePackWriter.WriteFlvTag(flvTags);

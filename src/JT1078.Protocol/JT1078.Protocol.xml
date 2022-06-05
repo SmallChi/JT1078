@@ -122,6 +122,14 @@
             <param name="key"></param>
             <returns></returns>
         </member>
+        <member name="M:JT1078.Protocol.H264.H264Decoder.ParseAVFrame(JT1078.Protocol.JT1078Package,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="package"></param>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
         <member name="M:JT1078.Protocol.H264.H264Decoder.ParseNALU(JT1078.Protocol.JT1078Package,System.Collections.Generic.List{JT1078.Protocol.H264.H264NALU},System.String)">
             <summary>
             
@@ -179,6 +187,17 @@
         <member name="P:JT1078.Protocol.H264.H264NALU.RawData">
             <summary>
             数据体
+            </summary>
+        </member>
+        <member name="P:JT1078.Protocol.JT1078AVFrame.SIM">
+            <summary>
+            终端设备SIM卡号
+            BCD[6]
+            </summary>
+        </member>
+        <member name="P:JT1078.Protocol.JT1078AVFrame.LogicChannelNumber">
+            <summary>
+            逻辑通道号
             </summary>
         </member>
         <member name="T:JT1078.Protocol.JT1078Label1">
@@ -322,7 +341,7 @@
         </member>
         <member name="P:JT1078.Protocol.JT1078Package.LastFrameInterval">
             <summary>
-            该帧与上一个关键帧之间的时间间隔，单位毫秒(ms),
+            该帧与上一帧之间的时间间隔，单位毫秒(ms),
             当数据类型为非视频帧时，则没有该字段
             </summary>
         </member>

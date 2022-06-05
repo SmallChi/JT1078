@@ -203,6 +203,15 @@
             <param name="frameRate">帧率 默认25d 即每秒25帧</param>
             <returns></returns>
         </member>
+        <member name="M:JT1078.Flv.FlvEncoder.EncoderScriptTag(JT1078.Protocol.JT1078AVFrame,System.Boolean,System.Double)">
+            <summary>
+            编码脚本Tag
+            </summary>
+            <param name="avframe">解析后的av信息</param>
+            <param name="hasAudio">是否有音频</param>
+            <param name="frameRate">帧率 默认25d 即每秒25帧</param>
+            <returns></returns>
+        </member>
         <member name="M:JT1078.Flv.FlvEncoder.EncoderFirstVideoTag(JT1078.Protocol.MessagePack.SPSInfo,JT1078.Protocol.H264.H264NALU,JT1078.Protocol.H264.H264NALU,JT1078.Protocol.H264.H264NALU)">
             <summary>
              编码首帧视频，即videoTag[0]
@@ -211,6 +220,13 @@
             <param name="sps"></param>
             <param name="pps"></param>
             <param name="sei"></param>
+            <returns></returns>
+        </member>
+        <member name="M:JT1078.Flv.FlvEncoder.EncoderFirstVideoTag(JT1078.Protocol.JT1078AVFrame)">
+            <summary>
+             编码首帧视频，即videoTag[0]
+            </summary>
+            <param name="avframe"></param>
             <returns></returns>
         </member>
         <member name="M:JT1078.Flv.FlvEncoder.EncoderFirstAudioTag(System.UInt64)">
