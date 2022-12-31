@@ -345,7 +345,7 @@ namespace JT1078.Protocol.Test
                 var bytes = data[6].ToHexBytes();
                 JT1078Package package = JT1078Serializer.Deserialize(bytes);
                 mergeBodyLength += package.DataBodyLength;
-                merge = JT1078Serializer.Merge(package);
+                merge = JT1078Serializer.Merge(package,JT808ChannelType.Live);
             }
             Assert.NotNull(merge);
             Assert.Equal(mergeBodyLength, merge.Bodies.Length);

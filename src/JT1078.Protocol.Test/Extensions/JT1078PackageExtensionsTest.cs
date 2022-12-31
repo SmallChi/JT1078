@@ -1,4 +1,5 @@
-﻿using JT1078.Protocol.Extensions;
+﻿using JT1078.Protocol.Enums;
+using JT1078.Protocol.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,7 +24,7 @@ namespace JT1078.Protocol.Test.Extensions
                 var bytes = data[6].ToHexBytes();
                 JT1078Package package = JT1078Serializer.Deserialize(bytes);
                 mergeBodyLength += package.DataBodyLength;
-                merge = JT1078Serializer.Merge(package);
+                merge = JT1078Serializer.Merge(package,JT808ChannelType.Live);
             }
             var packages = merge.Bodies.ConvertVideo(merge.SIM, merge.LogicChannelNumber, merge.Label2.PT, merge.Label3.DataType, 
                 merge.Timestamp, merge.LastFrameInterval, merge.LastFrameInterval);

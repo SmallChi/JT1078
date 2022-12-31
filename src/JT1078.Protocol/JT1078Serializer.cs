@@ -1,19 +1,19 @@
-﻿using JT1078.Protocol.Enums;
-using JT1078.Protocol.Extensions;
-using JT1078.Protocol.MessagePack;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using JT1078.Protocol.Enums;
+using JT1078.Protocol.Extensions;
+using JT1078.Protocol.MessagePack;
 
 namespace JT1078.Protocol
 {
     public static class JT1078Serializer
     {
-        private readonly static ConcurrentDictionary<string, JT1078Package> JT1078PackageGroupDict = new ConcurrentDictionary<string, JT1078Package>(StringComparer.OrdinalIgnoreCase);
+        private readonly static ConcurrentDictionary<string, JT1078Package> livePackageGroup = new(StringComparer.OrdinalIgnoreCase);
+        private readonly static ConcurrentDictionary<string, JT1078Package> historyPackageGroup = new(StringComparer.OrdinalIgnoreCase);
         public static byte[] Serialize(JT1078Package package, int minBufferSize = 4096)
         {
             byte[] buffer = JT1078ArrayPool.Rent(minBufferSize);
@@ -72,18 +72,33 @@ namespace JT1078.Protocol
             jT1078Package.Bodies = jT1078MessagePackReader.ReadRemainArray().ToArray();
             return jT1078Package;
         }
-        public static JT1078Package Merge(JT1078Package jT1078Package)
+
+        /// <summary>
+        /// merge package
+        /// <para>due to the agreement cannot distinguish the Stream type, so need clear Stream type at the time of merger, avoid confusion</para>
+        /// </summary>
+        /// <param name="jT1078Package">package of jt1078</param>
+        /// <param name="channelType">package type is live or history</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static JT1078Package Merge(JT1078Package jT1078Package,JT808ChannelType channelType)
         {
             string cacheKey = jT1078Package.GetKey();
+            var packageGroup = channelType switch
+            {
+                JT808ChannelType.Live=>livePackageGroup,
+                JT808ChannelType.History=>historyPackageGroup,
+                _=>throw new Exception("channel type error")
+            };
             if (jT1078Package.Label3.SubpackageType == JT1078SubPackageType.分包处理时的第一个包)
             {
-                JT1078PackageGroupDict.TryRemove(cacheKey, out _);
-                JT1078PackageGroupDict.TryAdd(cacheKey, jT1078Package);
+                packageGroup.TryRemove(cacheKey, out _);
+                packageGroup.TryAdd(cacheKey, jT1078Package);
                 return default;
             }
             else if (jT1078Package.Label3.SubpackageType == JT1078SubPackageType.分包处理时的中间包)
             {
-                if (JT1078PackageGroupDict.TryGetValue(cacheKey, out var tmpPackage))
+                if (packageGroup.TryGetValue(cacheKey, out var tmpPackage))
                 {
                     var totalLength = tmpPackage.Bodies.Length + jT1078Package.Bodies.Length;
                     byte[] poolBytes = JT1078ArrayPool.Rent(totalLength);
@@ -92,13 +107,13 @@ namespace JT1078.Protocol
                     jT1078Package.Bodies.CopyTo(tmpSpan.Slice(tmpPackage.Bodies.Length));
                     tmpPackage.Bodies = tmpSpan.Slice(0, totalLength).ToArray();
                     JT1078ArrayPool.Return(poolBytes);
-                    JT1078PackageGroupDict[cacheKey] = tmpPackage;
+                    packageGroup[cacheKey] = tmpPackage;
                 }
                 return default;
             }
             else if (jT1078Package.Label3.SubpackageType == JT1078SubPackageType.分包处理时的最后一个包)
             {
-                if (JT1078PackageGroupDict.TryRemove(cacheKey, out var tmpPackage))
+                if (packageGroup.TryRemove(cacheKey, out var tmpPackage))
                 {
                     var totalLength = tmpPackage.Bodies.Length + jT1078Package.Bodies.Length;
                     byte[] poolBytes = JT1078ArrayPool.Rent(totalLength);

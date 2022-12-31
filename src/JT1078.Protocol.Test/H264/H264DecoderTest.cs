@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using JT1078.Protocol.H264;
 using JT808.Protocol.Extensions;
 using JT1078.Protocol.MessagePack;
+using JT1078.Protocol.Enums;
 
 namespace JT1078.Protocol.Test.H264
 {
@@ -41,7 +42,7 @@ namespace JT1078.Protocol.Test.H264
                 var bytes = data[6].ToHexBytes();
                 JT1078Package package = JT1078Serializer.Deserialize(bytes);
                 mergeBodyLength += package.DataBodyLength;
-                Package = JT1078Serializer.Merge(package);
+                Package = JT1078Serializer.Merge(package,JT808ChannelType.Live);
             }
             H264Decoder decoder = new H264Decoder();
             var nalus = decoder.ParseNALU(Package);
@@ -128,7 +129,7 @@ namespace JT1078.Protocol.Test.H264
             {
                 var bytes = line.ToHexBytes();
                 JT1078Package package = JT1078Serializer.Deserialize(bytes);
-                var packageMerge = JT1078Serializer.Merge(package);
+                var packageMerge = JT1078Serializer.Merge(package,JT808ChannelType.Live);
                 if (packageMerge != null)
                 {
                     var nalus = decoder.ParseNALU(packageMerge);
